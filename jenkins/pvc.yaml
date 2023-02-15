@@ -1,0 +1,25 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-controller-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ceph-filesystem
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-agent-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ceph-filesystem
+  resources:
+    requests:
+      storage: 200Gi
