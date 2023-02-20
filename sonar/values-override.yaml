@@ -95,7 +95,7 @@ ingress:
 
   # Set ingressClassName if kubernetes version is >= 1.18
   # Reference: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
-  ingressClassName: nginx
+  # ingressClassName: nginx
 
 # Additional labels for Ingress manifest file
   # labels:
