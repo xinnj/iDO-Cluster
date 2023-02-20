@@ -27,7 +27,7 @@ edition: "community"
 
 image:
   repository: docker.io/sonarqube
-  tag: 9.8.0-{{ .Values.edition }}
+  tag: 9.9.0-{{ .Values.edition }}
   pullPolicy: IfNotPresent
   # If using a private repository, the imagePullSecrets to use
   # pullSecrets:
@@ -88,11 +88,10 @@ ingress:
       # servicePort: somePort
       # the pathType can be one of the following values: Exact|Prefix|ImplementationSpecific(default)
       # pathType: ImplementationSpecific
-  annotations: {}
-  # kubernetes.io/ingress.class: nginx
+  annotations:
   # kubernetes.io/tls-acme: "true"
   # This property allows for reports up to a certain size to be uploaded to SonarQube
-  # nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
 
   # Set ingressClassName if kubernetes version is >= 1.18
   # Reference: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -160,7 +159,7 @@ readinessProbe:
   failureThreshold: 6
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: <SONAR_URL_PREFIX>
+  sonarWebContext: <SONAR_URL_PREFIX>/
   # sonarWebContext: /sonarqube/
 
 livenessProbe:
@@ -169,7 +168,7 @@ livenessProbe:
   failureThreshold: 6
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: <SONAR_URL_PREFIX>
+  sonarWebContext: <SONAR_URL_PREFIX>/
   # sonarWebContext: /sonarqube/
   # If an ingress *path* is defined, it should be reflected here
   # sonar.web.context: /sonarqube
@@ -180,7 +179,7 @@ startupProbe:
   failureThreshold: 24
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: <SONAR_URL_PREFIX>
+  sonarWebContext: <SONAR_URL_PREFIX>/
   # sonarWebContext: /sonarqube/
 
 initContainers:
@@ -303,10 +302,10 @@ monitoringPasscode: "define_it"
 
 ## Environment variables to attach to the pods
 ##
-# env:
+env:
 #   # If you use a different ingress path from /, you have to add it here as the value of SONAR_WEB_CONTEXT
-#   - name: SONAR_WEB_CONTEXT
-#     value: /sonarqube
+  - name: SONAR_WEB_CONTEXT
+    value: <SONAR_URL_PREFIX>
 #   - name: VARIABLE
 #     value: my-value
 

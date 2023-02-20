@@ -11,7 +11,7 @@ SONAR_STORAGE_SIZE="5Gi"
 SONAR_PG_STORAGE_SIZE="20Gi"
 
 # A trailing "/" must be included
-SONAR_URL_PREFIX="/sonarqube/"
+SONAR_URL_PREFIX="/sonarqube"
 
 # Create PVC
 perl -0777 -p -i \
