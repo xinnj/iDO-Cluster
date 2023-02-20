@@ -1,4 +1,4 @@
-2controller:
+controller:
   watchIngressWithoutClass: true
   ingressClassResource:
     name: custom-nginx

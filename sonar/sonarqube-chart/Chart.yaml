@@ -1,22 +1,24 @@
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: "Update SonarQube to 9.8.0"
-    - kind: fixed
-      description: "Update the postgresql chart's repository"
+      description : "Update the list of supported kubernetes versions"
     - kind: changed
-      description: "Refactor Ingress to be compatible with static compatibility test and 1.19 minimum requirement"
+      description : "Set a new default (maximum) allowed size of the client request body on the ingress"
+    - kind: changed
+      description: "Update SonarQube to 9.9.0"
+    - kind: changed
+      description: "Mark 8.x.x chart as the LTS (SonarQube 9.9.x) chart"
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/images: |
     - name: sonarqube
-      image: sonarqube:9.8.0-community
+      image: sonarqube:9.9.0-community
   artifacthub.io/links: |
     - name: support
       url: https://community.sonarsource.com/
     - name: Chart Source
       url: https://github.com/SonarSource/helm-chart-sonarqube/tree/master/charts/sonarqube
 apiVersion: v2
-appVersion: 9.8.0
+appVersion: 9.9.0
 dependencies:
 - condition: postgresql.enabled
   name: postgresql
@@ -40,9 +42,13 @@ kubeVersion: '>= 1.19.0-0'
 maintainers:
 - email: leo.geoffroy+helm@sonarsource.com
   name: leo-geoffroy-sonarsource
+- email: carmine.vassallo@sonarsource.com
+  name: carminevassallo
+- email: jeremy.cotineau@sonarsource.com
+  name: jCOTINEAU
 name: sonarqube
 sources:
 - https://github.com/SonarSource/docker-sonarqube
 - https://github.com/SonarSource/sonarqube
 type: application
-version: 7.0.0+449
+version: 8.0.0+463
