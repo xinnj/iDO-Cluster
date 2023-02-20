@@ -25,9 +25,9 @@ kubectl apply -f "${base}"/pvc.yaml
 
 # Install Jenkins
 perl -0777 -p -i \
-    -e "s/<JENKINS_TIMEZONE>/${JENKINS_TIMEZONE}/g;" \
-    -e "s/<JENKINS_URL>/${JENKINS_URL}/g;" \
-    -e "s/<JENKINS_URL_PREFIX>/${JENKINS_URL_PREFIX}/g;" \
-    -e "s/<UPDATE_CENTER>/${UPDATE_CENTER}/g" \
+    -e "s#<JENKINS_TIMEZONE>#${JENKINS_TIMEZONE}#g;" \
+    -e "s#<JENKINS_URL>#${JENKINS_URL}#g;" \
+    -e "s#<JENKINS_URL_PREFIX>#${JENKINS_URL_PREFIX}#g;" \
+    -e "s#<UPDATE_CENTER>#${UPDATE_CENTER}#g" \
     "${base}"/values-override.yaml
 helm upgrade jenkins --install -f "${base}"/values-override.yaml "${base}"/jenkins-chart
