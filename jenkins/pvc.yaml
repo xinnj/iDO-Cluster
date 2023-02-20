@@ -6,10 +6,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: ceph-filesystem
+  storageClassName: <STORAGE_CLASS>
   resources:
     requests:
-      storage: 20Gi
+      storage: <CONTROLLER_STORAGE_SIZE>
 
 ---
 kind: PersistentVolumeClaim
@@ -19,7 +19,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ceph-filesystem
+  storageClassName: <STORAGE_CLASS>
   resources:
     requests:
-      storage: 200Gi
+      storage: <AGENT_STORAGE_SIZE>

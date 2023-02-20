@@ -3,12 +3,31 @@ set -euaxo pipefail
 
 base=$(dirname "$0")
 
+# ceph-filesystem, nfs-client
+STORAGE_CLASS="ceph-filesystem"
+CONTROLLER_STORAGE_SIZE="20Gi"
+AGENT_STORAGE_SIZE="200Gi"
+
+# long name of timezone, refer: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+JENKINS_TIMEZONE="Asia/Shanghai"
+JENKINS_URL="http://pipeline.ido-cluster.com/jenkins"
+JENKINS_URL_PREFIX="/${JENKINS_URL#*://*/}" && [[ "/${JENKINS_URL}" == "${JENKINS_URL_PREFIX}" ]] && JENKINS_URL_PREFIX="/"
+UPDATE_CENTER="https://updates.jenkins.io/update-center.json"
+
+
 # Create PVC
-# Todo: storageClassName, storage size
+perl -0777 -p -i \
+    -e "s/<STORAGE_CLASS>/${STORAGE_CLASS}/g;" \
+    -e "s/<CONTROLLER_STORAGE_SIZE>/${CONTROLLER_STORAGE_SIZE}/g;" \
+    -e "s/<AGENT_STORAGE_SIZE>/${AGENT_STORAGE_SIZE}/g" \
+    "${base}"/pvc.yaml
 kubectl apply -f "${base}"/pvc.yaml
 
 # Install Jenkins
-# Todo: set timezone
-# Todo: set url
-# Todo: set update center
+perl -0777 -p -i \
+    -e "s/<JENKINS_TIMEZONE>/${JENKINS_TIMEZONE}/g;" \
+    -e "s/<JENKINS_URL>/${JENKINS_URL}/g;" \
+    -e "s/<JENKINS_URL_PREFIX>/${JENKINS_URL_PREFIX}/g;" \
+    -e "s/<UPDATE_CENTER>/${UPDATE_CENTER}/g" \
+    "${base}"/values-override.yaml
 helm upgrade jenkins --install -f "${base}"/values-override.yaml "${base}"/jenkins-chart
