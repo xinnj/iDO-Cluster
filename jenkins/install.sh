@@ -3,6 +3,8 @@ set -euaxo pipefail
 
 base=$(dirname "$0")
 
+CONTAINER_MIRROR="${CONTAINER_MIRROR:-true}"
+
 # ceph-filesystem, nfs-client
 STORAGE_CLASS="ceph-filesystem"
 CONTROLLER_STORAGE_SIZE="20Gi"
@@ -24,6 +26,12 @@ perl -0777 -p -i \
 kubectl apply -f "${base}"/pvc.yaml
 
 # Install Jenkins
+if [ "${CONTAINER_MIRROR}" == "true" ]; then
+    perl -0777 -p -i \
+        -e "s/docker\.io/docker.m.daocloud.io/g" \
+        "${base}"/values-override.yaml
+fi
+
 perl -0777 -p -i \
     -e "s#<JENKINS_TIMEZONE>#${JENKINS_TIMEZONE}#g;" \
     -e "s#<JENKINS_URL>#${JENKINS_URL}#g;" \

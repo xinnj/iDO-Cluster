@@ -18,7 +18,7 @@ renderHelmLabels: true
 controller:
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-controller"
-  image: "jenkins/jenkins"
+  image: "docker.io/jenkins/jenkins"
   tag: "2.375.3-jdk11"
   tagLabel: jdk11
   imagePullPolicy: "IfNotPresent"
@@ -634,7 +634,7 @@ controller:
   # Optionally specify additional init-containers
   customInitContainers:
   - name: custom-init
-    image: "alpine:3.7"
+    image: "docker.io/alpine:3.7"
     imagePullPolicy: IfNotPresent
     command: ["/bin/sh"]
     args: ["-c", "mkdir -p /home/jenkins/agent/workspace && cd /var/jenkins_home && ln -sf /home/jenkins/agent/workspace workspace"]
@@ -650,7 +650,7 @@ controller:
       # jcasc changes will cause a reboot and will only be applied at the subsequent start-up.  Auto-reload uses the
       # http://<jenkins_url>/reload-configuration-as-code endpoint to reapply config when changes to the configScripts are detected.
       enabled: true
-      image: kiwigrid/k8s-sidecar:1.15.0
+      image: docker.io/kiwigrid/k8s-sidecar:1.15.0
       imagePullPolicy: IfNotPresent
       resources: {}
         #   limits:
