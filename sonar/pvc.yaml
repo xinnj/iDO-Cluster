@@ -1,0 +1,25 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sonarqube-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: <STORAGE_CLASS>
+  resources:
+    requests:
+      storage: <SONAR_STORAGE_SIZE>
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sonarqube-pg-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: <STORAGE_CLASS>
+  resources:
+    requests:
+      storage: <SONAR_PG_STORAGE_SIZE>
