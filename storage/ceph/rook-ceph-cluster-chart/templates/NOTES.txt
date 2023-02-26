@@ -1,6 +1,9 @@
 The Ceph Cluster has been installed. Check its status by running:
   kubectl --namespace {{ .Release.Namespace }} get cephcluster
 
+Get admin password of dashboard by running:
+  kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+
 Visit https://rook.io/docs/rook/latest/CRDs/ceph-cluster-crd/ for more information about the Ceph CRD.
 
 Important Notes:
