@@ -233,8 +233,8 @@ csi:
     - name : csi-omap-generator
       resource:
         requests:
-          memory: 512Mi
-          cpu: 250m
+          memory: 256Mi
+          cpu: 100m
         limits:
           memory: 1Gi
           cpu: 500m
@@ -313,8 +313,8 @@ csi:
     - name : csi-cephfsplugin
       resource:
         requests:
-          memory: 512Mi
-          cpu: 250m
+          memory: 256Mi
+          cpu: 200m
         limits:
           memory: 1Gi
           cpu: 500m
@@ -341,8 +341,8 @@ csi:
     - name : csi-cephfsplugin
       resource:
         requests:
-          memory: 512Mi
-          cpu: 250m
+          memory: 256Mi
+          cpu: 200m
         limits:
           memory: 1Gi
           cpu: 500m
