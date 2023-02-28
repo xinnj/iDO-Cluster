@@ -496,7 +496,7 @@ controller:
           - kubernetes:
               containerCap: 10
               containerCapStr: "10"
-              jenkinsUrl: "http://jenkins.default.svc.cluster.local:8080"
+              jenkinsUrl: "http://jenkins.default.svc.cluster.local:8080/jenkins"
               maxRequestsPerHost: 4
               maxRequestsPerHostStr: "4"
               name: "kubernetes"
@@ -509,7 +509,8 @@ controller:
           markupFormatter:
             rawHtml:
               disableSyntaxHighlighting: false
-          numExecutors: 0
+          mode: EXCLUSIVE
+          numExecutors: 4
           primaryView:
             all:
               name: "all"
