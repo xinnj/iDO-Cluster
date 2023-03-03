@@ -25,6 +25,9 @@ perl -0777 -p -i \
     "${base}"/pvc.yaml
 kubectl apply -f "${base}"/pvc.yaml
 
+# Create namespace for builders
+kubectl create ns builders
+
 # Install Jenkins
 if [ "${CONTAINER_MIRROR}" == "true" ]; then
     perl -0777 -p -i \
@@ -38,4 +41,4 @@ perl -0777 -p -i \
     -e "s#<JENKINS_URL_PREFIX>#${JENKINS_URL_PREFIX}#g;" \
     -e "s#<UPDATE_CENTER>#${UPDATE_CENTER}#g" \
     "${base}"/values-override.yaml
-helm upgrade jenkins --install -f "${base}"/values-override.yaml "${base}"/jenkins-chart
+helm upgrade jenkins --install --create-namespace --namespace jenkins -f "${base}"/values-override.yaml "${base}"/jenkins-chart

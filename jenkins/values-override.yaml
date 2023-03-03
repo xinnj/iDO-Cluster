@@ -504,11 +504,11 @@ controller:
           - kubernetes:
               containerCap: 10
               containerCapStr: "10"
-              jenkinsUrl: "http://jenkins.default.svc.cluster.local:8080/jenkins"
+              jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080/jenkins"
               maxRequestsPerHost: 4
               maxRequestsPerHostStr: "4"
               name: "kubernetes"
-              namespace: "default"
+              namespace: "builders"
               serverUrl: "https://kubernetes.default"
               webSocket: true
           crumbIssuer:
@@ -537,7 +537,7 @@ controller:
             installations:
             - credentialsId: "sonarqube"
               name: "sonarqube"
-              serverUrl: "http://sonarqube-sonarqube:9000/sonarqube"
+              serverUrl: "http://sonarqube-sonarqube.sonar:9000/sonarqube"
               triggers:
                 skipScmCause: false
                 skipUpstreamCause: false

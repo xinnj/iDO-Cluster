@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-controller-data
+  namespace: jenkins
 spec:
   accessModes:
     - ReadWriteOnce
@@ -16,6 +17,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-agent-data
+  namespace: jenkins
 spec:
   accessModes:
     - ReadWriteMany

@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: sonarqube-data
+  namespace: sonar
 spec:
   accessModes:
     - ReadWriteOnce
@@ -16,6 +17,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: sonarqube-pg-data
+  namespace: sonar
 spec:
   accessModes:
     - ReadWriteOnce

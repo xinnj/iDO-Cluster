@@ -31,4 +31,4 @@ fi
 perl -0777 -p -i \
     -e "s#<SONAR_URL_PREFIX>#${SONAR_URL_PREFIX}#g" \
     "${base}"/values-override.yaml
-helm upgrade sonarqube --install -f "${base}"/values-override.yaml "${base}"/sonarqube-chart
+helm upgrade sonarqube --install --create-namespace --namespace sonar -f "${base}"/values-override.yaml "${base}"/sonarqube-chart
