@@ -15,6 +15,8 @@ data:
     set -e
 {{- if .Values.controller.initializeOnce }}
     if [ -f {{ .Values.controller.jenkinsHome }}/initialization-completed ]; then
+      # Load casc config only once
+      rm -rf {{ .Values.controller.jenkinsHome }}/casc_configs/*
       echo "controller was previously initialized, refusing to re-initialize"
       exit 0
     fi
@@ -55,7 +57,7 @@ data:
 {{- if .Values.controller.initializeOnce }}
     touch {{ .Values.controller.jenkinsHome }}/initialization-completed
 {{- end }}
-  {{- if not .Values.controller.sidecars.configAutoReload.enabled }}
+    {{- if not .Values.controller.sidecars.configAutoReload.enabled }}
 # Only add config to this script if we aren't auto-reloading otherwise the pod will restart upon each config change:
 {{- if .Values.controller.JCasC.defaultConfig }}
   jcasc-default-config.yaml: |-
