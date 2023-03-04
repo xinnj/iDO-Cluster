@@ -479,13 +479,13 @@ controller:
     configScripts:
       default: |
         credentials:
-        system:
-          domainCredentials:
+          system:
+            domainCredentials:
             - credentials:
               - string:
-                id: "sonarqube"
-                scope: GLOBAL
-                secret: "{AQAAABAAAAAwSTWmKim5RLc0tZZZbB7R7kGMuRt6gG9ZOXioFbFsz7NP9+wf0FvP04eY5Q3uev5cSl5NiVG3I+QJhxkXyXoAWQ==}"
+                  id: "sonarqube"
+                  scope: GLOBAL
+                  secret: "{AQAAABAAAAAwSTWmKim5RLc0tZZZbB7R7kGMuRt6gG9ZOXioFbFsz7NP9+wf0FvP04eY5Q3uev5cSl5NiVG3I+QJhxkXyXoAWQ==}"
         jenkins:
           agentProtocols:
           - "JNLP4-connect"
@@ -532,15 +532,6 @@ controller:
               - id: "${chart-admin-username}"
                 name: "Jenkins Admin"
                 password: "${chart-admin-password}"
-          sonarGlobalConfiguration:
-            buildWrapperEnabled: true
-            installations:
-            - credentialsId: "sonarqube"
-              name: "sonarqube"
-              serverUrl: "http://sonarqube-sonarqube.sonar:9000/sonarqube"
-              triggers:
-                skipScmCause: false
-                skipUpstreamCause: false
           updateCenter:
             sites:
               - id: "default"
@@ -626,6 +617,15 @@ controller:
             url: "<JENKINS_URL>"
           shell:
             shell: "/bin/sh"
+          sonarGlobalConfiguration:
+            buildWrapperEnabled: true
+            installations:
+            - credentialsId: "sonarqube"
+              name: "sonarqube"
+              serverUrl: "http://sonarqube-sonarqube.sonar:9000/sonarqube"
+              triggers:
+                skipScmCause: false
+                skipUpstreamCause: false
 
     #  welcome-message: |
     #    jenkins:
