@@ -31,3 +31,11 @@ if [ "${CONTAINER_MIRROR}" == "true" ]; then
         "${base}/values-rook-ceph-cluster-${install_mode}.yaml"
 fi
 helm upgrade rook-ceph-cluster --install --create-namespace --namespace rook-ceph -f "${base}/values-rook-ceph-cluster-${install_mode}.yaml" "${base}/rook-ceph-cluster-chart"
+
+health=''
+while [ "$health" != "HEALTH_OK" ]; do
+    echo Wait the ceph cluster is ready...
+    sleep 5
+    health=$(kubectl --namespace rook-ceph get cephcluster -o custom-columns=HEALTH:.status.ceph.health --no-headers=true)
+    kubectl --namespace rook-ceph get cephcluster
+done
