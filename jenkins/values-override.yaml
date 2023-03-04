@@ -1054,7 +1054,7 @@ agent:
   # Defines how the raw yaml field gets merged with yaml definitions from inherited pod templates: merge or override
   yamlMergeStrategy: "override"
   # Timeout in seconds for an agent to be online
-  connectTimeout: 100
+  connectTimeout: 600
   # Annotations to apply to the pod.
   annotations: {}
 
