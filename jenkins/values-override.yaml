@@ -508,7 +508,7 @@ controller:
               maxRequestsPerHost: 4
               maxRequestsPerHostStr: "4"
               name: "kubernetes"
-              namespace: "builders"
+              namespace: "jenkins"
               serverUrl: "https://kubernetes.default"
               webSocket: true
           crumbIssuer:

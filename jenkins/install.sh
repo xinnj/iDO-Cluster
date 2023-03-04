@@ -18,7 +18,6 @@ UPDATE_CENTER="https://updates.jenkins.io/update-center.json"
 
 # Create namespaces
 kubectl create ns jenkins || :
-kubectl create ns builders || :
 
 # Create PVC
 perl -0777 -p -i \
