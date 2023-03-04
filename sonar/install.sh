@@ -13,6 +13,9 @@ SONAR_PG_STORAGE_SIZE="20Gi"
 # A trailing "/" must be included
 SONAR_URL_PREFIX="/sonarqube"
 
+# Create namespaces
+kubectl create ns sonar || :
+
 # Create PVC
 perl -0777 -p -i \
     -e "s/<STORAGE_CLASS>/${STORAGE_CLASS}/g;" \

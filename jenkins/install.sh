@@ -16,6 +16,9 @@ JENKINS_URL="http://pipeline.ido-cluster.com/jenkins"
 JENKINS_URL_PREFIX="/${JENKINS_URL#*://*/}" && [[ "/${JENKINS_URL}" == "${JENKINS_URL_PREFIX}" ]] && JENKINS_URL_PREFIX="/"
 UPDATE_CENTER="https://updates.jenkins.io/update-center.json"
 
+# Create namespaces
+kubectl create ns jenkins || :
+kubectl create ns builders || :
 
 # Create PVC
 perl -0777 -p -i \
@@ -24,9 +27,6 @@ perl -0777 -p -i \
     -e "s/<AGENT_STORAGE_SIZE>/${AGENT_STORAGE_SIZE}/g" \
     "${base}"/pvc.yaml
 kubectl apply -f "${base}"/pvc.yaml
-
-# Create namespace for builders
-kubectl create ns builders
 
 # Install Jenkins
 if [ "${CONTAINER_MIRROR}" == "true" ]; then
