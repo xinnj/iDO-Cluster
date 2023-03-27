@@ -86,7 +86,7 @@ controller:
   #     value: "http://192.168.64.1:3128"
   # Set min/max heap here if needed with:
   # javaOpts: "-Xms512m -Xmx512m"
-  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=<JENKINS_TIMEZONE> -Duser.timezone=<JENKINS_TIMEZONE> -Dfile.encoding=UTF-8 -Dkubernetes.websocket.timeout=60000 -Dorg.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.websocketConnectionTimeout=600"
+  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=<JENKINS_TIMEZONE> -Duser.timezone=<JENKINS_TIMEZONE> -Dfile.encoding=UTF-8 -Dkubernetes.websocket.timeout=60000 -Dorg.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.websocketConnectionTimeout=3600"
   # jenkinsOpts: ""
   # If you are using the ingress definitions provided by this chart via the `controller.ingress` block the configured hostname will be the ingress hostname starting with `https://` or `http://` depending on the `tls` configuration.
   # The Protocol can be overwritten by specifying `controller.jenkinsUrlProtocol`.
@@ -496,6 +496,7 @@ controller:
                       - "Overall/Administer"
           clouds:
           - kubernetes:
+              connectTimeout: 10
               containerCap: 10
               containerCapStr: "10"
               jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080/jenkins"
@@ -504,6 +505,7 @@ controller:
               name: "kubernetes"
               namespace: "jenkins"
               serverUrl: "https://kubernetes.default"
+              waitForPodSec: 3600
               webSocket: true
           crumbIssuer:
             standard:
