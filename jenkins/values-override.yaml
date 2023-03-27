@@ -86,7 +86,7 @@ controller:
   #     value: "http://192.168.64.1:3128"
   # Set min/max heap here if needed with:
   # javaOpts: "-Xms512m -Xmx512m"
-  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=<JENKINS_TIMEZONE> -Duser.timezone=<JENKINS_TIMEZONE> -Dfile.encoding=UTF-8 -Dkubernetes.websocket.timeout=60000 -Dorg.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.websocketConnectionTimeout=3600"
+  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=<JENKINS_TIMEZONE> -Duser.timezone=<JENKINS_TIMEZONE> -Dfile.encoding=UTF-8 -Dkubernetes.websocket.timeout=60000 -Dorg.csanchez.jenkins.plugins.kubernetes.PodTemplate.connectionTimeout=3600 -Dorg.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.websocketConnectionTimeout=3600"
   # jenkinsOpts: ""
   # If you are using the ingress definitions provided by this chart via the `controller.ingress` block the configured hostname will be the ingress hostname starting with `https://` or `http://` depending on the `tls` configuration.
   # The Protocol can be overwritten by specifying `controller.jenkinsUrlProtocol`.
