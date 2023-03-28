@@ -504,6 +504,7 @@ controller:
               maxRequestsPerHostStr: "4"
               name: "kubernetes"
               namespace: "jenkins"
+              retentionTimeout: 60
               serverUrl: "https://kubernetes.default"
               waitForPodSec: 3600
               webSocket: true
