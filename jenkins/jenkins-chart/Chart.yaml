@@ -1,7 +1,7 @@
 annotations:
   artifacthub.io/images: |
     - name: jenkins
-      image: jenkins/jenkins:2.375.2-jdk11
+      image: jenkins/jenkins:2.387.1-jdk11
     - name: k8s-sidecar
       image: kiwigrid/k8s-sidecar:1.15.0
     - name: inbound-agent
@@ -14,7 +14,7 @@ annotations:
     - name: Jenkins
       url: https://www.jenkins.io/
 apiVersion: v2
-appVersion: 2.375.2
+appVersion: 2.387.1
 description: Jenkins - Build great things at any scale! The leading open source automation
   server, Jenkins provides hundreds of plugins to support building, deploying and
   automating any project.
@@ -37,4 +37,4 @@ sources:
 - https://github.com/jenkinsci/docker-inbound-agent
 - https://github.com/maorfr/kube-tasks
 - https://github.com/jenkinsci/configuration-as-code-plugin
-version: 4.3.1
+version: 4.3.10
