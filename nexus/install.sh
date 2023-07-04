@@ -1,29 +1,29 @@
 #! /bin/bash
-set -euaxo pipefail
+set -euao pipefail
 
 base=$(dirname "$0")
 
-CONTAINER_MIRROR="${CONTAINER_MIRROR:-true}"
+echo "### Install Nexus ###"
+echo "TEAM=${TEAM}"
+echo "STORAGE_CLASS=${STORAGE_CLASS}"
+echo "NEXUS_STORAGE_SIZE=${NEXUS_STORAGE_SIZE}"
+echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
 
-# ceph-filesystem, nfs-client
-STORAGE_CLASS="ceph-filesystem"
-STORAGE_SIZE="200Gi"
+if [ "${TEAM}" == "default" ]; then
+  TEAM_URL="${CLUSTER_URL}"
+else
+  TEAM_URL="${CLUSTER_URL}/${TEAM}"
+fi
+NEXUS_URL="${TEAM_URL}/nexus"
+NEXUS_URL_PATH="${NEXUS_URL#*://*/}" && [[ "${NEXUS_URL}" == "${NEXUS_URL_PATH}" ]] && NEXUS_URL_PATH=""
 
 # Create namespaces
-kubectl create ns nexus || :
+kubectl create ns ${TEAM} || :
 
 # Create PVC
-perl -0777 -p -i \
-    -e "s/<STORAGE_CLASS>/${STORAGE_CLASS}/g;" \
-    -e "s/<STORAGE_SIZE>/${STORAGE_SIZE}/g" \
-    "${base}"/pvc.yaml
-kubectl apply -f "${base}"/pvc.yaml
+envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"
+kubectl apply -f "${base}/pvc.yaml"
 
 # Install nexus
-if [ "${CONTAINER_MIRROR}" == "true" ]; then
-    perl -0777 -p -i \
-        -e "s/docker\.io/docker.m.daocloud.io/g" \
-        "${base}"/values-override.yaml
-fi
-
-helm upgrade nexus --install --create-namespace --namespace nexus -f "${base}"/values-override.yaml "${base}"/nexus-repository-manager-chart
+envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
+helm upgrade nexus --install --create-namespace --namespace ${TEAM} -f "${base}"/values.yaml "${base}"/nexus-repository-manager-chart

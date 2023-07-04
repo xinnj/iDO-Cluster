@@ -3,11 +3,11 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: nexus-data
-  namespace: nexus
+  namespace: ${TEAM}
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: <STORAGE_CLASS>
+  storageClassName: ${STORAGE_CLASS}
   resources:
     requests:
-      storage: <STORAGE_SIZE>
+      storage: ${NEXUS_STORAGE_SIZE}

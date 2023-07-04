@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: docker.io/xinnj/file-server
+  repository: ${DOCKER_CONTAINER_MIRROR}/xinnj/file-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.1.0"
+  tag: "1.2.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -49,9 +49,9 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host:
+    - host: ${HOSTNAME}
       paths:
-        - path: /download
+        - path: ${FILE_URL_PREFIX}
           pathType: ImplementationSpecific
         - path: /fancyindex
           pathType: ImplementationSpecific
@@ -102,4 +102,9 @@ persistence:
 
 env:
   - name: TZ
-    value: <TIMEZONE>
+    value: ${TIMEZONE}
+  - name: URL_PREFIX
+    value: ${FILE_URL_PREFIX}
+
+probe:
+  path: ${FILE_URL_PREFIX}

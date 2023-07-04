@@ -1,35 +1,31 @@
 #! /bin/bash
-set -euaxo pipefail
+set -euao pipefail
 
 base=$(dirname "$0")
 
-CONTAINER_MIRROR="${CONTAINER_MIRROR:-true}"
+echo "### Install File Server ###"
+echo "CLUSTER_URL=${CLUSTER_URL}"
+echo "TEAM=${TEAM}"
+echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
+echo "TIMEZONE=${TIMEZONE}"
+echo "STORAGE_CLASS=${STORAGE_CLASS}"
+echo "FILE_STORAGE_SIZE=${FILE_STORAGE_SIZE}"
 
-# ceph-filesystem, nfs-client
-STORAGE_CLASS="ceph-filesystem"
-STORAGE_SIZE="200Gi"
-
-# long name of timezone, refer: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-TIMEZONE="Asia/Shanghai"
+if [ "${TEAM}" == "default" ]; then
+  TEAM_URL="${CLUSTER_URL}"
+else
+  TEAM_URL="${CLUSTER_URL}/${TEAM}"
+fi
+FILE_URL="${TEAM_URL}/download"
+FILE_URL_PREFIX="/${FILE_URL#*://*/}" && [[ "/${FILE_URL}" == "${FILE_URL_PREFIX}" ]] && FILE_URL_PREFIX="/"
 
 # Create namespaces
-kubectl create ns files || :
+kubectl create ns ${TEAM} || :
 
 # Create PVC
-perl -0777 -p -i \
-    -e "s/<STORAGE_CLASS>/${STORAGE_CLASS}/g;" \
-    -e "s/<STORAGE_SIZE>/${STORAGE_SIZE}/g" \
-    "${base}"/pvc.yaml
-kubectl apply -f "${base}"/pvc.yaml
+envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"
+kubectl apply -f "${base}/pvc.yaml"
 
 # Install file-server
-if [ "${CONTAINER_MIRROR}" == "true" ]; then
-    perl -0777 -p -i \
-        -e "s/docker\.io/docker.m.daocloud.io/g" \
-        "${base}"/values-override.yaml
-fi
-
-perl -0777 -p -i \
-    -e "s#<TIMEZONE>#${TIMEZONE}#g" \
-    "${base}"/values-override.yaml
-helm upgrade file-server --install --create-namespace --namespace files -f "${base}"/values-override.yaml "${base}"/file-server-chart
+envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
+helm upgrade file-server --install --create-namespace --namespace ${TEAM} -f "${base}"/values.yaml "${base}"/file-server-chart

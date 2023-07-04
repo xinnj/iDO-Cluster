@@ -1,37 +1,31 @@
 #! /bin/bash
-set -euaxo pipefail
+set -euao pipefail
 
 base=$(dirname "$0")
 
-CONTAINER_MIRROR="${CONTAINER_MIRROR:-true}"
+echo "### Install Sonarqube ###"
+echo "CLUSTER_URL=${CLUSTER_URL}"
+echo "TEAM=${TEAM}"
+echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
+echo "STORAGE_CLASS=${STORAGE_CLASS}"
+echo "SONAR_STORAGE_SIZE=${SONAR_STORAGE_SIZE}"
+echo "SONAR_PG_STORAGE_SIZE=${SONAR_PG_STORAGE_SIZE}"
 
-# ceph-filesystem, nfs-client
-STORAGE_CLASS="ceph-filesystem"
-SONAR_STORAGE_SIZE="5Gi"
-SONAR_PG_STORAGE_SIZE="20Gi"
-
-# A trailing "/" must be included
-SONAR_URL_PREFIX="/sonarqube"
+if [ "${TEAM}" == "default" ]; then
+  TEAM_URL="${CLUSTER_URL}"
+else
+  TEAM_URL="${CLUSTER_URL}/${TEAM}"
+fi
+SONAR_URL="${TEAM_URL}/sonarqube"
+SONAR_URL_PREFIX="/${SONAR_URL#*://*/}" && [[ "/${SONAR_URL}" == "${SONAR_URL_PREFIX}" ]] && SONAR_URL_PREFIX="/"
 
 # Create namespaces
-kubectl create ns sonar || :
+kubectl create ns ${TEAM} || :
 
 # Create PVC
-perl -0777 -p -i \
-    -e "s/<STORAGE_CLASS>/${STORAGE_CLASS}/g;" \
-    -e "s/<SONAR_STORAGE_SIZE>/${SONAR_STORAGE_SIZE}/g;" \
-    -e "s/<SONAR_PG_STORAGE_SIZE>/${SONAR_PG_STORAGE_SIZE}/g" \
-    "${base}"/pvc.yaml
+envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"
 kubectl apply -f "${base}"/pvc.yaml
 
 # Install Sonarqube
-if [ "${CONTAINER_MIRROR}" == "true" ]; then
-    perl -0777 -p -i \
-        -e "s/docker\.io/docker.m.daocloud.io/g" \
-        "${base}"/values-override.yaml
-fi
-
-perl -0777 -p -i \
-    -e "s#<SONAR_URL_PREFIX>#${SONAR_URL_PREFIX}#g" \
-    "${base}"/values-override.yaml
-helm upgrade sonarqube --install --create-namespace --namespace sonar -f "${base}"/values-override.yaml "${base}"/sonarqube-chart
+envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
+helm upgrade sonarqube --install --create-namespace --namespace ${TEAM} -f "${base}"/values.yaml "${base}"/sonarqube-chart

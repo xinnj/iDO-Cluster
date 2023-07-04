@@ -3,22 +3,13 @@ set -euaxo pipefail
 
 base=$(dirname "$0")
 
-CONTAINER_MIRROR="${CONTAINER_MIRROR:-true}"
-
-# long name of timezone, refer: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-TIMEZONE="Asia/Shanghai"
-
-NODE_PORT="30445"
+echo "### Install Samba Server ###"
+echo "CLUSTER_URL=${CLUSTER_URL}"
+echo "TEAM=${TEAM}"
+echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
+echo "TIMEZONE=${TIMEZONE}"
+echo "SMB_NODE_PORT=${SMB_NODE_PORT}"
 
 # Install samba-server
-if [ "${CONTAINER_MIRROR}" == "true" ]; then
-    perl -0777 -p -i \
-        -e "s/docker\.io/docker.m.daocloud.io/g" \
-        "${base}"/values-override.yaml
-fi
-
-perl -0777 -p -i \
-    -e "s#<TIMEZONE>#${TIMEZONE}#g" \
-    -e "s#<NODE_PORT>#${NODE_PORT}#g" \
-    "${base}"/values-override.yaml
-helm upgrade samba-server --install --create-namespace --namespace jenkins -f "${base}"/values-override.yaml "${base}"/samba-server-chart
+envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
+helm upgrade samba-server --install --create-namespace --namespace ${TEAM} -f "${base}"/values.yaml "${base}"/samba-server-chart

@@ -3,25 +3,25 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-controller-data
-  namespace: jenkins
+  namespace: ${TEAM}
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: <STORAGE_CLASS>
+    - ReadWriteMany
+  storageClassName: ${STORAGE_CLASS}
   resources:
     requests:
-      storage: <CONTROLLER_STORAGE_SIZE>
+      storage: ${CONTROLLER_STORAGE_SIZE}
 
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-agent-data
-  namespace: jenkins
+  namespace: ${TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: <STORAGE_CLASS>
+  storageClassName: ${STORAGE_CLASS}
   resources:
     requests:
-      storage: <AGENT_STORAGE_SIZE>
+      storage: ${AGENT_STORAGE_SIZE}

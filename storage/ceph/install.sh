@@ -2,7 +2,10 @@
 set -euao pipefail
 base=$(dirname "$0")
 
-CONTAINER_MIRROR="${CONTAINER_MIRROR:-true}"
+echo "### Install Ceph ###"
+echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
+echo "QUAY_CONTAINER_MIRROR=${QUAY_CONTAINER_MIRROR}"
+echo "K8S_CONTAINER_MIRROR=${K8S_CONTAINER_MIRROR}"
 
 node_num=$(kubectl get node --no-headers|wc -l)
 if (( node_num >= 3 )); then
@@ -13,23 +16,11 @@ fi
 echo "Install ceph as $install_mode mode..."
 
 # Install rook-ceph operator
-if [ "${CONTAINER_MIRROR}" == "true" ]; then
-    perl -0777 -p -i \
-        -e "s/docker\.io/docker.m.daocloud.io/g;" \
-        -e "s/quay\.io/quay.m.daocloud.io/g;" \
-        -e "s/registry\.k8s\.io/k8s.m.daocloud.io/g" \
-        "${base}/values-rook-ceph-${install_mode}.yaml"
-fi
+envsubst < "${base}/values-rook-ceph-${install_mode}-template.yaml" > "${base}/values-rook-ceph-${install_mode}.yaml"
 helm upgrade rook-ceph --install --create-namespace --namespace rook-ceph --wait --wait-for-jobs --timeout 10m -f "${base}/values-rook-ceph-${install_mode}.yaml" "${base}/rook-ceph-chart"
 
 # Install ceph cluster
-if [ "${CONTAINER_MIRROR}" == "true" ]; then
-    perl -0777 -p -i \
-        -e "s/docker\.io/docker.m.daocloud.io/g;" \
-        -e "s/quay\.io/quay.m.daocloud.io/g;" \
-        -e "s/registry\.k8s\.io/k8s.m.daocloud.io/g" \
-        "${base}/values-rook-ceph-cluster-${install_mode}.yaml"
-fi
+envsubst < "${base}/values-rook-ceph-cluster-${install_mode}-template.yaml" > "${base}/values-rook-ceph-cluster-${install_mode}-${install_mode}.yaml"
 helm upgrade rook-ceph-cluster --install --create-namespace --namespace rook-ceph -f "${base}/values-rook-ceph-cluster-${install_mode}.yaml" "${base}/rook-ceph-cluster-chart"
 
 health=''

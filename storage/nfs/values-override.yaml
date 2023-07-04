@@ -2,14 +2,14 @@ replicaCount: 1
 strategyType: Recreate
 
 image:
-  repository: k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner
+  repository: ${GCR_CONTAINER_MIRROR}/sig-storage/nfs-subdir-external-provisioner
   tag: v4.0.2
   pullPolicy: IfNotPresent
 imagePullSecrets: []
 
 nfs:
-  server:
-  path: /nfs-storage
+  server: ${NFS_SERVER}
+  path: ${NFS_PATH}
   mountOptions:
   volumeName: nfs-subdir-external-provisioner-root
   # Reclaim policy for the main nfs volume

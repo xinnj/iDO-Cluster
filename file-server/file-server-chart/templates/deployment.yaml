@@ -39,16 +39,16 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /download
+              path: {{ .Values.probe.path }}
               port: http
           readinessProbe:
             httpGet:
-              path: /download
+              path: {{ .Values.probe.path }}
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /data/download
+            - mountPath: /data
               name: {{ include "file-server.fullname" . }}-data
           {{- if .Values.env }}
           env:

@@ -3,11 +3,11 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: file-server-data
-  namespace: files
+  namespace: ${TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: <STORAGE_CLASS>
+  storageClassName: ${STORAGE_CLASS}
   resources:
     requests:
-      storage: <STORAGE_SIZE>
+      storage: ${FILE_STORAGE_SIZE}

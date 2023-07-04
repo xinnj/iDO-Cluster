@@ -26,7 +26,7 @@ OpenShift:
 edition: "community"
 
 image:
-  repository: docker.io/sonarqube
+  repository: ${DOCKER_CONTAINER_MIRROR}/sonarqube
   tag: 9.9.0-{{ .Values.edition }}
   pullPolicy: IfNotPresent
   # If using a private repository, the imagePullSecrets to use
@@ -80,9 +80,9 @@ ingress:
   enabled: true
   # Used to create an Ingress record.
   hosts:
-    - name:
+    - name: ${HOSTNAME}
       # Different clouds or configurations might need /* as the default path
-      path: <SONAR_URL_PREFIX>
+      path: ${SONAR_URL_PREFIX}
       # For additional control over serviceName and servicePort
       # serviceName: someService
       # servicePort: somePort
@@ -159,7 +159,7 @@ readinessProbe:
   failureThreshold: 6
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: <SONAR_URL_PREFIX>/
+  sonarWebContext: ${SONAR_URL_PREFIX}/
   # sonarWebContext: /sonarqube/
 
 livenessProbe:
@@ -168,7 +168,7 @@ livenessProbe:
   failureThreshold: 6
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: <SONAR_URL_PREFIX>/
+  sonarWebContext: ${SONAR_URL_PREFIX}/
   # sonarWebContext: /sonarqube/
   # If an ingress *path* is defined, it should be reflected here
   # sonar.web.context: /sonarqube
@@ -179,7 +179,7 @@ startupProbe:
   failureThreshold: 24
   # If an ingress *path* other than the root (/) is defined, it should be reflected here
   # A trailing "/" must be included
-  sonarWebContext: <SONAR_URL_PREFIX>/
+  sonarWebContext: ${SONAR_URL_PREFIX}/
   # sonarWebContext: /sonarqube/
 
 initContainers:
@@ -305,7 +305,7 @@ monitoringPasscode: "define_it"
 env:
 #   # If you use a different ingress path from /, you have to add it here as the value of SONAR_WEB_CONTEXT
   - name: SONAR_WEB_CONTEXT
-    value: <SONAR_URL_PREFIX>
+    value: ${SONAR_URL_PREFIX}
 #   - name: VARIABLE
 #     value: my-value
 
@@ -392,7 +392,7 @@ postgresql:
   enabled: true
   ## postgresql Chart global settings
   global:
-    imageRegistry: 'docker.io'
+    imageRegistry: '${DOCKER_CONTAINER_MIRROR}'
   #   imagePullSecrets: ''
   ## bitnami/postgres image tag
   # image:
@@ -463,7 +463,7 @@ podLabels: {}
 sonarqubeFolder: /opt/sonarqube
 
 tests:
-  image: docker.io/bitnami/minideb-extras
+  image: ${DOCKER_CONTAINER_MIRROR}/bitnami/minideb-extras
   enabled: true
   resources: {}
   initContainers:
@@ -501,10 +501,10 @@ extraConfig:
   secrets: []
   configmaps: []
 
-# account:
+account:
 # The values can be set to define the current and the (new) custom admin passwords at the startup (the username will remain "admin")
-#   adminPassword: admin
-#   currentAdminPassword: admin
+  adminPassword: admin123
+  currentAdminPassword: admin
 # The above values can be also provided by a secret that contains "password" and "currentPassword" as keys. You can generate such a secret in your cluster
 # using "kubectl create secret generic admin-password-secret-name --from-literal=password=admin --from-literal=currentPassword=admin"
 #   adminPasswordSecretName: ""
@@ -518,6 +518,6 @@ extraConfig:
 #       memory: 128Mi
 # curlContainerImage: curlimages/curl:latest
 # adminJobAnnotations: {}
-# sonarWebContext: /
+  sonarWebContext: "${SONAR_URL_PREFIX}/"
 
 terminationGracePeriodSeconds: 60

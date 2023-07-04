@@ -4,7 +4,7 @@
 
 image:
   # -- Image
-  repository: docker.io/rook/ceph
+  repository: ${DOCKER_CONTAINER_MIRROR}/rook/ceph
   # -- Image tag
   # @default -- `master`
   tag: v1.11.2
@@ -123,7 +123,7 @@ csi:
   enableMetadata: false
 
   # -- Set replicas for csi provisioner deployment
-  provisionerReplicas: 2
+  provisionerReplicas: 1
 
   # -- Cluster name identifier to set as metadata on the CephFS subvolume and RBD images. This will be useful
   # in cases like for example, when two container orchestrator clusters (Kubernetes/OCP) are using a single ceph cluster
@@ -457,32 +457,32 @@ csi:
   cephcsi:
     # -- Ceph CSI image
     # @default -- `quay.io/cephcsi/cephcsi:v3.8.0`
-    image: quay.io/cephcsi/cephcsi:v3.8.0
+    image: ${QUAY_CONTAINER_MIRROR}/cephcsi/cephcsi:v3.8.0
 
   registrar:
     # -- Kubernetes CSI registrar image
     # @default -- `registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.7.0`
-    image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.7.0
+    image: ${K8S_CONTAINER_MIRROR}/sig-storage/csi-node-driver-registrar:v2.7.0
 
   provisioner:
     # -- Kubernetes CSI provisioner image
     # @default -- `registry.k8s.io/sig-storage/csi-provisioner:v3.4.0`
-    image: registry.k8s.io/sig-storage/csi-provisioner:v3.4.0
+    image: ${K8S_CONTAINER_MIRROR}/sig-storage/csi-provisioner:v3.4.0
 
   snapshotter:
     # -- Kubernetes CSI snapshotter image
     # @default -- `registry.k8s.io/sig-storage/csi-snapshotter:v6.2.1`
-    image: registry.k8s.io/sig-storage/csi-snapshotter:v6.2.1
+    image: ${K8S_CONTAINER_MIRROR}/sig-storage/csi-snapshotter:v6.2.1
 
   attacher:
     # -- Kubernetes CSI Attacher image
     # @default -- `registry.k8s.io/sig-storage/csi-attacher:v4.1.0`
-    image: registry.k8s.io/sig-storage/csi-attacher:v4.1.0
+    image: ${K8S_CONTAINER_MIRROR}/sig-storage/csi-attacher:v4.1.0
 
   resizer:
     # -- Kubernetes CSI resizer image
     # @default -- `registry.k8s.io/sig-storage/csi-resizer:v1.7.0`
-    image: registry.k8s.io/sig-storage/csi-resizer:v1.7.0
+    image: ${K8S_CONTAINER_MIRROR}/sig-storage/csi-resizer:v1.7.0
 
   # -- Image pull policy
   imagePullPolicy: IfNotPresent
@@ -500,7 +500,7 @@ csi:
     # -- Enable CSIAddons
     enabled: false
     # -- CSIAddons Sidecar image
-    image: "quay.io/csiaddons/k8s-sidecar:v0.5.0"
+    image: "${QUAY_CONTAINER_MIRROR}/csiaddons/k8s-sidecar:v0.5.0"
 
   nfs:
     # -- Enable the nfs csi driver
