@@ -126,7 +126,14 @@ route:
 
 # Affinity for pod assignment
 # Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-affinity: {}
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: vm-agent
+              operator: DoesNotExist
 
 # Tolerations for pod assignment
 # Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -453,6 +460,24 @@ postgresql:
     ## If enabled = true, and name is not set, postgreSQL will create a serviceAccount
     enabled: false
     # name:
+  primary:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: vm-agent
+                  operator: DoesNotExist
+  readReplicas:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: vm-agent
+                  operator: DoesNotExist
 
 # Additional labels to add to the pods:
 # podLabels:

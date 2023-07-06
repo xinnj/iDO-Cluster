@@ -90,7 +90,7 @@ nexus:
   #   - "www.example.com"
 
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "nexus"
 
 deployment:
   # # Add annotations in deployment to enhance deployment configurations
@@ -170,6 +170,15 @@ persistence:
   # fsType: ext4
 
 tolerations: []
+
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: vm-agent
+              operator: DoesNotExist
 
 # Enable configmap and add data in configmap
 config:

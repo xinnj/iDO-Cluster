@@ -79,7 +79,14 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: vm-agent
+              operator: DoesNotExist
 
 persistence:
   enabled: true

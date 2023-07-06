@@ -161,6 +161,8 @@ persistence:
 
 tolerations: []
 
+affinity: {}
+
 # Enable configmap and add data in configmap
 config:
   enabled: false

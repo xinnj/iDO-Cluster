@@ -104,7 +104,14 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: vm-agent
+              operator: DoesNotExist
 
 # Additional labels for any resource created
 labels: {}
