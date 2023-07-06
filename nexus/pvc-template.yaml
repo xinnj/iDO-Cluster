@@ -6,7 +6,7 @@ metadata:
   namespace: ${TEAM}
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   storageClassName: ${STORAGE_CLASS}
   resources:
     requests:

@@ -7,6 +7,7 @@ echo "### Install Nexus ###"
 echo "TEAM=${TEAM}"
 echo "STORAGE_CLASS=${STORAGE_CLASS}"
 echo "NEXUS_STORAGE_SIZE=${NEXUS_STORAGE_SIZE}"
+echo "DOCKER_NODE_PORT=${DOCKER_NODE_PORT}"
 echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
 
 if [ "${TEAM}" == "default" ]; then

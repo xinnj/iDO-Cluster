@@ -48,11 +48,12 @@ metadata:
       {{- end }}
     {{- end }}
 spec:
-  type: {{ $.Values.service.type }}
+  type: NodePort
   ports:
     - port: {{ $registry.port }}
       protocol: TCP
       name: docker-{{ $registry.port }}
+      nodePort: {{ $registry.nodePort }}
   selector:
     {{- include "nexus.selectorLabels" $ | nindent 4 }}
     {{- if $.Values.nexus.extraSelectorLabels }}

@@ -463,7 +463,7 @@ controller:
                   secret: "{AQAAABAAAABwjGVhJKse843BQtrUyXK19amuEqg25dM4TCM8Tm5P2WJ1n4ieAc7YdRKRoeF7fEe+D8J0fbWBNLmVTuF4b48Q8B4b//GgOmtAjxrEGgnhTJBeB112fkFPPCuojUSmSRna6LVwUnvzx3geBLuXg2qg/Ao9OlbvFu1nGc7e3g2NxgQ=}"
               - usernamePassword:
                   id: "uploader"
-                  password: "{AQAAABAAAABQuqqJlVu5ePKSclAd0UVJ+PzlTm6qvimzxf+pTR5Q+sB9emkRVtLfkGuZpbNMqkfpghP4ZTsOfDeW2Aj9X94MbjxqdvfhUtjfueexQQxMsDNYJDYnzAw6dDMmTlzbqDK4}"
+                  password: "{AQAAABAAAAAQV5Pia3qr6D6fCk4z4246ENX0GCEqDMdhjv+WeGvsbNk=}"
                   scope: GLOBAL
                   username: "uploader"
         jenkins:

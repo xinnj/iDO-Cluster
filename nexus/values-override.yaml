@@ -20,6 +20,7 @@ nexus:
     registries:
       - host:
         port: 5000
+        nodePort: ${DOCKER_NODE_PORT}
     #     secretName: registry-secret
   env:
     # minimum recommended memory settings for a small, person instance from
