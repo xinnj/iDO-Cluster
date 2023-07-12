@@ -28,11 +28,20 @@ toolbox:
   # -- Enable Ceph debugging pod deployment. See [toolbox](../Troubleshooting/ceph-toolbox.md)
   enabled: true
   # -- Toolbox image, defaults to the image used by the Ceph cluster
-  image: #quay.io/ceph/ceph:v17.2.3
+  image: ${QUAY_CONTAINER_MIRROR}/ceph/ceph:v17.2.6
   # -- Toolbox tolerations
   tolerations: []
   # -- Toolbox affinity
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: vm-agent
+                operator: NotIn
+                values:
+                  - 'True'
   # -- Toolbox resources
   resources:
     limits:
@@ -52,7 +61,7 @@ monitoring:
   createPrometheusRules: false
   # -- The namespace in which to create the prometheus rules, if different from the rook cluster namespace.
   # If you have multiple rook-ceph clusters in the same k8s cluster, choose the same namespace (ideally, namespace with prometheus
-  # deployed) to set rulesNamespace for all the clusters. Otherwise, you will get duplicate alerts with multiple alert definitions.
+  # deployed) to set rulesNamespaceOverride for all the clusters. Otherwise, you will get duplicate alerts with multiple alert definitions.
   rulesNamespaceOverride:
   # Monitoring settings for external clusters:
   # externalMgrEndpoints: <list of endpoints>
@@ -89,7 +98,7 @@ cephClusterSpec:
     # versions running within the cluster. See tags available at https://hub.docker.com/r/ceph/ceph/tags/.
     # If you want to be more precise, you can always use a timestamp tag such quay.io/ceph/ceph:v15.2.11-20200419
     # This tag might not contain a new Ceph version, just security fixes from the underlying operating system, which will reduce vulnerabilities
-    image: ${QUAY_CONTAINER_MIRROR}/ceph/ceph:v17.2.5
+    image: ${QUAY_CONTAINER_MIRROR}/ceph/ceph:v17.2.6
     # Whether to allow unsupported versions of Ceph. Currently `pacific` and `quincy` are supported.
     # Future versions such as `reef` (v18) would require this to be set to `true`.
     # Do not set to true in production.
@@ -282,7 +291,9 @@ cephClusterSpec:
               preference:
                 matchExpressions:
                   - key: vm-agent
-                    operator: DoesNotExist
+                    operator: NotIn
+                    values:
+                      - 'True'
 
   resources:
     mgr:
@@ -346,6 +357,13 @@ cephClusterSpec:
       requests:
         cpu: "100m"
         memory: "100Mi"
+    exporter:
+      limits:
+        cpu: "250m"
+        memory: "128Mi"
+      requests:
+        cpu: "50m"
+        memory: "50Mi"
 
   # The option to automatically remove OSDs that are out and are safe to destroy.
   removeOSDsIfOutAndSafeToRemove: true

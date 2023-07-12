@@ -20,7 +20,7 @@ envsubst < "${base}/values-rook-ceph-${install_mode}-template.yaml" > "${base}/v
 helm upgrade rook-ceph --install --create-namespace --namespace rook-ceph --wait --wait-for-jobs --timeout 10m -f "${base}/values-rook-ceph-${install_mode}.yaml" "${base}/rook-ceph-chart"
 
 # Install ceph cluster
-envsubst < "${base}/values-rook-ceph-cluster-${install_mode}-template.yaml" > "${base}/values-rook-ceph-cluster-${install_mode}-${install_mode}.yaml"
+envsubst < "${base}/values-rook-ceph-cluster-${install_mode}-template.yaml" > "${base}/values-rook-ceph-cluster-${install_mode}.yaml"
 helm upgrade rook-ceph-cluster --install --create-namespace --namespace rook-ceph -f "${base}/values-rook-ceph-cluster-${install_mode}.yaml" "${base}/rook-ceph-cluster-chart"
 
 health=''
