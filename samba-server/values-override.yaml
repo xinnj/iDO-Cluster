@@ -84,7 +84,9 @@ affinity:
         preference:
           matchExpressions:
             - key: vm-agent
-              operator: DoesNotExist
+              operator: NotIn
+              values:
+                - 'True'
 
 persistence:
   enabled: true

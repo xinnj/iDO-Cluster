@@ -179,7 +179,9 @@ affinity:
         preference:
           matchExpressions:
             - key: vm-agent
-              operator: DoesNotExist
+              operator: NotIn
+              values:
+                - 'True'
 
 # Enable configmap and add data in configmap
 config:

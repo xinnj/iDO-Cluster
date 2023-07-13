@@ -13,13 +13,16 @@
 # ref: https://github.com/kubernetes/dns/blob/master/docs/specification.md
 clusterZone: "cluster.local"
 
+# The URL of the Kubernetes API server
+kubernetesURL: "https://kubernetes.default"
+
 renderHelmLabels: true
 
 controller:
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-controller"
   image: "${DOCKER_CONTAINER_MIRROR}/jenkins/jenkins"
-  tag: "2.387.1-jdk11"
+  tag: "2.401.2-jdk11"
   tagLabel: jdk11
   imagePullPolicy: "IfNotPresent"
   imagePullSecretName:
@@ -88,7 +91,10 @@ controller:
   #     value: "http://192.168.64.1:3128"
   # Set min/max heap here if needed with:
   # javaOpts: "-Xms512m -Xmx512m"
-  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=${TIMEZONE} -Duser.timezone=${TIMEZONE} -Dfile.encoding=UTF-8 -Dkubernetes.websocket.timeout=60000 -Dorg.csanchez.jenkins.plugins.kubernetes.PodTemplate.connectionTimeout=3600 -Dorg.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.websocketConnectionTimeout=3600"
+  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=${TIMEZONE} -Duser.timezone=${TIMEZONE} -Dfile.encoding=UTF-8 
+    -Dkubernetes.websocket.timeout=60000 -Dorg.csanchez.jenkins.plugins.kubernetes.PodTemplate.connectionTimeout=3600 
+    -Dorg.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.websocketConnectionTimeout=3600 
+    -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true"
   # jenkinsOpts: ""
   # If you are using the ingress definitions provided by this chart via the `controller.ingress` block the configured hostname will be the ingress hostname starting with `https://` or `http://` depending on the `tls` configuration.
   # The Protocol can be overwritten by specifying `controller.jenkinsUrlProtocol`.
@@ -144,7 +150,7 @@ controller:
   #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
   # Put labels on Jenkins controller pod
   podLabels: {}
-  # Used to create Ingress record (should used with ServiceType: ClusterIP)
+  # Used to create Ingress record (should be used with ServiceType: ClusterIP)
   # nodePort: <to set explicitly, choose port between 30000-32767
   # Enable Kubernetes Startup, Liveness and Readiness Probes
   # if Startup Probe is supported, enable it too
@@ -245,12 +251,12 @@ controller:
     - ansicolor:1.0.2
     - antisamy-markup-formatter:159.v25b_c67cd35fb_
     - apache-httpcomponents-client-4-api:4.5.14-150.v7a_b_9d17134a_5
-    - atlassian-bitbucket-server-integration:3.4.2
+    - atlassian-bitbucket-server-integration:3.5.0
     - authentication-tokens:1.53.v1c90fd9191a_b_
     - basic-branch-build-strategies:81.v05e333931c7d
-    - bootstrap5-api:5.2.3-1
-    - bouncycastle-api:2.28
-    - branch-api:2.1105.v472604208c55
+    - bootstrap5-api:5.3.0-1
+    - bouncycastle-api:2.29
+    - branch-api:2.1122.v09cb_8ea_8a_724
     - build-discarder:139.v05696a_7fe240
     - build-history-manager:1.7.0
     - build-timeout:1.31
@@ -258,7 +264,7 @@ controller:
     - checks-api:2.0.0
     - cloudbees-folder:6.815.v0dd5a_cb_40e0e
     - cobertura:1.17
-    - code-coverage-api:4.6.0
+    - code-coverage-api:4.7.0
     - command-launcher:100.v2f6722292ee8
     - commons-lang3-api:3.12.0-36.vd97de6465d5b_
     - commons-text-api:1.10.0-36.vc008c8fcda_7b_
@@ -267,25 +273,25 @@ controller:
     - credentials-binding:604.vb_64480b_c56ca_
     - credentials:1254.vb_96f366e7b_a_d
     - dashboard-view:2.487.vcf0ff9008a_c0
-    - data-tables-api:1.13.3-4
+    - data-tables-api:1.13.5-1
     - dingding-notifications:2.7.0
     - display-url-api:2.3.7
-    - durable-task:507.v050055d0cb_dd
-    - echarts-api:5.4.0-4
+    - durable-task:510.v324450f8dca_4
+    - echarts-api:5.4.0-5
     - email-ext:2.99
     - emailext-template:1.5
     - enhanced-old-build-discarder:1.4
     - envinject-api:1.199.v3ce31253ed13
     - envinject:2.901.v0038b_6471582
     - extended-choice-parameter:373.v1a_ecea_fdf2a_a_
-    - file-operations:113.vb_9472a_325a_92
+    - file-operations:131.v32b_e7824fe95
     - folder-auth:1.4
     - folder-properties:1.2.1
-    - font-awesome-api:6.3.0-2
-    - forensics-api:2.2.0
-    - git-client:4.3.0
-    - git-parameter:0.9.18
-    - git:5.0.2
+    - font-awesome-api:6.4.0-1
+    - forensics-api:2.3.0
+    - git-client:4.4.0
+    - git-parameter:0.9.19
+    - git:5.2.0
     - gitlab-api:5.3.0-91.v1f9a_fda_d654f
     - gitlab-branch-source:664.v877fdc293c89
     - greenballs:1.15.1
@@ -304,12 +310,12 @@ controller:
     - jdk-tool:66.vd8fa_64ee91b_d
     - jersey2-api:2.40-1
     - jquery3-api:3.7.0-1
-    - junit:1214.va_2f9db_3e6de0
+    - junit:1217.v4297208a_a_b_ce
     - kubernetes-client-api:6.4.1-215.v2ed17097a_8e9
     - kubernetes-credentials:0.10.0
-    - kubernetes:3937.vd7b_82db_e347b_
+    - kubernetes:3971.v94b_4c914ca_75
     - ldap:682.v7b_544c9d1512
-    - lockable-resources:1156.v5e9f897ece02
+    - lockable-resources:1172.v4b_8fc8eed570
     - mailer:457.v3f72cb_e015e5
     - matrix-auth:3.1.9
     - matrix-project:789.v57a_725b_63c79
@@ -317,28 +323,28 @@ controller:
     - mina-sshd-api-common:2.10.0-69.v28e3e36d18eb_
     - mina-sshd-api-core:2.10.0-69.v28e3e36d18eb_
     - okhttp-api:4.11.0-145.vcb_8de402ef81
-    - parameterized-trigger:2.45
-    - pipeline-build-step:491.v1fec530da_858
+    - parameterized-trigger:2.46
+    - pipeline-build-step:496.v2449a_9a_221f2
     - pipeline-graph-analysis:202.va_d268e64deb_3
     - pipeline-groovy-lib:656.va_a_ceeb_6ffb_f7
     - pipeline-input-step:468.va_5db_051498a_4
     - pipeline-milestone-step:111.v449306f708b_7
-    - pipeline-model-api:2.2133.ve46a_6113dfc3
-    - pipeline-model-definition:2.2133.ve46a_6113dfc3
-    - pipeline-model-extensions:2.2133.ve46a_6113dfc3
+    - pipeline-model-api:2.2141.v5402e818a_779
+    - pipeline-model-definition:2.2141.v5402e818a_779
+    - pipeline-model-extensions:2.2141.v5402e818a_779
     - pipeline-rest-api:2.33
     - pipeline-stage-step:305.ve96d0205c1c6
-    - pipeline-stage-tags-metadata:2.2133.ve46a_6113dfc3
+    - pipeline-stage-tags-metadata:2.2141.v5402e818a_779
     - pipeline-stage-view:2.33
-    - pipeline-utility-steps:2.15.4
+    - pipeline-utility-steps:2.16.0
     - plain-credentials:143.v1b_df8b_d3b_e48
-    - plugin-util-api:3.2.1
+    - plugin-util-api:3.3.0
     - prism-api:1.29.0-7
     - rebuild:320.v5a_0933a_e7d61
     - remote-file:1.23
     - resource-disposer:0.22
-    - role-strategy:633.v836e5b_3e80a_5
-    - run-condition:1.5
+    - role-strategy:665.v4d4f871dc768
+    - run-condition:1.6
     - saml:4.418.vdfa_7489a_b_a_2d
     - scm-api:676.v886669a_199a_a_
     - script-security:1251.vfe552ed55f8d
@@ -359,13 +365,13 @@ controller:
     - view-job-filters:364.v48a_33389553d
     - webhook-step:173.vfa_b_93560b_977
     - workflow-aggregator:596.v8c21c963d92d
-    - workflow-api:1219.v05cd837ea_249
+    - workflow-api:1232.v1679fa_2f0f76
     - workflow-basic-steps:1017.vb_45b_302f0cea_
-    - workflow-cps:3673.v5b_dd74276262
+    - workflow-cps:3705.va_6a_c2775a_c17
     - workflow-durable-task-step:1247.v7f9dfea_b_4fd0
     - workflow-job:1316.vd2290d3341a_f
-    - workflow-multibranch:746.v05814d19c001
-    - workflow-scm-step:408.v7d5b_135a_b_d49
+    - workflow-multibranch:756.v891d88f2cd46
+    - workflow-scm-step:415.v434365564324
     - workflow-step-api:639.v6eca_cd8c04a_a_
     - workflow-support:839.v35e2736cfd5c
     - ws-cleanup:0.45
@@ -460,10 +466,10 @@ controller:
               - string:
                   id: "sonarqube"
                   scope: GLOBAL
-                  secret: "{AQAAABAAAABwjGVhJKse843BQtrUyXK19amuEqg25dM4TCM8Tm5P2WJ1n4ieAc7YdRKRoeF7fEe+D8J0fbWBNLmVTuF4b48Q8B4b//GgOmtAjxrEGgnhTJBeB112fkFPPCuojUSmSRna6LVwUnvzx3geBLuXg2qg/Ao9OlbvFu1nGc7e3g2NxgQ=}"
+                  secret: "{AQAAABAAAADA1GvO0tR1p/B+Dnaz2zC5jBBrC00wi2dO0Eosbodxc4aT6rFvMOer0WlO6Pu6yBO15wTZc50h+UTxjJQLymI0mtWmeVAgEG6HXAGtvxisonkj9QrVLh0WKYnHxiCuj201uvs3aZF3NZ0mHVnBL/Ve3hyUWrQgxgeIF/h15YcSvdigMAMeDsVcklTWsRxwI3z4XPvWydDWpGuP69XZgkc1ewSlkTXYbgc2I0p8orTMd/78HVcyjByFeZKPDQsHgS1PZxxj0DFRYqw5IfTqyEnGBg==}"
               - usernamePassword:
                   id: "uploader"
-                  password: "{AQAAABAAAAAQV5Pia3qr6D6fCk4z4246ENX0GCEqDMdhjv+WeGvsbNk=}"
+                  password: "{AQAAABAAAAAQw788Zio1XD9kATcOmmI8y1uECgC4mE8pjZcuCL6KFBo=}"
                   scope: GLOBAL
                   username: "uploader"
         jenkins:
@@ -474,8 +480,8 @@ controller:
             roleBased:
               roles:
                 global:
-                - assignments:
-                  - "admin"
+                - entries:
+                  - user: "admin"
                   name: "admin"
                   pattern: ".*"
                   permissions:
@@ -501,6 +507,9 @@ controller:
           disabledAdministrativeMonitors:
           - "jenkins.diagnostics.ControllerExecutorsAgents"
           - "org.jenkinsci.plugins.rolestrategy.NamingStrategyAdministrativeMonitor"
+          labelAtoms:
+          - name: "built-in"
+          labelString: "built-in"
           markupFormatter:
             rawHtml:
               disableSyntaxHighlighting: false
@@ -659,7 +668,7 @@ controller:
       # jcasc changes will cause a reboot and will only be applied at the subsequent start-up.  Auto-reload uses the
       # http://<jenkins_url>/reload-configuration-as-code endpoint to reapply config when changes to the configScripts are detected.
       enabled: false
-      image: ${DOCKER_CONTAINER_MIRROR}/kiwigrid/k8s-sidecar:1.15.0
+      image: kiwigrid/k8s-sidecar:1.24.4
       imagePullPolicy: IfNotPresent
       resources: {}
         #   limits:
@@ -727,7 +736,9 @@ controller:
           preference:
             matchExpressions:
               - key: vm-agent
-                operator: DoesNotExist
+                operator: NotIn
+                values:
+                  - 'True'
   # Leverage a priorityClass to ensure your pods survive resource shortages
   # ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
   priorityClassName:
@@ -921,7 +932,7 @@ controller:
 agent:
   enabled: false
   defaultsProviderTemplate: ""
-  # URL for connecting to the Jenkins contoller
+  # URL for connecting to the Jenkins controller
   jenkinsUrl:
   # connect to the specified host and port, instead of connecting directly to the Jenkins controller
   jenkinsTunnel:
@@ -930,7 +941,7 @@ agent:
   maxRequestsPerHostStr: "32"
   namespace:
   image: "jenkins/inbound-agent"
-  tag: "4.11.2-4"
+  tag: "3107.v665000b_51092-15"
   workingDir: "/home/jenkins/agent"
   nodeUsageMode: "NORMAL"
   customJenkinsLabels: []
@@ -1281,4 +1292,4 @@ helmtest:
   bats:
     # Bash Automated Testing System (BATS)
     image: "bats/bats"
-    tag: "1.2.1"
+    tag: "1.9.0"

@@ -133,7 +133,9 @@ affinity:
         preference:
           matchExpressions:
             - key: vm-agent
-              operator: DoesNotExist
+              operator: NotIn
+              values:
+                - 'True'
 
 # Tolerations for pod assignment
 # Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -468,7 +470,9 @@ postgresql:
             preference:
               matchExpressions:
                 - key: vm-agent
-                  operator: DoesNotExist
+                  operator: NotIn
+                  values:
+                    - 'True'
   readReplicas:
     affinity:
       nodeAffinity:
@@ -477,7 +481,9 @@ postgresql:
             preference:
               matchExpressions:
                 - key: vm-agent
-                  operator: DoesNotExist
+                  operator: NotIn
+                  values:
+                    - 'True'
 
 # Additional labels to add to the pods:
 # podLabels:
