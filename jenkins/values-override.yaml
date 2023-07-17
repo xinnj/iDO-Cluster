@@ -598,10 +598,24 @@ controller:
                       continueAfterMatch: false
           globalLibraries:
             libraries:
-            - defaultVersion: "main"
+            - name: "iDO-lib-local"
+              allowVersionOverride: false
+              defaultVersion: "main"
               implicit: true
               includeInChangesets: false
-              name: "iDO-lib"
+              retriever:
+                modernSCM:
+                  libraryPath: "./"
+                  scm:
+                    git:
+                      id: "ae57f135-5f41-453a-817e-a22796295685"
+                      remote: "file:///home/jenkins/lib"
+                      traits:
+                      - "gitBranchDiscovery"
+            - name: "iDO-lib"
+              defaultVersion: "main"
+              implicit: false
+              includeInChangesets: false
               retriever:
                 modernSCM:
                   libraryPath: "./"
@@ -652,15 +666,26 @@ controller:
   # Optionally specify additional init-containers
   customInitContainers:
   - name: custom-init
-    image: "${DOCKER_CONTAINER_MIRROR}/alpine:3.7"
+    image: "${DOCKER_CONTAINER_MIRROR}/xinnj/jenkins-lib:${JENKINS_LIB_VERSION}"
     imagePullPolicy: IfNotPresent
-    command: ["/bin/sh"]
-    args: ["-c", "mkdir -p /home/jenkins/agent/workspace && cd /var/jenkins_home && ln -sf /home/jenkins/agent/workspace workspace && mkdir -p /home/jenkins/agent/jenkins_backup"]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -euaxo pipefail
+        rm -rf /home/jenkins/lib/*
+        cp -r /jenkins-lib/. /home/jenkins/lib/
+        mkdir -p /home/jenkins/agent/workspace
+        cd /var/jenkins_home
+        ln -sf /home/jenkins/agent/workspace workspace
+        mkdir -p /home/jenkins/agent/jenkins_backup
     volumeMounts:
     - mountPath: /home/jenkins/agent
       name: agent-workspace
     - mountPath: /var/jenkins_home
       name: jenkins-home
+    - name: jenkins-lib
+      mountPath: /home/jenkins/lib
 
   sidecars:
     configAutoReload:
@@ -1157,11 +1182,15 @@ persistence:
   - name: agent-workspace
     persistentVolumeClaim:
       claimName: jenkins-agent-data
+  - name: jenkins-lib
+    emptyDir: {}
   #  - name: nothing
   #    emptyDir: {}
   mounts:
   - name: agent-workspace
     mountPath: /home/jenkins/agent
+  - name: jenkins-lib
+    mountPath: /home/jenkins/lib
   #  - mountPath: /var/nothing
   #    name: nothing
   #    readOnly: true
