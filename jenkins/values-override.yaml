@@ -248,8 +248,8 @@ controller:
 
   # List of plugins to be install during Jenkins controller start
   installPlugins:
-    - ansicolor:1.0.2
-    - antisamy-markup-formatter:159.v25b_c67cd35fb_
+    - ansicolor:1.0.3
+    - antisamy-markup-formatter:162.v0e6ec0fcfcf6
     - apache-httpcomponents-client-4-api:4.5.14-150.v7a_b_9d17134a_5
     - atlassian-bitbucket-server-integration:3.5.0
     - authentication-tokens:1.53.v1c90fd9191a_b_
@@ -262,32 +262,33 @@ controller:
     - build-timeout:1.31
     - caffeine-api:3.1.6-115.vb_8b_b_328e59d8
     - checks-api:2.0.0
-    - cloudbees-folder:6.815.v0dd5a_cb_40e0e
+    - cloudbees-disk-usage-simple:182.v62ca_0c992a_f3
+    - cloudbees-folder:6.846.v23698686f0f6
     - cobertura:1.17
     - code-coverage-api:4.7.0
-    - command-launcher:100.v2f6722292ee8
-    - commons-lang3-api:3.12.0-36.vd97de6465d5b_
-    - commons-text-api:1.10.0-36.vc008c8fcda_7b_
-    - configuration-as-code:1647.ve39ca_b_829b_42
-    - copyartifact:705.v5295cffec284
-    - credentials-binding:604.vb_64480b_c56ca_
-    - credentials:1254.vb_96f366e7b_a_d
-    - dashboard-view:2.487.vcf0ff9008a_c0
+    - command-launcher:106.vb_a_b_8f751309c
+    - commons-lang3-api:3.13.0-62.v7d18e55f51e2
+    - commons-text-api:1.10.0-68.v0d0b_c439292b_
+    - configuration-as-code:1670.v564dc8b_982d0
+    - copyartifact:714.v28a_34f8c563f
+    - credentials-binding:631.v861c06d062b_4
+    - credentials:1271.v54b_1c2c6388a_
+    - dashboard-view:2.495.v07e81500c3f2
     - data-tables-api:1.13.5-1
     - dingding-notifications:2.7.0
-    - display-url-api:2.3.7
-    - durable-task:510.v324450f8dca_4
+    - display-url-api:2.3.8
+    - durable-task:513.vc48a_a_075a_d93
     - echarts-api:5.4.0-5
-    - email-ext:2.99
+    - email-ext:2.100
     - emailext-template:1.5
     - enhanced-old-build-discarder:1.4
     - envinject-api:1.199.v3ce31253ed13
-    - envinject:2.901.v0038b_6471582
-    - extended-choice-parameter:373.v1a_ecea_fdf2a_a_
+    - envinject:2.908.v66a_774b_31d93
+    - extended-choice-parameter:376.v2e02857547b_a_
     - file-operations:131.v32b_e7824fe95
     - folder-auth:1.4
     - folder-properties:1.2.1
-    - font-awesome-api:6.4.0-1
+    - font-awesome-api:6.4.0-2
     - forensics-api:2.3.0
     - git-client:4.4.0
     - git-parameter:0.9.19
@@ -296,7 +297,7 @@ controller:
     - gitlab-branch-source:664.v877fdc293c89
     - greenballs:1.15.1
     - handy-uri-templates-2-api:2.1.8-22.v77d5b_75e6953
-    - htmlpublisher:1.31
+    - htmlpublisher:1.32
     - http_request:1.18
     - instance-identity:173.va_37c494ec4e5
     - ionicons-api:56.v1b_1c8c49374e
@@ -307,73 +308,74 @@ controller:
     - javax-activation-api:1.2.0-6
     - javax-mail-api:1.6.2-9
     - jaxb:2.3.8-1
-    - jdk-tool:66.vd8fa_64ee91b_d
+    - jdk-tool:73.vddf737284550
     - jersey2-api:2.40-1
     - jquery3-api:3.7.0-1
     - junit:1217.v4297208a_a_b_ce
     - kubernetes-client-api:6.4.1-215.v2ed17097a_8e9
     - kubernetes-credentials:0.10.0
-    - kubernetes:3971.v94b_4c914ca_75
-    - ldap:682.v7b_544c9d1512
-    - lockable-resources:1172.v4b_8fc8eed570
-    - mailer:457.v3f72cb_e015e5
-    - matrix-auth:3.1.9
-    - matrix-project:789.v57a_725b_63c79
-    - metrics:4.2.18-439.v86a_20b_a_8318b_
+    - kubernetes:3985.vd26d77b_2a_48a_
+    - ldap:694.vc02a_69c9787f
+    - lockable-resources:1185.v0c528656ce04
+    - mailer:463.vedf8358e006b_
+    - matrix-auth:3.1.10
+    - matrix-project:808.v5a_b_5f56d6966
+    - metrics:4.2.18-442.v02e107157925
     - mina-sshd-api-common:2.10.0-69.v28e3e36d18eb_
     - mina-sshd-api-core:2.10.0-69.v28e3e36d18eb_
-    - okhttp-api:4.11.0-145.vcb_8de402ef81
+    - okhttp-api:4.11.0-157.v6852a_a_fa_ec11
     - parameterized-trigger:2.46
-    - pipeline-build-step:496.v2449a_9a_221f2
+    - pipeline-build-step:505.v5f0844d8d126
     - pipeline-graph-analysis:202.va_d268e64deb_3
-    - pipeline-groovy-lib:656.va_a_ceeb_6ffb_f7
-    - pipeline-input-step:468.va_5db_051498a_4
+    - pipeline-groovy-lib:671.v07c339c842e8
+    - pipeline-input-step:477.v339683a_8d55e
     - pipeline-milestone-step:111.v449306f708b_7
-    - pipeline-model-api:2.2141.v5402e818a_779
-    - pipeline-model-definition:2.2141.v5402e818a_779
-    - pipeline-model-extensions:2.2141.v5402e818a_779
+    - pipeline-model-api:2.2144.v077a_d1928a_40
+    - pipeline-model-definition:2.2144.v077a_d1928a_40
+    - pipeline-model-extensions:2.2144.v077a_d1928a_40
     - pipeline-rest-api:2.33
     - pipeline-stage-step:305.ve96d0205c1c6
-    - pipeline-stage-tags-metadata:2.2141.v5402e818a_779
+    - pipeline-stage-tags-metadata:2.2144.v077a_d1928a_40
     - pipeline-stage-view:2.33
     - pipeline-utility-steps:2.16.0
     - plain-credentials:143.v1b_df8b_d3b_e48
     - plugin-util-api:3.3.0
     - prism-api:1.29.0-7
+    - prometheus:2.2.3
     - rebuild:320.v5a_0933a_e7d61
     - remote-file:1.23
-    - resource-disposer:0.22
-    - role-strategy:665.v4d4f871dc768
+    - resource-disposer:0.23
+    - role-strategy:680.v3a_6a_1698b_864
     - run-condition:1.6
-    - saml:4.418.vdfa_7489a_b_a_2d
+    - saml:4.429.v9a_781a_61f1da_
     - scm-api:676.v886669a_199a_a_
-    - script-security:1251.vfe552ed55f8d
+    - script-security:1264.vecf66020eb_7d
     - simple-queue:1.4.3
-    - slack:664.vc9a_90f8b_c24a_
+    - slack:684.v833089650554
     - snakeyaml-api:1.33-95.va_b_a_e3e47b_fa_4
     - sonar:2.15
     - ssh-agent:333.v878b_53c89511
-    - ssh-credentials:305.v8f4381501156
+    - ssh-credentials:308.ve4497b_ccd8f4
     - ssh-steps:2.0.65.vd26b_5b_9b_de4d
-    - sshd:3.303.vefc7119b_ec23
+    - sshd:3.312.v1c601b_c83b_0e
     - structs:324.va_f5d6774f3a_d
-    - thinBackup:1.17
-    - timestamper:1.25
-    - token-macro:359.vb_cde11682e0c
+    - thinBackup:1.18
+    - timestamper:1.26
+    - token-macro:384.vf35b_f26814ec
     - trilead-api:2.84.v72119de229b_7
     - variant:59.vf075fe829ccb
     - view-job-filters:364.v48a_33389553d
     - webhook-step:173.vfa_b_93560b_977
     - workflow-aggregator:596.v8c21c963d92d
-    - workflow-api:1232.v1679fa_2f0f76
-    - workflow-basic-steps:1017.vb_45b_302f0cea_
-    - workflow-cps:3705.va_6a_c2775a_c17
-    - workflow-durable-task-step:1247.v7f9dfea_b_4fd0
+    - workflow-api:1251.vd4889a_b_0a_065
+    - workflow-basic-steps:1042.ve7b_140c4a_e0c
+    - workflow-cps:3731.ve4b_5b_857b_a_d3
+    - workflow-durable-task-step:1284.v4fcd365b_75b_e
     - workflow-job:1316.vd2290d3341a_f
     - workflow-multibranch:756.v891d88f2cd46
     - workflow-scm-step:415.v434365564324
     - workflow-step-api:639.v6eca_cd8c04a_a_
-    - workflow-support:839.v35e2736cfd5c
+    - workflow-support:848.v5a_383b_d14921
     - ws-cleanup:0.45
 
   # Set to false to download the minimum required version of all dependencies.
@@ -866,7 +868,7 @@ controller:
   prometheus:
     # If enabled, add the prometheus plugin to the list of plugins to install
     # https://plugins.jenkins.io/prometheus
-    enabled: false
+    enabled: true
     # Additional labels to add to the ServiceMonitor object
     serviceMonitorAdditionalLabels: {}
     # Set a custom namespace where to deploy ServiceMonitor resource
