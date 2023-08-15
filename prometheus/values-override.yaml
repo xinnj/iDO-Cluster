@@ -350,7 +350,7 @@ alertmanager:
     ## Hosts must be provided if Ingress is enabled.
     ##
     hosts:
-      - ${HOSTNAME}
+      - "${HOSTNAME}"
       # - alertmanager.domain.com
 
     ## Paths to use for ingress rules - one path should match the alertmanagerSpec.routePrefix
@@ -677,11 +677,10 @@ alertmanager:
      volumeClaimTemplate:
        spec:
          storageClassName: ${STORAGE_CLASS}
-         accessModes: ["ReadWriteOnce"]
+         accessModes: ["ReadWriteMany"]
          resources:
            requests:
              storage: ${ALTERMANAGER_STORAGE_SIZE}
-         selector: {}
 
 
     ## The external URL the Alertmanager instances will be available under. This is necessary to generate correct URLs. This is necessary if Alertmanager is not served from root of a DNS name. string  false
@@ -928,7 +927,7 @@ grafana:
     # hosts:
     #   - grafana.domain.com
     hosts:
-      - ${HOSTNAME}
+      - "${HOSTNAME}"
 
     ## Path for grafana ingress
     path: /grafana(/|$)(.*)
@@ -974,6 +973,8 @@ grafana:
                   - 'True'
 
   sidecar:
+    image:
+      repository: ${QUAY_CONTAINER_MIRROR}/kiwigrid/k8s-sidecar
     dashboards:
       enabled: true
       label: grafana_dashboard
@@ -1097,6 +1098,10 @@ grafana:
     #   targetLabel: nodename
     #   replacement: $1
     #   action: replace
+
+  initChownData:
+    image:
+      repository: ${DOCKER_CONTAINER_MIRROR}/library/busybox
 
 ## Flag to disable all the kubernetes component scrapers
 ##
@@ -1867,6 +1872,16 @@ kubeStateMetrics:
 kube-state-metrics:
   image:
     registry: ${K8S_CONTAINER_MIRROR}
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: vm-agent
+                operator: NotIn
+                values:
+                  - 'True'
   namespaceOverride: ""
   rbac:
     create: true
@@ -2772,7 +2787,7 @@ prometheus:
     # hosts:
     #   - prometheus.domain.com
     hosts:
-      - ${HOSTNAME}
+      - "${HOSTNAME}"
 
     ## Paths to use for ingress rules - one path should match the prometheusSpec.routePrefix
     ##
@@ -3300,7 +3315,7 @@ prometheus:
       volumeClaimTemplate:
         spec:
           storageClassName: ${STORAGE_CLASS}
-          accessModes: ["ReadWriteOnce"]
+          accessModes: ["ReadWriteMany"]
           resources:
             requests:
               storage: ${PROMETHEUS_STORAGE_SIZE}
