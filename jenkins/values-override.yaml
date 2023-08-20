@@ -510,14 +510,28 @@ controller:
           - "jenkins.diagnostics.ControllerExecutorsAgents"
           - "org.jenkinsci.plugins.rolestrategy.NamingStrategyAdministrativeMonitor"
           labelAtoms:
-          - name: "built-in"
-          labelString: "built-in"
+          - name: "Workspace"
           markupFormatter:
             rawHtml:
               disableSyntaxHighlighting: false
           mode: EXCLUSIVE
           myViewsTabBar: "standard"
-          numExecutors: 4
+          nodes:
+          - permanent:
+              labelString: "Workspace"
+              launcher:
+                inbound:
+                  webSocket: true
+                  workDirSettings:
+                    disabled: false
+                    failIfWorkDirIsMissing: false
+                    internalDir: "remoting"
+              mode: EXCLUSIVE
+              name: "Workspace"
+              numExecutors: 4
+              remoteFS: "/home/jenkins/agent"
+              retentionStrategy: "always"
+          numExecutors: 0
           primaryView:
             all:
               name: "all"
@@ -677,9 +691,6 @@ controller:
         set -euaxo pipefail
         rm -rf /home/jenkins/lib/*
         cp -r /jenkins-lib/. /home/jenkins/lib/
-        mkdir -p /home/jenkins/agent/workspace
-        cd /var/jenkins_home
-        ln -sf /home/jenkins/agent/workspace workspace
         mkdir -p /home/jenkins/agent/jenkins_backup
     volumeMounts:
     - mountPath: /home/jenkins/agent
@@ -1324,3 +1335,46 @@ helmtest:
     # Bash Automated Testing System (BATS)
     image: "bats/bats"
     tag: "1.9.0"
+
+workspaceAgent:
+  componentName: "workspace-agent"
+  image:
+    repository: "${DOCKER_CONTAINER_MIRROR}/xinnj/inbound-agent"
+    tag: "4.11-1-alpine-jdk11-nolog"
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
+  env:
+    - name: JENKINS_SECRET
+      value: 7d0fe8435fa408248d210560fd1ae1ecbf757682969f2b3f6c99a8831b9a8d7d
+    - name: JENKINS_AGENT_NAME
+      value: Workspace
+    - name: JENKINS_WEB_SOCKET
+      value: "true"
+    - name: JENKINS_NAME
+      value: Workspace
+    - name: JENKINS_AGENT_WORKDIR
+      value: /home/jenkins/agent
+    - name: JENKINS_URL
+      value: http://jenkins:8080/${TEAM}/jenkins/
+    - name: JENKINS_AGENT_CACHEDIR
+      value: /Users/jenkins/agent/remoting/jarCache
+  securityContext:
+    runAsGroup: 1000
+    runAsUser: 1000
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - preference:
+            matchExpressions:
+              - key: vm-agent
+                operator: NotIn
+                values:
+                  - "True"
+          weight: 1

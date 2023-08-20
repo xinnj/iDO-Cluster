@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "jenkins.fullname" . }}-agent
+  namespace: {{ template "jenkins.namespace" . }}
+  labels:
+    "app.kubernetes.io/name": '{{ template "jenkins.name" .}}'
+    "helm.sh/chart": "{{ template "jenkins.label" .}}"
+    "app.kubernetes.io/managed-by": "{{ .Release.Service }}"
+    "app.kubernetes.io/instance": "{{ .Release.Name }}"
+    "app.kubernetes.io/component": "{{ .Values.workspaceAgent.componentName }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      "app.kubernetes.io/component": "{{ .Values.workspaceAgent.componentName }}"
+      "app.kubernetes.io/instance": "{{ .Release.Name }}"
+  template:
+    metadata:
+      labels:
+        "app.kubernetes.io/name": '{{ template "jenkins.name" .}}'
+        "app.kubernetes.io/managed-by": "{{ .Release.Service }}"
+        "app.kubernetes.io/instance": "{{ .Release.Name }}"
+        "app.kubernetes.io/component": "{{ .Values.workspaceAgent.componentName }}"
+    spec:
+      {{- with .Values.workspaceAgent.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: jnlp
+          image: {{ .Values.workspaceAgent.image.repository }}:{{ .Values.workspaceAgent.image.tag }}
+          imagePullPolicy: {{ .Values.workspaceAgent.image.pullPolicy }}
+          env:
+            {{- toYaml .Values.workspaceAgent.env | nindent 12 }}
+          resources:
+            {{- toYaml .Values.workspaceAgent.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /home/jenkins/agent
+              name: workspace-volume
+          workingDir: /home/jenkins/agent
+      securityContext:
+        {{- toYaml .Values.workspaceAgent.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: workspace-volume
+          persistentVolumeClaim:
+            claimName: jenkins-agent-data
+      affinity:
+        {{- toYaml .Values.workspaceAgent.affinity | nindent 8 }}
