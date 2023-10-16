@@ -278,6 +278,9 @@ func initFlexPackages() {
 				showErrorModal(err.Error())
 			}
 		}
+
+		initFlexMirror()
+		pages.SwitchToPage("Mirror")
 	})
 
 	formDown.AddButton("Back", func() {

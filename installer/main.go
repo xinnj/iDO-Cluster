@@ -14,6 +14,7 @@ var modalQuit = tview.NewModal()
 var flexBasicInfo = tview.NewFlex()
 var flexStorage = tview.NewFlex()
 var flexPackages = tview.NewFlex()
+var flexMirror = tview.NewFlex()
 
 func main() {
 	ex, err := os.Executable()
@@ -40,6 +41,7 @@ func main() {
 	pages.AddPage("Basic Info", flexBasicInfo, true, true)
 	pages.AddPage("Storage", flexStorage, true, false)
 	pages.AddPage("Packages", flexPackages, true, false)
+	pages.AddPage("Mirror", flexMirror, true, false)
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlC {
