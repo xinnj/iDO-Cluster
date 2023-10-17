@@ -15,6 +15,7 @@ var flexBasicInfo = tview.NewFlex()
 var flexStorage = tview.NewFlex()
 var flexPackages = tview.NewFlex()
 var flexMirror = tview.NewFlex()
+var flexInstall = tview.NewFlex()
 
 func main() {
 	ex, err := os.Executable()
@@ -42,6 +43,7 @@ func main() {
 	pages.AddPage("Storage", flexStorage, true, false)
 	pages.AddPage("Packages", flexPackages, true, false)
 	pages.AddPage("Mirror", flexMirror, true, false)
+	pages.AddPage("Install", flexInstall, true, false)
 
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlC {

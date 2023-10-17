@@ -815,7 +815,7 @@ controller:
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     path: "${JENKINS_URL_PREFIX}"
     # configures the hostname e.g. jenkins.example.com
-    hostName: ${HOSTNAME}
+    hostName: ${CLUSTER_HOSTNAME}
     tls:
     # - secretName: jenkins.cluster.local
     #   hosts:

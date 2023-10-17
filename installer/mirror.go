@@ -45,7 +45,7 @@ func initFlexMirror() {
 
 	formDown := tview.NewForm()
 
-	formDown.AddButton("Next", func() {
+	formDown.AddButton("Install", func() {
 		if enableMirror {
 			for k, v := range mirrors {
 				if v == "" {
@@ -54,7 +54,8 @@ func initFlexMirror() {
 			}
 		}
 
-		pages.SwitchToPage("Deploy Cluster")
+		initFlexInstall()
+		pages.SwitchToPage("Install")
 	})
 
 	formDown.AddButton("Back", func() {

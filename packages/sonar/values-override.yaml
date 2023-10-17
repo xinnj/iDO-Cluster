@@ -80,7 +80,7 @@ ingress:
   enabled: true
   # Used to create an Ingress record.
   hosts:
-    - name: ${HOSTNAME}
+    - name: ${CLUSTER_HOSTNAME}
       # Different clouds or configurations might need /* as the default path
       path: ${SONAR_URL_PREFIX}
       # For additional control over serviceName and servicePort

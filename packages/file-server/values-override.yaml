@@ -49,7 +49,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: ${HOSTNAME}
+    - host: ${CLUSTER_HOSTNAME}
       paths:
         - path: ${FILE_URL_PREFIX}
           pathType: ImplementationSpecific

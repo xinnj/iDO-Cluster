@@ -23,10 +23,24 @@ helm upgrade rook-ceph --install --create-namespace --namespace rook-ceph --wait
 envsubst < "${base}/values-rook-ceph-cluster-${install_mode}-template.yaml" > "${base}/values-rook-ceph-cluster-${install_mode}.yaml"
 helm upgrade rook-ceph-cluster --install --create-namespace --namespace rook-ceph -f "${base}/values-rook-ceph-cluster-${install_mode}.yaml" "${base}/rook-ceph-cluster-chart"
 
+echo Wait the ceph cluster is ready...
 health=''
+message=''
 while [ "$health" != "HEALTH_OK" ]; do
-    echo Wait the ceph cluster is ready...
-    sleep 5
-    health=$(kubectl --namespace rook-ceph get cephcluster -o custom-columns=HEALTH:.status.ceph.health --no-headers=true)
-    kubectl --namespace rook-ceph get cephcluster
+    new_message=$(kubectl --namespace rook-ceph get cephcluster -o custom-columns=MESSAGE:.status.message --no-headers=true)
+    if [ "${new_message}" != "${message}" ]; then
+      echo "${new_message}"
+      message=${new_message}
+    fi
+
+    new_health=$(kubectl --namespace rook-ceph get cephcluster -o custom-columns=HEALTH:.status.ceph.health --no-headers=true)
+    if [ "${new_health}" != "" ]; then
+      if [ "${new_health}" != "${health}" ]; then
+          echo "${new_health}"
+          health=${new_health}
+      fi
+    fi
+
+    sleep 10
 done
+kubectl --namespace rook-ceph get cephcluster

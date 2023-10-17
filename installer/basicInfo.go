@@ -8,52 +8,58 @@ import (
 	"strings"
 )
 
-var clusterUrl string
-var team = "default"
-var timezone string
+type BasicInfo struct {
+	clusterUrl string
+	team       string
+	timezone   string
+}
+
+var basicInfo = BasicInfo{clusterUrl: "", team: "default", timezone: ""}
 
 func initFlexBasicInfo() {
 	flexBasicInfo.Clear()
 	formBasicInfo := tview.NewForm()
 	formBasicInfo.SetTitle("Basic Info").SetBorder(true)
 
-	formBasicInfo.AddInputField("Team: ", team, 0, nil, func(text string) {
-		team = strings.Trim(text, " ")
+	formBasicInfo.AddInputField("Team: ", basicInfo.team, 0, nil, func(text string) {
+		basicInfo.team = strings.Trim(text, " ")
 	})
 
-	formBasicInfo.AddInputField("Cluster public access URL: ", clusterUrl, 0, nil,
+	formBasicInfo.AddInputField("Cluster public access URL: ", basicInfo.clusterUrl, 0, nil,
 		func(text string) {
-			clusterUrl = strings.Trim(text, " ")
+			basicInfo.clusterUrl = strings.Trim(text, " ")
 		})
 
-	if timezone == "" {
+	if basicInfo.timezone == "" {
 		var err error
-		timezone, err = tzlocal.RuntimeTZ()
+		basicInfo.timezone, err = tzlocal.RuntimeTZ()
 		check(err)
 	}
 
-	formBasicInfo.AddInputField("Timezone: ", timezone, 0, nil, func(text string) {
-		timezone = text
+	formBasicInfo.AddInputField("Timezone: ", basicInfo.timezone, 0, nil, func(text string) {
+		basicInfo.timezone = text
 	})
 
 	formDown := tview.NewForm()
 
 	formDown.AddButton("Next", func() {
 		reTeam := regexp.MustCompile("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
-		matches := reTeam.FindStringSubmatch(team)
+		matches := reTeam.FindStringSubmatch(basicInfo.team)
 		if matches == nil {
-			showErrorModal("Format of team is wrong:\n" + team +
+			showErrorModal("Format of team is wrong:\n" + basicInfo.team +
 				"\nName must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character.")
 			return
 		}
 
-		if clusterUrl == "" {
+		if basicInfo.clusterUrl == "" {
 			showErrorModal("Custer public access URL is empty.")
 			return
 		}
-		u, err := url.Parse(clusterUrl)
+
+		basicInfo.clusterUrl = strings.TrimSuffix(basicInfo.clusterUrl, "/")
+		u, err := url.Parse(basicInfo.clusterUrl)
 		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-			showErrorModal("Format of cluster public access URL is wrong: \n" + clusterUrl)
+			showErrorModal("Format of cluster public access URL is wrong: \n" + basicInfo.clusterUrl)
 			return
 		}
 

@@ -16,8 +16,12 @@ if [ "${TEAM}" == "default" ]; then
 else
   TEAM_URL="${CLUSTER_URL}/${TEAM}"
 fi
+echo "TEAM_URL=${TEAM_URL}"
+
 FILE_URL="${TEAM_URL}/download"
 FILE_URL_PREFIX="/${FILE_URL#*://*/}" && [[ "/${FILE_URL}" == "${FILE_URL_PREFIX}" ]] && FILE_URL_PREFIX="/"
+echo "FILE_URL=${FILE_URL}"
+echo "FILE_URL_PREFIX=${FILE_URL_PREFIX}"
 
 # Create namespaces
 kubectl create ns ${TEAM} || :
