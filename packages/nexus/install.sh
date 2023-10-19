@@ -3,6 +3,7 @@ set -euao pipefail
 
 base=$(dirname "$0")
 
+echo "##########################################################################"
 echo "### Install Nexus ###"
 echo "TEAM=${TEAM}"
 echo "STORAGE_CLASS=${STORAGE_CLASS}"

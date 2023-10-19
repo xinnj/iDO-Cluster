@@ -3,6 +3,7 @@ set -euaxo pipefail
 
 base=$(dirname "$0")
 
+echo "##########################################################################"
 echo "### Install Samba Server ###"
 echo "CLUSTER_URL=${CLUSTER_URL}"
 echo "TEAM=${TEAM}"

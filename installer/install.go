@@ -106,7 +106,7 @@ func initFlexInstall() {
 		AddItem(formDown, 3, 1, false)
 
 	go startTimer(stopTimer)
-	go execCmd(tasks, envs, logContent)
+	go execTasks(tasks, envs, logContent)
 }
 
 func buildTasks() (tasks []task, envs []string) {
@@ -192,16 +192,19 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "SMB_NODE_PORT="+smbConfig.nodePort)
 	}
 
+	tasks = append(tasks, task{name: "Final Check",
+		command: "chmod +x packages/final-check.sh; packages/final-check.sh"})
+
 	return
 }
 
-func execCmd(tasks []task, envs []string, view *tview.TextView) {
+func execTasks(tasks []task, envs []string, view *tview.TextView) {
 	var logBgColor tcell.Color
 
 	for index, task := range tasks {
 		listTask.SetCurrentItem(index)
 		mainText, _ := listTask.GetItemText(index)
-		listTask.SetItemText(index, mainText, "installing...")
+		listTask.SetItemText(index, mainText, "in-progress...")
 
 		processState = nil
 

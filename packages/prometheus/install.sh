@@ -3,6 +3,7 @@ set -euao pipefail
 
 base=$(dirname "$0")
 
+echo "##########################################################################"
 echo "### Install Prometheus Stack ###"
 
 # Install prometheus

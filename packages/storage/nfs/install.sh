@@ -3,6 +3,7 @@ set -euaxo pipefail
 
 base=$(dirname "$0")
 
+echo "##########################################################################"
 echo "### Install NFS Provisioner ###"
 echo "NFS_SERVER=${NFS_SERVER}"
 echo "NFS_PATH=${NFS_PATH}"

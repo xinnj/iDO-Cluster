@@ -2,6 +2,7 @@
 set -euao pipefail
 base=$(dirname "$0")
 
+echo "##########################################################################"
 echo "### Install Ceph ###"
 echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
 echo "QUAY_CONTAINER_MIRROR=${QUAY_CONTAINER_MIRROR}"

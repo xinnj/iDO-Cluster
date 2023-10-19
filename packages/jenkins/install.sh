@@ -3,6 +3,7 @@ set -euao pipefail
 
 base=$(dirname "$0")
 
+echo "##########################################################################"
 echo "### Install Jenkins ###"
 echo "CLUSTER_URL=${CLUSTER_URL}"
 echo "TEAM=${TEAM}"
