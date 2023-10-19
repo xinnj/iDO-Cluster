@@ -1,5 +1,5 @@
 #! /bin/bash
-set -euaxo pipefail
+set -euao pipefail
 
 base=$(dirname "$0")
 

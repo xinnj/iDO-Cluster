@@ -136,6 +136,15 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, k+"="+v)
 	}
 
+	envs = append(envs, "ENABLE_PROMETHEUS="+strconv.FormatBool(installPrometheus))
+	if installPrometheus {
+		tasks = append(tasks, task{name: "Install Prometheus",
+			command: "chmod +x packages/prometheus/install.sh; packages/prometheus/install.sh"})
+		envs = append(envs, "ALTERMANAGER_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.alertmanagerStorageSizeGi)+"Gi")
+		envs = append(envs, "GRAFANA_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.grafanaStorageSizeGi)+"Gi")
+		envs = append(envs, "PROMETHEUS_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.prometheusStorageSizeGi)+"Gi")
+	}
+
 	switch storageClass {
 	case storageClassType.ceph:
 		tasks = append(tasks, task{name: "Install Ceph",
@@ -181,14 +190,6 @@ func buildTasks() (tasks []task, envs []string) {
 		tasks = append(tasks, task{name: "Install Samba Server",
 			command: "chmod +x packages/samba-server/install.sh; packages/samba-server/install.sh"})
 		envs = append(envs, "SMB_NODE_PORT="+smbConfig.nodePort)
-	}
-
-	if installPrometheus {
-		tasks = append(tasks, task{name: "Install Prometheus",
-			command: "chmod +x packages/prometheus/install.sh; packages/prometheus/install.sh"})
-		envs = append(envs, "ALTERMANAGER_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.alertmanagerStorageSizeGi)+"Gi")
-		envs = append(envs, "GRAFANA_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.grafanaStorageSizeGi)+"Gi")
-		envs = append(envs, "PROMETHEUS_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.prometheusStorageSizeGi)+"Gi")
 	}
 
 	return

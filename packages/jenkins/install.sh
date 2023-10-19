@@ -11,6 +11,7 @@ echo "TIMEZONE=${TIMEZONE}"
 echo "STORAGE_CLASS=${STORAGE_CLASS}"
 echo "CONTROLLER_STORAGE_SIZE=${CONTROLLER_STORAGE_SIZE}"
 echo "AGENT_STORAGE_SIZE=${AGENT_STORAGE_SIZE}"
+echo "ENABLE_PROMETHEUS=${ENABLE_PROMETHEUS}"
 
 if [ "${TEAM}" == "default" ]; then
   TEAM_URL="${CLUSTER_URL}"
@@ -22,7 +23,7 @@ JENKINS_URL_PREFIX="/${JENKINS_URL#*://*/}" && [[ "/${JENKINS_URL}" == "${JENKIN
 UPDATE_CENTER="https://updates.jenkins.io/update-center.json"
 
 # Create namespaces
-kubectl create ns ${TEAM} || :
+kubectl create ns ${TEAM} --dry-run=client -o yaml | kubectl apply -f -
 
 # Create PVC
 envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"

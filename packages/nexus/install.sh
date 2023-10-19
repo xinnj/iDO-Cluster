@@ -19,7 +19,7 @@ NEXUS_URL="${TEAM_URL}/nexus"
 NEXUS_URL_PATH="${NEXUS_URL#*://*/}" && [[ "${NEXUS_URL}" == "${NEXUS_URL_PATH}" ]] && NEXUS_URL_PATH=""
 
 # Create namespaces
-kubectl create ns ${TEAM} || :
+kubectl create ns ${TEAM} --dry-run=client -o yaml | kubectl apply -f -
 
 # Create PVC
 envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"

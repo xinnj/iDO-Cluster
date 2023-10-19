@@ -24,7 +24,7 @@ echo "FILE_URL=${FILE_URL}"
 echo "FILE_URL_PREFIX=${FILE_URL_PREFIX}"
 
 # Create namespaces
-kubectl create ns ${TEAM} || :
+kubectl create ns ${TEAM} --dry-run=client -o yaml | kubectl apply -f -
 
 # Create PVC
 envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"
