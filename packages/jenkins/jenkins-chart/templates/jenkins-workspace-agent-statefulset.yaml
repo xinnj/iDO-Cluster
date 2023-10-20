@@ -39,6 +39,12 @@ spec:
             - mountPath: /home/jenkins/agent
               name: workspace-volume
           workingDir: /home/jenkins/agent
+          command:
+            - /bin/sh
+            - -c
+            - |
+                source /home/jenkins/agent/.workspace.sec
+                /usr/local/bin/jenkins-agent
       securityContext:
         {{- toYaml .Values.workspaceAgent.podSecurityContext | nindent 8 }}
       volumes:
