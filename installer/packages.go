@@ -96,12 +96,32 @@ func (config *PrometheusConfig) validate() error {
 	return nil
 }
 
+type GiteaConfig struct {
+	sshNodePort              string
+	giteaSharedStorageSizeGi int
+	giteaPgStorageSizeGi     int
+}
+
+func (config *GiteaConfig) validate() error {
+	if config.sshNodePort == "" {
+		return errors.New("SSH node port is empty.")
+	}
+	if config.giteaSharedStorageSizeGi == 0 {
+		return errors.New("Gitea storage size is 0.")
+	}
+	if config.giteaPgStorageSizeGi == 0 {
+		return errors.New("Gitea DB storage size is 0.")
+	}
+	return nil
+}
+
 var installJenkins = false
 var installNexus = false
 var installSonar = false
 var installFileServer = false
 var installSmb = false
 var installPrometheus = false
+var installGitea = false
 var jenkinsConfig = JenkinsConfig{
 	controllerStorageSizeGi: 20,
 	agentStorageSizeGi:      200,
@@ -126,116 +146,34 @@ var prometheusConfig = PrometheusConfig{
 	grafanaStorageSizeGi:      5,
 	prometheusStorageSizeGi:   10,
 }
+var giteaConfig = GiteaConfig{
+	sshNodePort:              "32222",
+	giteaSharedStorageSizeGi: 200,
+	giteaPgStorageSizeGi:     20,
+}
+var packages = []string{"Gitea", "Jenkins", "Nexus", "Sonarqube", "File server", "Samba server", "Prometheus"}
+var listPackages = tview.NewList()
+var formPackage = tview.NewForm()
 
 func initFlexPackages() {
 	flexPackages.Clear()
-	formPackages := tview.NewForm()
-	formPackages.SetTitle("Packages").SetBorder(true)
+	flexList := tview.NewFlex()
+	flexList.SetTitle("Packages").SetBorder(true)
 
-	// Jenkins
-	formPackages.AddCheckbox("Install Jenkins: ", installJenkins, func(checked bool) {
-		installJenkins = checked
-		flexPackages.Clear()
-		initFlexPackages()
-	})
-	if installJenkins {
-		formPackages.AddInputField("Jenkins controller storage size (Gi): ", strconv.Itoa(jenkinsConfig.controllerStorageSizeGi),
-			0, nil, func(text string) {
-				jenkinsConfig.controllerStorageSizeGi, _ = strconv.Atoi(text)
-			})
-		formPackages.AddInputField("Jenkins agent storage size (Gi): ", strconv.Itoa(jenkinsConfig.agentStorageSizeGi),
-			0, nil, func(text string) {
-				jenkinsConfig.agentStorageSizeGi, _ = strconv.Atoi(text)
-			})
-		formPackages.AddInputField("Jenkins pipeline lib version: ", jenkinsConfig.pipelineLibVersion,
-			0, nil, func(text string) {
-				jenkinsConfig.pipelineLibVersion = text
-			})
-	}
+	if listPackages.GetItemCount() == 0 {
+		for index, item := range packages {
+			listPackages.AddItem(item, "", rune(49+index), nil)
+		}
 
-	// Nexus
-	formPackages.AddCheckbox("Install Nexus: ", installNexus, func(checked bool) {
-		installNexus = checked
-		flexPackages.Clear()
-		initFlexPackages()
-	})
-	if installNexus {
-		formPackages.AddInputField("Nexus storage size (Gi): ", strconv.Itoa(nexusConfig.storageSizeGi),
-			0, nil, func(text string) {
-				nexusConfig.storageSizeGi, _ = strconv.Atoi(text)
-			})
-		formPackages.AddInputField("Nexus docker node port: ", nexusConfig.dockerNodePort,
-			0, nil, func(text string) {
-				nexusConfig.dockerNodePort = text
-			})
-	}
+		mainText, _ := listPackages.GetItemText(0)
+		selectPackage(0, mainText)
 
-	// Sonar
-	formPackages.AddCheckbox("Install Sonarqube: ", installSonar, func(checked bool) {
-		installSonar = checked
-		flexPackages.Clear()
-		initFlexPackages()
-	})
-	if installSonar {
-		formPackages.AddInputField("Sonarqube storage size (Gi): ", strconv.Itoa(sonarConfig.storageSizeGi),
-			0, nil, func(text string) {
-				sonarConfig.storageSizeGi, _ = strconv.Atoi(text)
-			})
-		formPackages.AddInputField("Sonarqube DB storage size (Gi): ", strconv.Itoa(sonarConfig.dbStorageSizeGi),
-			0, nil, func(text string) {
-				sonarConfig.dbStorageSizeGi, _ = strconv.Atoi(text)
-			})
-	}
-
-	// File server
-	formPackages.AddCheckbox("Install file server: ", installFileServer, func(checked bool) {
-		installFileServer = checked
-		flexPackages.Clear()
-		initFlexPackages()
-	})
-	if installFileServer {
-		formPackages.AddInputField("File server storage size (Gi): ", strconv.Itoa(fileServerConfig.storageSizeGi),
-			0, nil, func(text string) {
-				fileServerConfig.storageSizeGi, _ = strconv.Atoi(text)
-			})
-	}
-
-	// Smb
-	formPackages.AddCheckbox("Install Samba server: ", installSmb, func(checked bool) {
-		installSmb = checked
-		flexPackages.Clear()
-		initFlexPackages()
-	})
-	if installSmb {
-		formPackages.AddInputField("Smb node port: ", smbConfig.nodePort,
-			0, nil, func(text string) {
-				smbConfig.nodePort = text
-			})
-	}
-
-	// Prometheus
-	formPackages.AddCheckbox("Install Prometheus: ", installPrometheus, func(checked bool) {
-		installPrometheus = checked
-		flexPackages.Clear()
-		initFlexPackages()
-	})
-	if installPrometheus {
-		formPackages.AddInputField("Alert manager storage size (Gi): ", strconv.Itoa(prometheusConfig.alertmanagerStorageSizeGi),
-			0, nil, func(text string) {
-				prometheusConfig.alertmanagerStorageSizeGi, _ = strconv.Atoi(text)
-			})
-		formPackages.AddInputField("Grafana storage size (Gi): ", strconv.Itoa(prometheusConfig.grafanaStorageSizeGi),
-			0, nil, func(text string) {
-				prometheusConfig.grafanaStorageSizeGi, _ = strconv.Atoi(text)
-			})
-		formPackages.AddInputField("Prometheus storage size (Gi): ", strconv.Itoa(prometheusConfig.prometheusStorageSizeGi),
-			0, nil, func(text string) {
-				prometheusConfig.prometheusStorageSizeGi, _ = strconv.Atoi(text)
-			})
+		listPackages.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
+			selectPackage(index, mainText)
+		})
 	}
 
 	formDown := tview.NewForm()
-
 	formDown.AddButton("Next", func() {
 		if installJenkins {
 			err := jenkinsConfig.validate()
@@ -291,7 +229,134 @@ func initFlexPackages() {
 		showQuitModal()
 	})
 
+	flexList.
+		AddItem(listPackages, 0, 1, true).
+		AddItem(formPackage, 0, 3, false)
+
 	flexPackages.SetDirection(tview.FlexRow).
-		AddItem(formPackages, 0, 1, true).
+		AddItem(flexList, 0, 1, true).
 		AddItem(formDown, 3, 1, false)
+}
+
+func selectPackage(index int, mainText string) {
+	formPackage.Clear(true)
+	listPackages.SetItemText(index, mainText, "")
+	switch mainText {
+	case "Gitea":
+		formPackage.AddCheckbox("Install Gitea: ", installGitea, func(checked bool) {
+			installGitea = checked
+			selectPackage(index, mainText)
+		})
+		if installGitea {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Gitea shared storage size (Gi): ", strconv.Itoa(giteaConfig.giteaSharedStorageSizeGi),
+				0, nil, func(text string) {
+					giteaConfig.giteaSharedStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Gitea DB storage size (Gi): ", strconv.Itoa(giteaConfig.giteaPgStorageSizeGi),
+				0, nil, func(text string) {
+					giteaConfig.giteaPgStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Gitea SSH node port: ", giteaConfig.sshNodePort,
+				0, nil, func(text string) {
+					giteaConfig.sshNodePort = text
+				})
+		}
+	case "Jenkins":
+		formPackage.AddCheckbox("Install Jenkins: ", installJenkins, func(checked bool) {
+			installJenkins = checked
+			selectPackage(index, mainText)
+		})
+		if installJenkins {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Jenkins controller storage size (Gi): ", strconv.Itoa(jenkinsConfig.controllerStorageSizeGi),
+				0, nil, func(text string) {
+					jenkinsConfig.controllerStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Jenkins agent storage size (Gi): ", strconv.Itoa(jenkinsConfig.agentStorageSizeGi),
+				0, nil, func(text string) {
+					jenkinsConfig.agentStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Jenkins pipeline lib version: ", jenkinsConfig.pipelineLibVersion,
+				0, nil, func(text string) {
+					jenkinsConfig.pipelineLibVersion = text
+				})
+		}
+	case "Nexus":
+		formPackage.AddCheckbox("Install Nexus: ", installNexus, func(checked bool) {
+			installNexus = checked
+			selectPackage(index, mainText)
+		})
+		if installNexus {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Nexus storage size (Gi): ", strconv.Itoa(nexusConfig.storageSizeGi),
+				0, nil, func(text string) {
+					nexusConfig.storageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Nexus docker node port: ", nexusConfig.dockerNodePort,
+				0, nil, func(text string) {
+					nexusConfig.dockerNodePort = text
+				})
+		}
+	case "Sonarqube":
+		formPackage.AddCheckbox("Install Sonarqube: ", installSonar, func(checked bool) {
+			installSonar = checked
+			selectPackage(index, mainText)
+		})
+		if installSonar {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Sonarqube storage size (Gi): ", strconv.Itoa(sonarConfig.storageSizeGi),
+				0, nil, func(text string) {
+					sonarConfig.storageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Sonarqube DB storage size (Gi): ", strconv.Itoa(sonarConfig.dbStorageSizeGi),
+				0, nil, func(text string) {
+					sonarConfig.dbStorageSizeGi, _ = strconv.Atoi(text)
+				})
+		}
+	case "File server":
+		formPackage.AddCheckbox("Install file server: ", installFileServer, func(checked bool) {
+			installFileServer = checked
+			selectPackage(index, mainText)
+		})
+		if installFileServer {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("File server storage size (Gi): ", strconv.Itoa(fileServerConfig.storageSizeGi),
+				0, nil, func(text string) {
+					fileServerConfig.storageSizeGi, _ = strconv.Atoi(text)
+				})
+		}
+	case "Samba server":
+		formPackage.AddCheckbox("Install Samba server: ", installSmb, func(checked bool) {
+			installSmb = checked
+			selectPackage(index, mainText)
+		})
+		if installSmb {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Smb node port: ", smbConfig.nodePort,
+				0, nil, func(text string) {
+					smbConfig.nodePort = text
+				})
+		}
+	case "Prometheus":
+		formPackage.AddCheckbox("Install Prometheus: ", installPrometheus, func(checked bool) {
+			installPrometheus = checked
+			selectPackage(index, mainText)
+		})
+		if installPrometheus {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Alert manager storage size (Gi): ", strconv.Itoa(prometheusConfig.alertmanagerStorageSizeGi),
+				0, nil, func(text string) {
+					prometheusConfig.alertmanagerStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Grafana storage size (Gi): ", strconv.Itoa(prometheusConfig.grafanaStorageSizeGi),
+				0, nil, func(text string) {
+					prometheusConfig.grafanaStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Prometheus storage size (Gi): ", strconv.Itoa(prometheusConfig.prometheusStorageSizeGi),
+				0, nil, func(text string) {
+					prometheusConfig.prometheusStorageSizeGi, _ = strconv.Atoi(text)
+				})
+		}
+	}
 }

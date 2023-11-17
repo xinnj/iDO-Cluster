@@ -158,6 +158,14 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "NFS_PATH="+nfsConfig.path)
 	}
 
+	if installGitea {
+		tasks = append(tasks, task{name: "Install Gitea",
+			command: "chmod +x packages/gitea/install.sh; packages/gitea/install.sh"})
+		envs = append(envs, "GITEA_SHARED_STORAGE_SIZE="+strconv.Itoa(giteaConfig.giteaSharedStorageSizeGi)+"Gi")
+		envs = append(envs, "GITEA_PG_STORAGE_SIZE="+strconv.Itoa(giteaConfig.giteaPgStorageSizeGi)+"Gi")
+		envs = append(envs, "SSH_NODE_PORT="+giteaConfig.sshNodePort)
+	}
+
 	if installJenkins {
 		tasks = append(tasks, task{name: "Install Jenkins",
 			command: "chmod +x packages/jenkins/install.sh; packages/jenkins/install.sh"})

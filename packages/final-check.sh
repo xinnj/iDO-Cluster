@@ -17,6 +17,7 @@ while [ "$result" != "" ]; do
   new_result=$(kubectl get pods --field-selector=status.phase!=Running,status.phase!=Succeeded -o custom-columns=Name:.metadata.name --no-headers=true -A)
   if [ "${new_result}" != "" ]; then
     if [ "${new_result}" != "${result}" ]; then
+      echo "##########################################################################"
       echo "Please wait for these pods to be ready..."
       kubectl get pods --field-selector=status.phase!=Running,status.phase!=Succeeded -A
     fi
