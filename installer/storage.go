@@ -18,27 +18,47 @@ var storageClassType = StorageClassType{
 	ceph: "ceph-filesystem",
 	nfs:  "nfs-client",
 }
-var storageClass = storageClassType.ceph
+var storageClass = ""
+var useExistingSC = true
+var existingSCs []string
 var nfsConfig NfsConfig
 
 func initFlexStorage() {
-	// todo: auto detect sc
 	flexStorage.Clear()
 	formStorage := tview.NewForm()
 	formStorage.SetTitle("Storage").SetBorder(true)
 
-	formStorage.AddCheckbox("Use CEPH: ", storageClass == storageClassType.ceph, func(checked bool) {
+	formStorage.AddCheckbox("Use existing StorageClass: ", useExistingSC, func(checked bool) {
+		useExistingSC = true
+		storageClass = ""
+		flexStorage.Clear()
+		initFlexStorage()
+	})
+	if useExistingSC {
+		if len(existingSCs) == 0 {
+			result, err := execCommand("kubectl get sc --no-headers -o custom-columns=\":metadata.name\"", 0)
+			check(err)
+			existingSCs = strings.Split(strings.TrimSpace(string(result)), "\n")
+		}
+		formStorage.AddDropDown("Select a StorageClass: ", existingSCs, -1, func(option string, optionIndex int) {
+			storageClass = option
+		})
+	}
+
+	formStorage.AddCheckbox("Use CEPH: ", !useExistingSC && storageClass == storageClassType.ceph, func(checked bool) {
+		useExistingSC = false
 		storageClass = storageClassType.ceph
 		flexStorage.Clear()
 		initFlexStorage()
 	})
 
-	formStorage.AddCheckbox("Use NFS: ", storageClass == storageClassType.nfs, func(checked bool) {
+	formStorage.AddCheckbox("Use NFS: ", !useExistingSC && storageClass == storageClassType.nfs, func(checked bool) {
+		useExistingSC = false
 		storageClass = storageClassType.nfs
 		flexStorage.Clear()
 		initFlexStorage()
 	})
-	if storageClass == storageClassType.nfs {
+	if !useExistingSC && storageClass == storageClassType.nfs {
 		formStorage.AddInputField("NFS server: ", nfsConfig.server, 0, nil, func(text string) {
 			nfsConfig.server = strings.Trim(text, " ")
 		})
@@ -50,6 +70,11 @@ func initFlexStorage() {
 	formDown := tview.NewForm()
 
 	formDown.AddButton("Next", func() {
+		if storageClass == "" {
+			showErrorModal("Please select a StorageClass.")
+			return
+		}
+
 		if storageClass == storageClassType.nfs {
 			if nfsConfig.server == "" {
 				showErrorModal("NFS server is empty.")

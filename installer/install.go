@@ -145,18 +145,19 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "PROMETHEUS_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.prometheusStorageSizeGi)+"Gi")
 	}
 
-	switch storageClass {
-	case storageClassType.ceph:
-		tasks = append(tasks, task{name: "Install Ceph",
-			command: "chmod +x packages/storage/ceph/install.sh; packages/storage/ceph/install.sh"})
-		envs = append(envs, "STORAGE_CLASS=ceph-filesystem")
-	case storageClassType.nfs:
-		tasks = append(tasks, task{name: "Install nfs",
-			command: "chmod +x packages/storage/nfs/install.sh; packages/storage/nfs/install.sh"})
-		envs = append(envs, "STORAGE_CLASS=nfs-client")
-		envs = append(envs, "NFS_SERVER="+nfsConfig.server)
-		envs = append(envs, "NFS_PATH="+nfsConfig.path)
+	if !useExistingSC {
+		switch storageClass {
+		case storageClassType.ceph:
+			tasks = append(tasks, task{name: "Install Ceph",
+				command: "chmod +x packages/storage/ceph/install.sh; packages/storage/ceph/install.sh"})
+		case storageClassType.nfs:
+			tasks = append(tasks, task{name: "Install nfs",
+				command: "chmod +x packages/storage/nfs/install.sh; packages/storage/nfs/install.sh"})
+			envs = append(envs, "NFS_SERVER="+nfsConfig.server)
+			envs = append(envs, "NFS_PATH="+nfsConfig.path)
+		}
 	}
+	envs = append(envs, "STORAGE_CLASS="+storageClass)
 
 	if installGitea {
 		tasks = append(tasks, task{name: "Install Gitea",
