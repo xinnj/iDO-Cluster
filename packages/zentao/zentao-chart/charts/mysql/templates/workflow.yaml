@@ -1,0 +1,4 @@
+{{- include "lib-common.workflow" (list . "lib-common.container") -}}
+
+{{- define "app.workflow" }}
+{{- end -}}

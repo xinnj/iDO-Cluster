@@ -1,0 +1,40 @@
+{{- define "lib-common.workflow.v2.tpl" -}}
+{{- $values := default .Values .Component.Values -}}
+{{- if $values.workflow.kind }}
+    {{- if eq $values.workflow.kind "Deployment" }}
+        {{ include "workflow.deployment.v2" . }}
+    {{- else if eq $values.workflow.kind "DaemonSet" }}
+        {{ include "workflow.daemonset.v2" . }}
+    {{- else if eq $values.workflow.kind "StatefulSet" }}
+        {{ include "workflow.statefulset.v2" . }}
+    {{- else if eq $values.workflow.kind "Job" }}
+        {{ include "workflow.job.v2" . }}
+    {{- else }}
+        {{ printf "not ready" }}
+    {{- end -}}
+{{- else -}}
+    {{ include "workflow.deployment.v2" . }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: include "" (dict "name" "name" "kind" "Deployment" "apiVersion" "v1" "ctx" .)
+If the workflow exist, use current matchLabels
+*/}}
+{{- define "lib-common.workflow.matchLabels" -}}
+{{- $spec := (lookup .apiVersion .kind .ctx.Release.Namespace .name).spec -}}
+{{- if $spec -}}
+{{ toYaml $spec.selector.matchLabels }}
+{{- else -}}
+{{- include "lib-common.labels.matchLabels" .ctx }}
+{{- end -}}
+{{- end -}}
+
+{{- define "lib-common.workflow.v2" -}}
+{{- $root := (first .) -}}
+{{- include "lib-common.values.merge" (first .) -}}
+{{- if and $root.Values.global.stopped (or $root.Values.cleanPolicy.workflow $root.Values.global.cleanPolicy.workflow) }}
+{{- else }}
+{{- include "lib-common.util.mergeYaml" (append . "lib-common.workflow.v2.tpl") -}}
+{{- end }}
+{{- end -}}

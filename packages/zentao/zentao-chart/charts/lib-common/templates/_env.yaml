@@ -1,0 +1,102 @@
+{{- define "lib-common.env.container" }}
+{{- $envMap := dict -}}
+{{- $envMap = merge $envMap .Values.env .Values.global.env -}}
+{{- range $k, $v := $envMap -}}
+{{ include "lib-common.env.field" (dict "key" $k "value" $v "ctx" $) }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: include "lib-common.env.container.v2" (dict "env" dict "values" .Values "ctx" .)
+*/}}
+{{- define "lib-common.env.container.v2" }}
+{{- $envMap := dict -}}
+{{- $envMap = merge $envMap .env .values.global.env -}}
+{{- range $k, $v := $envMap -}}
+{{ include "lib-common.env.field" (dict "key" $k "value" $v "ctx" $.ctx) }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: {{ include "lib-common.env.field" (dict "key" "" "value" "" "ctx" $) }}
+*/}}
+{{- define "lib-common.env.field" -}}
+{{- if (kindIs "string" .value) }}
+- name: {{ .key }}
+  value: {{ include "lib-common.utils.readRef" (dict "value" .value "ctx" .ctx) | quote }}
+{{- else if (kindIs "float64" .value) }}
+- name: {{ .key }}
+  value: {{ toString .value | quote }}
+{{- else if (kindIs "bool" .value) }}
+- name: {{ .key }}
+  value: {{ toString .value | quote }}
+{{- else if kindIs "map" .value -}}
+  {{- if eq .value.source "secret" }}
+    {{- $bool := (include "lib-common.utils.readbool" (dict "value" (default "true" .value.enabled) "ctx" .ctx) ) }}
+    {{- if eq "true" $bool }}
+- name: {{ .key }}
+  value: null
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "lib-common.env.secretName" (dict "condtions" .value.subChartRefs "ctx" .ctx) }}
+      key: {{ .value.key }}
+    {{- end }}
+  {{- else if eq .value.source "configmap" }}
+    {{- $bool := (include "lib-common.utils.readbool" (dict "value" (default "true" .value.enabled) "ctx" .ctx) ) }}
+    {{- if eq "true" $bool }}
+- name: {{ .key }}
+  value: null
+  valueFrom:
+    configMapKeyRef:
+      name: {{ include "lib-common.env.configmapName" (dict "name" .value.name "ctx" .ctx) }}
+      key: {{ .value.key }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Usage: {{ include "lib-common.env.secretName" (dict "condtions" .subChartRefs "ctx" $) }}
+*/}}
+{{- define "lib-common.env.secretName" -}}
+{{- $subApp := "" -}}
+{{- if .condtions -}}
+  {{- range .condtions -}}
+    {{- $ret := (include "lib-common.utils.getValueByPath" (dict "path" .when "ctx" $.ctx) ) -}}
+    {{- if $ret -}}
+    {{- $subApp = .name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $subApp }}
+{{- include "app.dependency.fullname" (list .ctx $subApp) -}}
+{{- else }}
+{{- template "app.fullname" .ctx }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: {{ include "lib-common.env.configmapName" (dict "name" .name "ctx" $) }}
+*/}}
+{{- define "lib-common.env.configmapName" -}}
+{{- $fullname := include "lib-common.name.fullname" .ctx }}
+{{- if .name }}
+{{- printf "%s-%s" $fullname .name -}}
+{{- else }}
+{{- $fullname -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: {{ include "lib-common.env.from" (dict "configmaps" (list) "secrets" (list) "ctx" $) }}
+*/}}
+{{- define "lib-common.env.from" -}}
+{{- range .configmaps }}
+- configMapRef:
+    name: {{ template "lib-common.name.fullname" $.ctx }}-{{ . }}
+{{- end }}
+{{- range .secrets }}
+- secretRef:
+    name: {{ template "lib-common.name.fullname" $.ctx }}-{{ . }}
+{{- end }}
+{{- end -}}

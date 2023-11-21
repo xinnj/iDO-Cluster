@@ -1,0 +1,162 @@
+global:
+  repodomain: hub.qucheng.com
+  storageClass: ""
+  debug: false
+  ingress:
+    className: nginx
+  env: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+workflow:
+  kind: Deployment
+
+image:
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+apiVersion:
+  deployment: apps/v1
+  statefulset: apps/v1
+
+command: []
+
+args: []
+
+service:
+  enabled: false
+
+strategy:
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 25%
+  type: RollingUpdate
+
+ingress:
+  ingressClassName: ""
+  enabled: false
+  host: ""
+  tls:
+    enabled: false
+    secretName: ""
+
+imagePullSecrets: []
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+dbservice:
+  labels: {}
+  annotations: {}
+
+db:
+  labels: {}
+  annotations: {}
+  config: {}
+
+rbac:
+  create: false
+  clusterrolebinding:
+    create: false
+    rolename: ""
+
+volumes: {}
+# x: 
+#   type: pvc
+#   enabled: false
+#   accessMode: ReadWriteOnce
+#   mounts:
+#   - mountPath:
+#     subPath: ""
+# y: 
+#   type: configmap
+#   mounts:
+#   - mountPath: 
+#     subPath: 
+# shm:
+#   type: pvc
+#   enabled: false
+#   accessMode: ReadWriteOnce
+#   size: 1Gi
+#   mediumMemory: true
+#   mounts:
+#   - mountPath: /dev/shm
+#     subPath: ""
+# nfs-example:
+  # type: nfs
+  # path: /
+  # server: 192.168.0.1
+  # mounts:
+  # - mountPath: /data/nfs
+
+secret:
+  labels: {}
+  annotations: {}
+  data:
+    # mysql_password:
+    #   value: ""
+    #   length: 10
+    #   allowOverride: false
+
+probe:
+  liveness:
+    enabled: false 
+    type: http
+    methods:
+      http:
+        httpGet:
+          path: /health
+          port: probe
+      tcp:
+        tcpSocket:
+          port: probe
+    options:
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+  readiness:
+    enabled: false
+    type: http
+    methods:
+      http:
+        httpGet:
+          path: /health
+          port: probe
+      tcp:
+        tcpSocket:
+          port: probe
+    options:
+      periodSeconds: 5
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 1
+  startup:
+    enabled: false
+    type: http
+    methods:
+      http:
+        httpGet:
+          path: /health
+          port: probe
+      tcp:
+        tcpSocket:
+          port: probe
+    options:
+      failureThreshold: 10
+      periodSeconds: 3
+      timeoutSeconds: 1
+      initialDelaySeconds: 5

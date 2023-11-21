@@ -1,0 +1,6 @@
+dependencies:
+- name: lib-common
+  repository: file://../lib-common
+  version: 0.2.18
+digest: sha256:8c16e0ccd78ab8517d11392284abbc51cd51e03b0fdcf7bb011d0824a3a3b421
+generated: "2022-09-01T09:33:25.432502+08:00"

@@ -1,0 +1,39 @@
+{
+    "title": "域名",
+    "type": "object",
+    "properties": {
+        "ingress": {
+            "title": "域名访问",
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "title": "开启",
+                    "type": "boolean",
+                    "default": true
+                },
+                "defines": {
+                    "title": "服务分类",
+                    "type": "object",
+                    "properties": {
+                        "web": {
+                            "title": "",
+                            "type": "object",
+                            "ui:hidden": "{{rootFormData.ingress.enabled === false}}",
+                            "properties": {
+                                "hosts": {
+                                    "title": "域名列表",
+                                    "type": "array",
+                                    "items": {
+                                        "title": "域名",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": []
+}

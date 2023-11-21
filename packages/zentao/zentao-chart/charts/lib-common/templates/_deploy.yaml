@@ -1,0 +1,56 @@
+{{- define "workflow.deployment" }}
+apiVersion: {{ .Values.apiVersion.deployment }}
+kind: Deployment
+metadata:
+  name: {{ template "app.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "lib-common.labels.standard" . | nindent 4 }}
+    {{- if .Values.workflow.labels }}
+{{ toYaml .Values.workflow.labels | indent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.workflow.annotations }}
+{{ toYaml .Values.workflow.annotations | indent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ template "lib-common.utils.replicas" . }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels: {{- include "lib-common.labels.matchLabels" . | nindent 6 }}
+  strategy: {{ toYaml .Values.strategy | nindent 4 }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.name" . }}
+        release: {{ .Release.Name | quote }}
+        {{- if .Values.podLabels }}
+{{ toYaml .Values.podLabels | indent 8 }}
+        {{- end }}
+        {{- if .Values.global.podExtraLabels }}
+{{ toYaml .Values.global.podExtraLabels | indent 8 }}
+        {{- end }}
+      annotations:
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.podSecurityContext | indent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 30
+      nodeSelector: {{ mustMergeOverwrite .Values.global.nodeSelector .Values.nodeSelector | toYaml | nindent 8 }}
+      tolerations: {{ concat .Values.global.tolerations .Values.tolerations | toYaml | nindent 8 }}
+      affinity: {{ mustMergeOverwrite .Values.global.affinity .Values.affinity | toYaml | nindent 8 }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ template "lib-common.serviceAccountName" . }}
+      schedulerName: {{ default .Values.global.schedulerName .Values.schedulerName | default "default-scheduler" }}
+{{- end }}

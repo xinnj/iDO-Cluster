@@ -1,0 +1,16 @@
+{{- define "lib-common.workflow.tpl" -}}
+{{- if .Values.workflow.kind }}
+    {{- if eq .Values.workflow.kind "Deployment" }}
+        {{ include "workflow.deployment" . }}
+    {{- else }}
+        {{ printf "not ready" }}
+    {{- end -}}
+{{- else -}}
+    {{ include "workflow.deployment" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "lib-common.workflow" -}}
+{{- include "lib-common.util.mergeValues" (list (first .) "lib-common") -}}
+{{- include "lib-common.util.mergeYaml" (append . "lib-common.workflow.tpl") -}}
+{{- end -}}

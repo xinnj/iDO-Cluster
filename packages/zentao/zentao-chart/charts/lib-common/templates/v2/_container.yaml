@@ -1,0 +1,195 @@
+{{- define "lib-common.container.v2" -}}
+{{- include "lib-common.values.merge" . -}}
+{{- include "lib-common.container.v2.tpl" (dict "values" (default .Values .Component.Values) "ctx" .) -}}
+{{- end -}}
+
+{{/*
+Usage: include "lib-common.container.ports.v2" (dict "ports" .ports "ctx" .)
+*/}}
+{{- define "lib-common.container.ports.v2" }}
+{{- range .ports }}
+- name: {{ .name }}
+  containerPort: {{ .port }}
+{{- end }}
+{{- end }}
+
+{{/*
+Usage: include "lib-common.container.image.v2" (dict "image" dict "values" .Values "ctx" .)
+*/}}
+{{- define "lib-common.container.image.v2" -}}
+{{- $nodomain := not (contains "." .image.repository) -}}
+{{- $tag := include "lib-common.utils.readRef" (dict "value" .image.tag "ctx" .ctx) -}}
+{{- if and .values.global.repodomain $nodomain -}}
+{{- printf "%s/%s:%s" .values.global.repodomain .image.repository $tag -}}
+{{- else -}}
+{{- printf "%s:%s" .image.repository $tag -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: include "lib-common.image.autotag" (dict "deploy" .Values.deploy "ctx" .)
+*/}}
+{{- define "lib-common.image.autotag" -}}
+{{- if .deploy -}}
+  {{- if hasKey .deploy.versions .deploy.product -}}
+    {{- index .deploy.versions .deploy.product -}}
+  {{- else -}}
+    {{- printf "version for %s not defined" .deploy.product | fail -}}
+  {{- end -}}
+{{- else -}}
+  {{- printf "deploy must be defined" | fail -}}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
+Usage: include "lib-common.container.v2.tpl" (dict "values" .Values "ctx" .)
+*/}}
+{{- define "lib-common.container.v2.tpl" -}}
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ default .ctx.Chart.Name .ctx.Component.Name }}
+        imagePullPolicy: {{ .values.image.pullPolicy }}
+        image: {{ template "lib-common.container.image.v2" (dict "image" .values.image "values" .values "ctx" .ctx) }}
+        {{- if .values.command }}
+        command: {{ toYaml .values.command | nindent 8 }}
+        {{- end }}
+        {{- if .values.args }}
+        args: {{ toYaml .values.args | nindent 8 }}
+        {{- end }}
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        {{ block "app.custom.env" .ctx }}{{ end }}
+        {{- if or .values.env .values.global.env }}
+        {{ include "lib-common.env.container.v2" (dict "env" .values.env "values" .values "ctx" .ctx) | nindent 8 }}
+        {{- end }}
+        {{- if or .values.envFrom.configmaps .values.envFrom.secrets }}
+        envFrom: {{ include "lib-common.env.from" (dict "configmaps" .values.envFrom.configmaps "secrets" .values.envFrom.secrets "ctx" .ctx) | nindent 8 }}
+        {{- end }}
+        {{- if .values.ports }}
+        ports: {{ include "lib-common.container.ports.v2" (dict "ports" .values.ports "ctx" .ctx) | nindent 8 }}
+        {{- end }}
+        {{- if .values.resources }}
+        resources: {{ include "lib-common.utils.generateResources.v2" (dict "resources" .values.resources "oversold" .values.oversold "values" .values "ctx" .ctx) | nindent 10 }}
+        {{- end }}
+        {{- with .values.lifecycle }}
+        {{- if .enabled }}
+        lifecycle:
+          postStart: {{ .postStart | indent 12 }}
+          preStop: {{ .preStop | indent 12 }}
+        {{- end }}
+        {{- end }}
+        {{- with .values.securityContext }}
+        securityContext: {{ toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .values.probe.liveness }}
+        {{- if .enabled }}
+        livenessProbe:
+{{ toYaml (get .methods .type) | indent 10 }}
+{{ toYaml .options | indent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- with .values.probe.readiness }}
+        {{- if .enabled }}
+        readinessProbe:
+{{ toYaml (get .methods .type) | indent 10 }}
+{{ toYaml .options | indent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- with .values.probe.startup }}
+        {{- if .enabled }}
+        startupProbe:
+{{ toYaml (get .methods .type) | indent 10 }}
+{{ toYaml .options | indent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .values.volumes }}
+        volumeMounts:
+        {{- range $k, $v := .values.volumes }}
+        {{- $doMount := "true" }}
+          {{- if or .existingSecret .existingConfigmap }}
+            {{- $doMount = include "lib-common.storage.resource.exist" (dict "opts" . "ctx" $.ctx) }}
+          {{- end }}
+        {{- if eq $doMount "true" }}
+        {{- $vloumeName := $k -}}
+        {{- range $v.mounts }}
+        - name: {{ $vloumeName }}
+          mountPath: {{ .mountPath }}
+          {{- if .subPath }}
+          subPath: {{ .subPath }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+      {{- range $name, $opt := .values.sidecars }}
+        {{- if $opt.enabled }}
+        {{- include "lib-common.container.extra.tpl" (dict "name" $name "opt" $opt "values" $.values "ctx" $.ctx ) | nindent 6 }}
+        {{- end }}
+      {{- end }}
+      {{- if .values.initContainers }}
+      initContainers:
+      {{- range $name, $opt := .values.initContainers }}
+        {{- if $opt.enabled }}
+        {{- include "lib-common.container.extra.tpl" (dict "name" $name "opt" $opt "values" $.values "ctx" $.ctx ) | nindent 6 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+{{- end -}}
+
+
+{{/*
+Usage: include "lib-common.container.extra.tpl" (dict "name" "" "opt" dict "values" .Values  "ctx" .)
+*/}}
+{{- define "lib-common.container.extra.tpl" -}}
+- name: {{ .name }}
+  imagePullPolicy: {{ .opt.image.pullPolicy }}
+  image: {{ template "lib-common.container.image.v2" (dict "values" .values "image" .opt.image "ctx" .ctx) }}
+  {{- if .opt.command }}
+  command: {{ toYaml .opt.command | nindent 2 }}
+  {{- end }}
+  {{- if .opt.args }}
+  args: {{ toYaml .opt.args | nindent 2 }}
+  {{- end }}
+  env:
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: POD_NAMESPACE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+  {{- if or .opt.env .values.global.env }}
+  {{ include "lib-common.env.container.v2" (dict "env" .opt.env "values" .values "ctx" .ctx) | nindent 2 }}
+  {{- end }}
+  {{- if .opt.envFrom }}
+  envFrom: {{ include "lib-common.env.from" (dict "configmaps" .opt.envFrom.configmaps "secrets" .opt.envFrom.secrets "ctx" .ctx) | nindent 2 }}
+  {{- end }}
+  {{- if .opt.ports }}
+  ports: {{ include "lib-common.container.ports.v2" (dict "ports" .opt.ports "ctx" .ctx) | nindent 2 }}
+  {{- end }}
+  {{- if .opt.resources }}
+  resources: {{ include "lib-common.utils.generateResources.v2" (dict "resources" .opt.resources "oversold" .opt.oversold "values" .values "ctx" .ctx) | nindent 4 }}
+  {{- end }}
+  {{- with .opt.securityContext }}
+  securityContext: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  volumeMounts:
+  {{- range .opt.mounts }}
+  - name: {{ .name }}
+    mountPath: {{ .mountPath }}
+    {{- if .subPath }}
+    subPath: {{ .subPath }}
+    {{- end }}
+  {{- end }}
+{{- end }}

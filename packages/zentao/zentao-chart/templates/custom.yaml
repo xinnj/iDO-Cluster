@@ -1,0 +1,7 @@
+{{ define "app.custom.env" }}
+{{- if eq .Chart.Name "zentao" }}
+        - name: ZT_MYSQL_HOST
+          value: {{ include "lib-common.utils.depServiceName.withOverride" (dict
+            "condition" "mysql.enabled" "subchart" "mysql" "default" "$ref:mysql.auth.host" "ctx" $)}}
+{{- end }}
+{{ end }}

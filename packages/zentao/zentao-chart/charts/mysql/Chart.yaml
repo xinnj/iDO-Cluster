@@ -1,0 +1,10 @@
+apiVersion: v2
+appVersion: 5.7.37
+dependencies:
+- name: lib-common
+  repository: file://../lib-common
+  version: 0.*.*
+description: A Helm chart for Kubernetes
+name: mysql
+type: application
+version: 0.2.9

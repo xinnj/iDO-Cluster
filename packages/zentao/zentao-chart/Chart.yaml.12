@@ -1,0 +1,41 @@
+apiVersion: v2
+type: application
+
+name: zentao
+description: 禅道 项目管理软件 是国产的开源项目管理软件，专注研发项目管理，内置需求管理、任务管理、bug管理、缺陷管理、用例管理、计划发布等功能，实现了软件的完整生命周期管理。
+
+version: 2021.1.1201
+appVersion: "12.5.3"
+
+home: "https://www.zentao.net"
+icon: "https://img.qucheng.com/app/z/zentao-icon.svg"
+
+maintainers:
+- name: 周悦秋
+  email: zhouyueqiu@escycorp.ltd
+
+keywords:
+- pms
+
+dependencies:
+- name: lib-common
+  version: 1.*.*
+  repository: https://hub.qucheng.com/chartrepo/library
+- name: mysql
+  version: 0.2.*
+  repository: https://hub.qucheng.com/chartrepo/library
+  condition: mysql.enabled
+
+annotations:
+  metadata/alias: 禅道开源版
+  metadata/hidden: false
+  metadata/upgrade_allow_from: 0.0.1
+  metadata/changelog_url: https://www.zentao.net/dynamic/zentaopms12.5.3-80319.html
+  metadata/introduction: 禅道是国内流行的项目管理软件，代码开源，完全免费。
+  metadata/screenshot_urls: |
+    https://img.qucheng.com/app/z/zentaoopen-screenshot01.png
+    https://img.qucheng.com/app/z/zentaoopen-screenshot02.png
+    https://img.qucheng.com/app/z/zentaoopen-screenshot03.png
+  metadata/dockerfile_url: https://github.com/quicklyon/zentao-docker
+  metadata/git_url: https://github.com/easysoft/zentaopms
+  metadata/forum_url: https://www.qucheng.com/forum/zentao.html

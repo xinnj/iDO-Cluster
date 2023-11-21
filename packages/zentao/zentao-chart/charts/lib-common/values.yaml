@@ -1,0 +1,218 @@
+global:
+  repodomain: hub.qucheng.com
+  storageClass: ""
+  debug: false
+  ingress:
+    className: nginx
+  env: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  cleanPolicy: {}
+  cloudProvider: ""  # cloud provider, like tke/ack
+  cloudLoadBalancerId: ""
+
+workflow:
+  kind: Deployment
+
+cleanPolicy: {}
+
+image:
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+apiVersion:
+  deployment: apps/v1
+  statefulset: apps/v1
+  daemonset: apps/v1
+  job: batch/v1
+
+command: []
+
+args: []
+
+service:
+  enabled: false
+  annotations: {}
+  cloudLoadBalancerId: "" # for cloud provider
+
+# used for deployment
+strategy:
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 25%
+  type: RollingUpdate
+
+
+# used for daemonset, statefulset
+updateStrategy:
+  rollingUpdate:
+    maxUnavailable: 100%
+  type: RollingUpdate # options OnDelete
+
+ingress:
+  ingressClassName: ""
+  enabled: false
+  host: ""
+  tls:
+    enabled: false
+    secretName: ""
+  sub:
+    enabled: false
+    style: "" # sub/prefix/suffix
+
+imagePullSecrets: []
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+dbservice:
+  labels: {}
+  annotations: {}
+
+db:
+  labels: {}
+  annotations: {}
+  config: {}
+
+rbac:
+  create: false
+  clusterrolebinding:
+    create: false
+    rolename: ""
+  role:
+    rules: []
+
+
+volumes:
+# x:
+#   type: pvc
+#   enabled: false
+#   accessMode: ReadWriteOnce
+#   mounts:
+#   - mountPath:
+#     subPath: ""
+# y:
+#   type: configmap
+#   mounts:
+#   - mountPath:
+#     subPath:
+# shm:
+#   type: pvc
+#   enabled: false
+#   accessMode: ReadWriteOnce
+#   size: 1Gi
+#   mediumMemory: true
+#   mounts:
+#   - mountPath: /dev/shm
+#     subPath: ""
+# nfs-example:
+  # type: nfs
+  # path: /
+  # server: 192.168.0.1
+  # mounts:
+  # - mountPath: /data/nfs
+
+configmaps: {}
+  # settings:
+  #   mode: file
+  #   files:
+  #   - files/config.json
+  # env:
+  #   mode: kv
+  #   data:
+  #     x: '{{ .Values.auth.username }}'
+  #     y: "2"
+  #   dataTpl: files/yapi.tpl
+
+secret:
+  labels: {}
+  annotations: {}
+  data:
+    # mysql_password:
+    #   value: ""
+    #   length: 10
+    #   allowOverride: false
+
+envFrom:
+  configmaps: {}
+  secrets: {}
+
+custom: {}
+
+probe:
+  liveness:
+    enabled: false
+    type: http
+    methods:
+      http:
+        httpGet:
+          path: /health
+          port: probe
+      tcp:
+        tcpSocket:
+          port: probe
+      custom:
+        exec:
+          command:
+          - cat
+          - /tmp/healthy
+    options:
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+  readiness:
+    enabled: false
+    type: http
+    methods:
+      http:
+        httpGet:
+          path: /health
+          port: probe
+      tcp:
+        tcpSocket:
+          port: probe
+      custom:
+        exec:
+          command:
+          - cat
+          - /tmp/healthy
+    options:
+      periodSeconds: 5
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 1
+  startup:
+    enabled: false
+    type: http
+    methods:
+      http:
+        httpGet:
+          path: /health
+          port: probe
+      tcp:
+        tcpSocket:
+          port: probe
+      custom:
+        exec:
+          command:
+          - cat
+          - /tmp/healthy
+    options:
+      failureThreshold: 10
+      periodSeconds: 3
+      timeoutSeconds: 1
+      initialDelaySeconds: 5

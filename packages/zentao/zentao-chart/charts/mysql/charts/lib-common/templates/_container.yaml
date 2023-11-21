@@ -1,0 +1,101 @@
+{{- define "lib-common.container" -}}
+{{- include "lib-common.util.mergeValues" (list . "lib-common") -}}
+{{- include "lib-common.container.tpl" . -}}
+{{- end -}}
+
+{{- define "lib-common.container.ports" }}
+{{- range .Values.ports }}
+- name: {{ .name }}
+  containerPort: {{ .port }}
+{{- end }}
+{{- end }}
+
+{{- define "lib-common.container.image" -}}
+{{- $nodomain := not (contains "." .Values.image.repository) -}}
+{{- if and .Values.global.repodomain $nodomain -}}
+{{- printf "%s/%s:%s" .Values.global.repodomain .Values.image.repository .Values.image.tag -}}
+{{- else -}}
+{{- printf "%s:%s" .Values.image.repository .Values.image.tag -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "lib-common.container.tpl" -}}
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ template "app.name" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ template "lib-common.container.image" . }}
+        {{- if .Values.command }}
+        command: {{ toYaml .Values.command | nindent 8 }}
+        {{- end }}
+        {{- if .Values.args }}
+        args: {{ toYaml .Values.args | nindent 8 }}
+        {{- end }}
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        {{ block "app.custom.env" . }}{{ end }}
+        {{- if or .Values.env .Values.global.env }}
+        {{ include "lib-common.env.container" . | nindent 8 }}
+        {{- end }}
+        {{ block "app.custom.envFrom" . }}{{ end }}
+        {{- if .Values.ports }}
+        ports:
+        {{ include "lib-common.container.ports" . | indent 8 }}
+        {{- end }}
+        {{- if .Values.resources }}
+        resources: {{ include "lib-common.utils.generateResources" . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.lifecycle }}
+        {{- if .enabled }}
+        lifecycle:
+          postStart: {{ .postStart | indent 12 }}
+          preStop: {{ .preStop | indent 12 }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.probe.liveness }}
+        {{- if .enabled }}
+        livenessProbe:
+{{ toYaml (get .methods .type) | indent 10 }}
+{{ toYaml .options | indent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.probe.readiness }}
+        {{- if .enabled }}
+        readinessProbe:
+{{ toYaml (get .methods .type) | indent 10 }}
+{{ toYaml .options | indent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.probe.startup }}
+        {{- if .enabled }}
+        startupProbe:
+{{ toYaml (get .methods .type) | indent 10 }}
+{{ toYaml .options | indent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.volumes }}
+        volumeMounts:
+        {{- range $k, $v := .Values.volumes }}
+        {{- $vloumeName := $k -}}
+        {{- range $v.mounts }}
+        - name: {{ $vloumeName }}
+          mountPath: {{ .mountPath }}
+          {{- if .subPath }}
+          subPath: {{ .subPath }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+      {{- if .Values.volumes }}
+      volumes: {{ include "lib-common.storage.volumes" . | nindent 6 }}
+      {{- end }}
+{{- end -}}

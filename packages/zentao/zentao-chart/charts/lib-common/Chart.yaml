@@ -1,0 +1,10 @@
+annotations:
+  category: Infrastructure
+apiVersion: v2
+appVersion: 1.1.12
+description: The most basic level library chart. Contains basic named-templates as
+  render functions and tools. All of application charts should add `lib-common` to
+  dependency.
+name: lib-common
+type: library
+version: 1.1.12

@@ -115,6 +115,21 @@ func (config *GiteaConfig) validate() error {
 	return nil
 }
 
+type ZentaoConfig struct {
+	zentaoStorageSizeGi   int
+	zentaoDbStorageSizeGi int
+}
+
+func (config *ZentaoConfig) validate() error {
+	if config.zentaoStorageSizeGi == 0 {
+		return errors.New("Zentao storage size is 0.")
+	}
+	if config.zentaoDbStorageSizeGi == 0 {
+		return errors.New("Zentao DB storage size is 0.")
+	}
+	return nil
+}
+
 var installJenkins = false
 var installNexus = false
 var installSonar = false
@@ -122,6 +137,7 @@ var installFileServer = false
 var installSmb = false
 var installPrometheus = false
 var installGitea = false
+var installZentao = false
 var jenkinsConfig = JenkinsConfig{
 	controllerStorageSizeGi: 20,
 	agentStorageSizeGi:      200,
@@ -151,7 +167,11 @@ var giteaConfig = GiteaConfig{
 	giteaSharedStorageSizeGi: 200,
 	giteaPgStorageSizeGi:     20,
 }
-var packages = []string{"Gitea", "Jenkins", "Nexus", "Sonarqube", "File server", "Samba server", "Prometheus"}
+var zentaoConfig = ZentaoConfig{
+	zentaoStorageSizeGi:   200,
+	zentaoDbStorageSizeGi: 20,
+}
+var packages = []string{"Gitea", "Zentao", "Jenkins", "Nexus", "Sonarqube", "File server", "Samba server", "Prometheus"}
 var listPackages = tview.NewList()
 var formPackage = tview.NewForm()
 
@@ -217,6 +237,20 @@ func initFlexPackages() {
 			}
 		}
 
+		if installGitea {
+			err := giteaConfig.validate()
+			if err != nil {
+				showErrorModal(err.Error())
+			}
+		}
+
+		if installZentao {
+			err := zentaoConfig.validate()
+			if err != nil {
+				showErrorModal(err.Error())
+			}
+		}
+
 		initFlexMirror()
 		pages.SwitchToPage("Mirror")
 	})
@@ -260,6 +294,22 @@ func selectPackage(index int, mainText string) {
 			formPackage.AddInputField("Gitea SSH node port: ", giteaConfig.sshNodePort,
 				0, nil, func(text string) {
 					giteaConfig.sshNodePort = text
+				})
+		}
+	case "Zentao":
+		formPackage.AddCheckbox("Install Zentao: ", installZentao, func(checked bool) {
+			installZentao = checked
+			selectPackage(index, mainText)
+		})
+		if installZentao {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Zentao storage size (Gi): ", strconv.Itoa(zentaoConfig.zentaoStorageSizeGi),
+				0, nil, func(text string) {
+					zentaoConfig.zentaoStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Zentao DB storage size (Gi): ", strconv.Itoa(zentaoConfig.zentaoDbStorageSizeGi),
+				0, nil, func(text string) {
+					zentaoConfig.zentaoDbStorageSizeGi, _ = strconv.Atoi(text)
 				})
 		}
 	case "Jenkins":

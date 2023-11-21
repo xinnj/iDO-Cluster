@@ -1,0 +1,147 @@
+{{- define "lib-common.storage.class" -}}
+{{- $top := first . }}
+{{- $inputStorageClass := index . 1 -}}
+{{- default $top.Values.global.storageClass $inputStorageClass -}}
+{{- end -}}
+
+{{/*
+Usage: include "lib-common.storage.resource.exist" (dict "opts" dict "ctx" $.ctx)
+*/}}
+{{- define "lib-common.storage.resource.exist" -}}
+{{- $exist := "false" -}}
+{{- if eq .opts.type "secret" -}}
+  {{- if and .opts.existingSecret (not .disabled) -}}
+  {{- $i := lookup "v1" "Secret" .ctx.Release.Namespace (tpl .opts.existingSecret .ctx) -}}
+  {{- if $i -}}
+    {{- $exist = "true" -}}
+  {{- end -}}
+  {{- end -}}
+{{- else if eq .opts.type "configmap" -}}
+  {{- if and .opts.existingConfigmap (not .disabled) -}}
+  {{- $i := lookup "v1" "ConfigMap" .ctx.Release.Namespace (tpl .opts.existingConfigmap .ctx) -}}
+  {{- if $i -}}
+    {{- $exist = "true" -}}
+  {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{ $exist }}
+{{- end -}}
+
+{{- define "lib-common.storage.volume.pvc" }}
+{{- $top := first . }}
+{{- $k := index . 1 }}
+{{- $v := index . 2 }}
+{{- if $v.enabled }}
+- name: {{ $k }}
+  persistentVolumeClaim:
+    claimName: {{ $v.existingClaim | default (printf "%s-%s" (include "lib-common.name.fullname" $top) $k) }}
+{{- else }}
+- name: {{ $k }}
+{{- if $v.mediumMemory }}
+  emptyDir:
+    medium: Memory
+    sizeLimit: {{ $v.size | quote }}
+{{- else }}
+  emptyDir: {}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "lib-common.storage.volume.empty" }}
+{{- $top := first . }}
+{{- $k := index . 1 }}
+{{- $v := index . 2 }}
+- name: {{ $k }}
+{{- if $v.mediumMemory }}
+  emptyDir:
+    medium: Memory
+    sizeLimit: {{ $v.size | quote }}
+{{- else }}
+  emptyDir: {}
+{{- end }}
+{{- end }}
+
+{{- define "lib-common.storage.volume.configmap" }}
+{{- $top := first . }}
+{{- $k := index . 1 }}
+{{- $v := index . 2 }}
+- name: {{ $k }}
+  configMap:
+    name: {{ $v.existingConfigmap | default (printf "%s-%s" (include "lib-common.name.fullname" $top) (default $k $v.name)) }}
+{{- end }}
+
+{{- define "lib-common.storage.volume.secret" }}
+{{- $top := first . }}
+{{- $k := index . 1 }}
+{{- $v := index . 2 }}
+{{- if $v.existingSecret }}
+  {{- $exist := include "lib-common.storage.resource.exist" (dict "opts" $v "ctx" $top) }}
+  {{- if eq $exist "true" }}
+- name: {{ $k }}
+  secret:
+    secretName: {{ tpl $v.existingSecret $top }}
+  {{- end }}
+{{- else }}
+- name: {{ $k }}
+  secret:
+    secretName: {{ if $v.name }}{{ printf "%s-%s" (include "lib-common.name.fullname" $top) $v.name }}{{ else }}{{ include "lib-common.name.fullname" $top }}{{ end }}
+{{- end }}
+{{- end }}
+
+{{- define "lib-common.storage.volume.nfs" }}
+{{- $top := first . }}
+{{- $k := index . 1 }}
+{{- $v := index . 2 }}
+- name: {{ $k }}
+  nfs:
+    path: {{ $v.path }}
+    server: {{ $v.server }}
+{{- end }}
+
+{{- define "lib-common.storage.volume.hostpath" }}
+{{- $top := first . }}
+{{- $k := index . 1 }}
+{{- $v := index . 2 }}
+- name: {{ $k }}
+  hostPath:
+    path: {{ include "lib-common.utils.readRef" (dict "value" $v.path "ctx" $top) }}
+    type: {{ default "DirectoryOrCreate" $v.mode }}
+{{- end }}
+
+{{- define "lib-common.storage.volumes" }}
+{{- range $k, $v := .Values.volumes }}
+  {{- if eq $v.type "pvc" }}
+    {{- include "lib-common.storage.volume.pvc" (list $ $k $v) }}
+  {{- else if eq $v.type "empty" }}
+    {{- include "lib-common.storage.volume.empty" (list $ $k $v)}}
+  {{- else if eq $v.type "configmap" }}
+    {{- include "lib-common.storage.volume.configmap" (list $ $k $v) }}
+  {{- else if eq $v.type "nfs" }}
+    {{- include "lib-common.storage.volume.nfs" (list $ $k $v) }}
+  {{- else if eq $v.type "hostPath" }}
+    {{- include "lib-common.storage.volume.hostpath" (list $ $k $v) }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+Usage: include "lib-common.storage.volumes.v2" (dict "values" .Values "ctx" .)
+*/}}
+{{- define "lib-common.storage.volumes.v2" -}}
+{{- range $k, $v := .values.volumes }}
+  {{- if eq $v.type "pvc" }}
+    {{- include "lib-common.storage.volume.pvc" (list $.ctx $k $v) }}
+  {{- else if eq $v.type "empty" }}
+    {{- include "lib-common.storage.volume.empty" (list $ $k $v)}}
+  {{- else if eq $v.type "configmap" }}
+    {{- include "lib-common.storage.volume.configmap" (list $.ctx $k $v) }}
+  {{- else if eq $v.type "secret" }}
+    {{- include "lib-common.storage.volume.secret" (list $.ctx $k $v) }}
+  {{- else if eq $v.type "nfs" }}
+    {{- include "lib-common.storage.volume.nfs" (list $.ctx $k $v) }}
+  {{- else if eq $v.type "hostPath" }}
+    {{- include "lib-common.storage.volume.hostpath" (list $.ctx $k $v) }}
+  {{- end }}
+{{- end }}
+{{- end }}

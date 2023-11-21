@@ -167,6 +167,13 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "SSH_NODE_PORT="+giteaConfig.sshNodePort)
 	}
 
+	if installZentao {
+		tasks = append(tasks, task{name: "Install Zentao",
+			command: "chmod +x packages/zentao/install.sh; packages/zentao/install.sh"})
+		envs = append(envs, "ZENTAO_STORAGE_SIZE="+strconv.Itoa(zentaoConfig.zentaoStorageSizeGi)+"Gi")
+		envs = append(envs, "ZENTAO_DB_STORAGE_SIZE="+strconv.Itoa(zentaoConfig.zentaoDbStorageSizeGi)+"Gi")
+	}
+
 	if installJenkins {
 		tasks = append(tasks, task{name: "Install Jenkins",
 			command: "chmod +x packages/jenkins/install.sh; packages/jenkins/install.sh"})

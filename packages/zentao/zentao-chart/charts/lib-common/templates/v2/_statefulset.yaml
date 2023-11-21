@@ -1,0 +1,61 @@
+{{- define "lib-common.statefulset.v2.tpl" }}
+{{- $name := include "lib-common.name.fullname" .ctx -}}
+apiVersion: {{ .values.apiVersion.statefulset }}
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  namespace: {{ .ctx.Release.Namespace | quote }}
+  labels: {{- include "lib-common.labels.standard" .ctx | nindent 4 }}
+    {{- if .values.workflow.labels }}
+{{ toYaml .values.workflow.labels | indent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .values.workflow.annotations }}
+{{ toYaml .values.workflow.annotations | indent 4 }}
+    {{- end }}
+spec:
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels: {{- include "lib-common.workflow.matchLabels" (dict "name" $name "kind" "StatefulSet" "apiVersion" .values.apiVersion.statefulset "ctx" .ctx) | nindent 6 }}
+  updateStrategy: {{ toYaml .values.updateStrategy | nindent 4 }}
+  serviceName: {{ template "app.fullname" .ctx }}
+  template:
+    metadata:
+      labels: {{- include "lib-common.labels.standard" .ctx | nindent 8 }}
+        {{- if .values.podLabels }}
+{{ toYaml .values.podLabels | indent 8 }}
+        {{- end }}
+        {{- if .values.global.podExtraLabels }}
+{{ toYaml .values.global.podExtraLabels | indent 8 }}
+        {{- end }}
+      annotations:
+        {{- if .values.podAnnotations }}
+{{ toYaml .values.podAnnotations | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .values.podSecurityContext }}
+      securityContext: {{ toYaml .values.podSecurityContext | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 30
+      nodeSelector: {{ mustMergeOverwrite .values.global.nodeSelector .values.nodeSelector | toYaml | nindent 8 }}
+      tolerations: {{ concat .values.global.tolerations .values.tolerations | toYaml | nindent 8 }}
+      affinity: {{ mustMergeOverwrite .values.global.affinity .values.affinity | toYaml | nindent 8 }}
+      {{- if .values.priorityClassName }}
+      priorityClassName: {{ .values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ template "lib-common.serviceAccountName.v2" (dict "values" .values "ctx" .ctx) }}
+      schedulerName: {{ default .values.global.schedulerName .values.schedulerName | default "default-scheduler" }}
+      {{- if .values.volumes }}
+      volumes: {{ include "lib-common.storage.volumes.v2" (dict "values" .values "ctx" .ctx) | nindent 6 }}
+      {{- end }}
+{{- end }}
+
+{{- define "workflow.statefulset.v2" }}
+{{ include "lib-common.statefulset.v2.tpl" (dict "values" (default .Values .Component.Values) "ctx" .) }}
+{{- end }}

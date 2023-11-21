@@ -1,0 +1,21 @@
+{{- define "lib-common.clusterrolebinding" }}
+{{- if and .Values.rbac.create .Values.rbac.clusterrolebinding.create }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "app.fullname" . }}
+  labels: {{- include "lib-common.labels.standard" . | nindent 4 }}
+  {{- if .annotations }}
+  annotations: {{ toYaml .annotations | nindent 4 }}
+  {{- end }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ default (include "app.fullname" .) .Values.rbac.clusterrolebinding.rolename }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "lib-common.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- end }}

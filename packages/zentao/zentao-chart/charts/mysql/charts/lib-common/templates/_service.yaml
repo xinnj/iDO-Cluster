@@ -1,0 +1,46 @@
+{{- define "lib-common.service.tpl" -}}
+
+{{- $serviceType := default "ClusterIP" .Values.service.type -}}
+
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "app.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "lib-common.labels.standard" . | nindent 4 }}
+    {{- if .Values.service.labels }}
+{{ toYaml .Values.service.labels | indent 4 }}
+    {{- end }}
+  {{- if .Values.service.annotations }}
+  annotations: {{ toYaml .Values.service.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    app: {{ template "app.name" . }}
+    release: {{ .Release.Name | quote }}
+  type: {{ $serviceType }}
+  {{- if and (or (eq $serviceType "LoadBalancer") (eq $serviceType "NodePort")) (not (empty .Values.service.externalTrafficPolicy)) }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  ports:
+    {{- range .Values.ports }}
+    {{- if ne .name "probe" }}
+    - name: {{ default .port .name | quote }}
+      port: {{ .port }}
+      protocol: {{ .protocol | default "tcp" | upper }}
+      targetPort: {{ default .port .targetPort }}
+      {{- if (and (or (eq $serviceType "NodePort") (eq $serviceType "LoadBalancer")) (not (empty .nodePort))) }}
+      nodePort: {{ .nodePort }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- define "lib-common.service" -}}
+{{- include "lib-common.util.mergeValues" (list . "lib-common") -}}
+{{- if not (or .Values.global.stoped .Values.global.stopped) }}
+{{- include "lib-common.service.tpl" . -}}
+{{- end }}
+{{- end -}}

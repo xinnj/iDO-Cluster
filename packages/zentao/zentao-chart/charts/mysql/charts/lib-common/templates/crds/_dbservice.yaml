@@ -1,0 +1,57 @@
+{{/*
+Usage:
+{{ include "lib-common.crd.dbservice.tpl" (dict
+  "type" "mysql" "user" "root"
+  "password" (dict "source" "secret" "name" "" "key" "mysql_root_password")
+  "service" (dict "port" "mysql")
+  "labels" (dict)
+  "annotations" (dict)
+  "ctx" .
+)}}
+*/}}
+{{- define "lib-common.crd.dbservice.tpl" }}
+{{- if .ctx.Capabilities.APIVersions.Has "qucheng.easycorp.io/v1beta1/DbService" }}
+---
+apiVersion: qucheng.easycorp.io/v1beta1
+kind: DbService
+metadata:
+  name: {{ template "app.fullname" .ctx }}
+  labels: {{- include "lib-common.labels.standard" .ctx | nindent 4 }}
+  {{- with .labels }}
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ quote $value }}
+    {{- end }}
+  {{- end }}
+  {{- with .annotations }}
+  annotations: 
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ quote $value }}
+    {{- end }}
+  {{- end }}
+spec:
+  account:
+    password:
+      valueFrom:
+      {{- with .password }}
+        {{- if .value }}
+        value: {{ .value }}
+        {{- else if eq .source "secret" }}
+        secretKeyRef:
+          key: {{ .key }}
+          name: {{ include "app.fullname" $.ctx | default .name  }}
+        {{- end }}
+      {{- end }}
+    user:
+      value: {{ include "lib-common.utils.readRef" (dict "value" .user "ctx" .ctx) }}
+  service:
+    {{- with .service }}
+    name: {{ default (include "app.fullname" $.ctx) .name }}
+      {{- if .namespace }}
+    namespace: {{ .namespace }}
+      {{- end }}
+    port: {{ .port }}
+    {{- end }}
+  type: {{ .type }}
+{{ "" }}
+{{- end }}
+{{- end }}

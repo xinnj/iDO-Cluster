@@ -1,0 +1,129 @@
+replicas: 1
+scalable: true
+
+image:
+  repository: app/zentao
+  tag: "18.8"
+  pullPolicy: Always
+
+service:
+  enabled: true
+  type: ClusterIP
+
+ports:
+  - name: web
+    protocol: tcp
+    port: 80
+  - name: probe
+    protocol: tcp
+    port: 80
+
+probe:
+  readiness:
+    enabled: true
+    type: http
+    methods:
+      http:
+        httpGet:
+          path: /check.html
+          port: 80
+  startup:
+    enabled: true
+    type: tcp
+    methods:
+      tcp:
+        tcpSocket:
+          port: 80
+
+resources:
+  cpu: 200m
+  memory: 256Mi
+
+oversold:
+  cpu: 100m
+  memory: 128Mi
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+  # host: "zentao.local"
+  paths:
+  - path: /
+    port: 80
+    type: Prefix
+  tls:
+    enabled: false
+    secretName:
+
+env:
+  ZT_MYSQL_PASSWORD:
+    source: secret
+    key: mysql_password
+    subChartRefs:
+    - when: mysql.enabled
+      name: mysql
+  ZT_MYSQL_DB: "$ref:mysql.auth.database"
+  ZT_MYSQL_PORT: "$ref:mysql.auth.port"
+  ZT_MYSQL_USER: "$ref:mysql.auth.user"
+  IS_CONTAINER: "true"
+  SMTP_ENABLED: '$ref:mail.enabled'
+  SMTP_FROMNAME: "ZenTao"
+  APP_DOMAIN: "$ref:ingress.host"
+
+mysql:
+  enabled: true
+  auth:
+    rootPassword: pass4zenTao
+    user: "root"
+    password: "pass4zenTao"
+    database: "zentao"
+    port: 3306
+  volumes:
+    data:
+      existingClaim: zentao-mysql-data
+
+secret:
+  data:
+    mysql_password:
+      value: "$ref:mysql.auth.password"
+      length: 20
+      allowOverride: true
+
+mail:
+  enabled: false
+  smtp: {}
+
+configmaps:
+  mail:
+    mode: kv
+    data:
+      SMTP_HOST: '$ref:mail.smtp.host'
+      SMTP_PORT: '$ref:mail.smtp.port'
+      SMTP_USER: '$ref:mail.smtp.user'
+      SMTP_PASS: '$ref:mail.smtp.pass'
+
+envFrom:
+  configmaps:
+   - mail
+
+db:
+  config:
+    grant_super_privilege: "true"
+
+global:
+  allowOverSold: true
+  cleanPolicy:
+    workflow: true
+
+volumes:
+  data:
+    existingClaim: zentao-data
+    type: pvc
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    mounts:
+    - mountPath: /data
+      subPath: ""

@@ -1,0 +1,51 @@
+{
+    "title": "基本配置",
+    "type": "object",
+    "properties": {
+        "volumes": {
+            "type": "object",
+            "title": "存储",
+            "properties": {
+                "data": {
+                    "title": "data",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "title": "持久化存储",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "storageClass": {
+                            "title": "存储类",
+                            "type": "string",
+                            "default": "opencs",
+                            "ui:hidden": "{{rootFormData.volumes.data.enabled === false}}",
+                            "enum": [
+                                "opencs",
+                                "cbs",
+                                "local-path"
+                            ],
+                            "enumNames": [
+                                "NFS",
+                                "块存储",
+                                "本机目录"
+                            ]
+                        },
+                        "size": {
+                            "title": "容量",
+                            "type": "string",
+                            "default": "1Gi",
+                            "ui:hidden": "{{rootFormData.volumes.data.enabled === false}}"
+                        }
+                    },
+                    "dependencies": {
+                        "enabled": [
+                            "size"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "required": []
+}

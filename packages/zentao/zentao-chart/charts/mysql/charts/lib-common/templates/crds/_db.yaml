@@ -1,0 +1,125 @@
+{{/*
+Usage: 
+{{ include "lib-common.crd.db.tpl" (dict
+  "dbName" "" "user" ""
+  "password" (dict "source" "secret" "key" "mysql_password")
+  "dbService" (dict "name" "" "namespace" "")
+  "labels" (dict)
+  "annotations" (dict)
+  "config" (dict)
+  "ctx" .
+)}}
+*/}}
+{{- define "lib-common.crd.db.tpl" }}
+{{- if .ctx.Capabilities.APIVersions.Has "qucheng.easycorp.io/v1beta1/Db" }}
+{{- $dbName := (include "lib-common.utils.readRef" (dict "value" .dbName "ctx" .ctx)) -}}
+---
+apiVersion: qucheng.easycorp.io/v1beta1
+kind: Db
+metadata:
+  name: {{ template "app.fullname" .ctx }}-{{ $dbName | replace "_" "-" }}
+  labels: {{- include "lib-common.labels.standard" .ctx | nindent 4 }}
+  {{- with .labels }}
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ quote $value }}
+    {{- end }}
+  {{- end }}
+  {{- with .annotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ quote $value }}
+    {{- end }}
+  {{- end }}
+spec:
+  dbName: {{ $dbName }}
+  targetService:
+    {{- with .dbService }}
+    name: {{  default (include "app.fullname" $.ctx) .name }}
+      {{- if .namespace }}
+    namespace: {{ .namespace }}
+      {{- end }}
+    {{- end }}
+  {{- with .config }}
+  config:
+  {{- range $key, $value := . }}
+    {{ $key }}: {{ include "lib-common.utils.readRef" (dict "value" $value "ctx" $.ctx) | quote }}
+  {{- end }}
+  {{- end }}
+  account:
+    password:
+      valueFrom:
+      {{- with .password }}
+        {{- if .value }}
+        value: {{ .value }}
+        {{- else if eq .source "secret" }}
+        secretKeyRef:
+          key: {{ .key }}
+          name: {{ include "app.fullname" $.ctx | default .name  }}
+        {{- end }}
+      {{- end }}
+    user:
+      value: {{ include "lib-common.utils.readRef" (dict "value" .user "ctx" .ctx) }}
+{{ "" }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+Usage:
+{{ include "lib-common.crd.db.external.mysql" . }}
+*/}}
+{{- define "lib-common.crd.db.external.mysql" -}}
+{{- include "lib-common.util.mergeValues" (list . "lib-common") -}}
+{{- if and (not .Values.mysql.enabled) .Values.mysql.auth.dbservice }}
+{{- $dbservice := .Values.mysql.auth.dbservice -}}
+{{ include "lib-common.crd.db.tpl" (dict
+  "dbName" "$ref:mysql.auth.database" "user" "$ref:mysql.auth.user"
+  "password" (dict "source" "secret" "key" "mysql_password")
+  "dbService" (dict "name" $dbservice.name "namespace" $dbservice.namespace)
+  "labels" .Values.db.labels
+  "annotations" .Values.db.annotations
+  "config" .Values.db.config
+  "ctx" .
+)}}
+{{- end }}
+{{- end -}}
+
+{{/*
+Usage:
+{{ include "lib-common.crd.db.external.postgresql" . }}
+*/}}
+{{- define "lib-common.crd.db.external.postgresql" -}}
+{{- include "lib-common.util.mergeValues" (list . "lib-common") -}}
+{{- if and (not .Values.postgresql.enabled) .Values.postgresql.auth.dbservice }}
+{{- $dbservice := .Values.postgresql.auth.dbservice -}}
+{{ include "lib-common.crd.db.tpl" (dict
+  "dbName" "$ref:postgresql.auth.database" "user" "$ref:postgresql.auth.user"
+  "password" (dict "source" "secret" "key" "mongo_password")
+  "dbService" (dict "name" $dbservice.name "namespace" $dbservice.namespace)
+  "labels" .Values.db.labels
+  "annotations" .Values.db.annotations
+  "config" .Values.db.config
+  "ctx" .
+)}}
+{{- end }}
+{{- end -}}
+
+{{/*
+Usage:
+{{ include "lib-common.crd.db.external.mongodb" . }}
+*/}}
+{{- define "lib-common.crd.db.external.mongodb" -}}
+{{- include "lib-common.util.mergeValues" (list . "lib-common") -}}
+{{- if and (not .Values.mongodb.enabled) .Values.mongodb.auth.dbservice }}
+{{- $dbservice := .Values.mongodb.auth.dbservice -}}
+{{ include "lib-common.crd.db.tpl" (dict
+  "dbName" "$ref:mongodb.auth.database" "user" "$ref:mongodb.auth.user"
+  "password" (dict "source" "secret" "key" "mongo_password")
+  "dbService" (dict "name" $dbservice.name "namespace" $dbservice.namespace)
+  "labels" .Values.db.labels
+  "annotations" .Values.db.annotations
+  "config" .Values.db.config
+  "ctx" .
+)}}
+{{- end }}
+{{- end -}}

@@ -1,0 +1,48 @@
+{{- define "lib-common.component.name" -}}
+{{- $parentDir := (dir .Template.Name | base) }}
+{{- if ne $parentDir "templates" }}
+{{- $parentDir -}}
+{{- else -}}
+{{- "" -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "lib-common.component.loadValues" -}}
+{{- $_ := merge .ctx.Component.Values (deepCopy .libValues) -}}
+{{- $valuesFile := printf "values.%s.yaml" .name -}}
+{{- $content := .ctx.Files.Get $valuesFile -}}
+{{- $data := fromYaml $content }}
+{{- $_ := mergeOverwrite .ctx.Component.Values $data -}}
+{{- $_ := mergeOverwrite .ctx.Component.Values (get .ctx.Values .name | default (dict)) -}}
+{{- $_ := set .ctx.Values .name (deepCopy .ctx.Component.Values) }}
+{{- end -}}
+
+
+{{- define "lib-common.values.merge" -}}
+{{- $libValues := (get .Values "lib-common") | default (dict) -}}
+{{- $_ := merge .Values (deepCopy $libValues) -}}
+{{- $_ := set . "Component" (dict "Name" "" "Values" (dict)) -}}
+{{- $name := include "lib-common.component.name" . -}}
+{{- if $name -}}
+{{- $_ := set .Component "Name" $name -}}
+{{- include "lib-common.component.loadValues" (dict "name" $name "libValues" $libValues "ctx" .) }}
+{{- end -}}
+{{- if .Values._custom -}}
+{{- include "lib-common.values.custom.merge" (dict "listStructs" .Values._custom "ctx" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: include "lib-common.values.custom.merge" (dict "listStructs" .Values._custom "ctx" .)
+*/}}
+{{- define "lib-common.values.custom.merge" -}}
+{{- $data := dict -}}
+{{- range .listStructs -}}
+{{- if hasKey $data .name -}}
+{{- printf "duplicate key '%s' in _custom" .name | fail -}}
+{{- else -}}
+{{- $_ := set $data .name (default "" .default) -}}
+{{- end -}}
+{{- end -}}
+{{- $_ := merge .ctx.Values.custom $data -}}
+{{- end -}}

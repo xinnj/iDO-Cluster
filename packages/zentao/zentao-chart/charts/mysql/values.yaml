@@ -1,0 +1,70 @@
+image:
+  repository: app/mysql
+  tag: 5.7.37-debian-10
+
+auth:
+  rootPassword:
+  user:
+  password:
+  database: 
+
+secret:
+  enabled: false
+  data:
+    mysql_root_password:
+      value: "$ref:auth.rootPassword"
+      length: 20
+      allowOverride: false
+    mysql_password:
+      value: "$ref:auth.password"
+      length: 20
+      allowOverride: false
+
+env:
+  MYSQL_USER: "$ref:auth.user"
+  MYSQL_PASSWORD:
+    source: secret
+    key: mysql_password
+  MYSQL_ROOT_PASSWORD:
+    source: secret
+    key: mysql_root_password
+  MYSQL_DATABASE: "$ref:auth.database"
+
+service:
+  enabled: true
+
+ports:
+  - name: mysql
+    protocol: tcp
+    port: 3306
+  - name: probe
+    protocol: tcp
+    port: 3306
+
+probe:
+  readiness:
+    enabled: false
+    type: tcp
+  startup:
+    enabled: false
+    type: tcp
+
+resources:
+  cpu: 1
+  memory: 1Gi
+
+oversold:
+  cpu: 100m
+  memory: 256Mi
+
+volumes:
+  data:
+    type: pvc
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    annotations:
+      easycorp.io/pvc_backup_exclude: "true"
+    mounts:
+    - mountPath: /bitnami/mysql/data
+      subPath: ""

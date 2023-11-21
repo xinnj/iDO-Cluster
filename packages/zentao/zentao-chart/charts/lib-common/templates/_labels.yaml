@@ -1,0 +1,22 @@
+{{- define "lib-common.labels.standard" -}}
+app: {{ template "app.name" . }}
+chart: {{ template "app.chart" . }}
+release: {{ .Release.Name | quote }}
+{{- if .Component }}
+component: {{ default .Chart.Name .Component.Name }}
+{{- end }}
+provider: quickon
+{{- end -}}
+
+
+{{/*
+Usage: include "lib-common.labels.matchLabels" .
+. is the root context
+*/}}
+{{- define "lib-common.labels.matchLabels" -}}
+app: {{ template "app.name" . }}
+release: {{ .Release.Name | quote }}
+{{- if .Component }}
+component: {{ default .Chart.Name .Component.Name }}
+{{- end }}
+{{- end -}}

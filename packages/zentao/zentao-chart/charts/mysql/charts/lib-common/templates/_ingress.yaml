@@ -1,0 +1,62 @@
+{{- define "lib-common.ingress.host" -}}
+{{- $host := default .Values.ingress.host .Values.global.ingress.host -}}
+{{- tpl $host . -}}
+{{- end -}}
+
+{{/*
+generate ingress resource
+Usage:
+{{ include "lib-common.ingress.tpl" (dict "uniqueSuffix" $name "opts" "opts" "host" "host" "tls" "tls" "class" "class" "ctx" $) }}
+*/}}
+{{- define "lib-common.ingress.tpl" -}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ if .uniqueSuffix }}{{ printf "%s-%s" (include "app.fullname" .ctx) (toString .uniqueSuffix) }}{{ else }}{{ template "app.fullname" .ctx }}{{ end }}
+  namespace: {{ .ctx.Release.Namespace | quote }}
+  labels: {{- include "lib-common.labels.standard" .ctx | nindent 4 }}
+  {{- if .opts.annotations }}
+  annotations: 
+  {{- include "lib-common.annotations" (dict "annotations" .opts.annotations "ctx" .ctx) | indent 4}}
+  {{- end }}
+spec:
+  {{- if eq "true" (include "lib-common.ingress.supportsIngressClassname" .ctx ) }}
+  ingressClassName: {{ default .opts.ingressClassName .ctx.Values.global.ingress.className }}
+  {{- end }}
+  rules:
+  - host: {{ .host }}
+    http:
+      paths:
+      {{- range .opts.paths }}
+      - backend:
+          service:
+            name: {{ template "app.fullname" $.ctx }}
+            port:
+              number: {{ .port }}
+        path: {{ .path }}
+        pathType: {{ default "Prefix" .type }}
+      {{- end }}
+  {{- if and .tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .host }}
+      secretName: {{ .tls.secretName }}
+  {{- end }}
+{{ "" }}
+{{- end }}
+
+
+{{- define "lib-common.ingress" -}}
+{{- include "lib-common.util.mergeValues" (list . "lib-common") -}}
+{{- if not (or .Values.global.stoped .Values.global.stopped) }}
+{{- if .Values.ingress.enabled }}
+{{- include "lib-common.ingress.tpl" (dict 
+  "opts" .Values.ingress
+  "host" (include "lib-common.ingress.host" .)
+  "tls" .Values.ingress.tls
+  "class" .Values.ingress.ingressClassName
+  "ctx" .) }}
+{{- end }}
+{{- end }}
+{{- end -}}

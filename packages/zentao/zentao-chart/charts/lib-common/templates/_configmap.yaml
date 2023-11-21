@@ -1,0 +1,16 @@
+{{- define "lib-common.configmap.tpl" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "app.fullname" . }}-files
+  labels: {{- include "lib-common.labels.standard" . | nindent 4 }}
+  namespace: {{ .Release.Namespace | quote }}
+data:
+{{- $configFiles := .Files.Glob "files/*" }}
+{{ $configFiles.AsConfig | indent 2 }}
+{{- end }}
+
+{{- define "lib-common.configmap" -}}
+{{- include "lib-common.util.mergeValues" (list . "lib-common") -}}
+{{- include "lib-common.configmap.tpl" . -}}
+{{- end -}}

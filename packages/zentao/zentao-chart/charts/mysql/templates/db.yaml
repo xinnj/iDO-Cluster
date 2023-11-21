@@ -1,0 +1,19 @@
+{{ include "lib-common.crd.dbservice.tpl" (dict
+  "type" "mysql" "user" "root"
+  "password" (dict "source" "secret" "name" "" "key" "mysql_root_password")
+  "service" (dict "port" "mysql")
+  "labels" .Values.dbservice.labels
+  "annotations" .Values.dbservice.annotations
+  "ctx" .
+)}}
+
+{{- if .Values.auth.database }}
+{{ include "lib-common.crd.db.tpl" (dict
+  "dbName" "$ref:auth.database" "user" "$ref:auth.user"
+  "password" (dict "source" "secret" "key" "mysql_password")
+  "dbService" (dict "name" "" "namespace" "")
+  "labels" .Values.db.labels
+  "annotations" .Values.db.annotations
+  "ctx" .
+)}}
+{{- end }}

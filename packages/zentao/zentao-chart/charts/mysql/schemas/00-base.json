@@ -1,0 +1,57 @@
+{
+    "title": "基本配置",
+    "type": "object",
+    "properties": {
+        "replicas": {
+            "title": "副本数",
+            "type": "integer",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 3,
+            "ui:hidden": true
+        },
+        "resources": {
+            "title": "资源",
+            "type": "object",
+            "properties": {
+                "cpu": {
+                    "type": "string",
+                    "ui:width": "45%",
+                    "default": "0.5",
+                    "enum": [
+                        "0.25",
+                        "0.5",
+                        "1"
+                    ],
+                    "enumNames": [
+                        "0.25 核",
+                        "0.5 核",
+                        "1 核"
+                    ]
+                },
+                "memory": {
+                    "type": "string",
+                    "ui:width": "45%",
+                    "default": "512Mi",
+                    "enum": [
+                        "256Mi",
+                        "512Mi",
+                        "1Gi",
+                        "2Gi"
+                    ],
+                    "enumNames": [
+                        "256 MB",
+                        "512 MB",
+                        "1 GB",
+                        "2 GB"
+                    ]
+                }
+            },
+            "required": [
+                "cpu",
+                "memory"
+            ]
+        }
+    },
+    "required": []
+}

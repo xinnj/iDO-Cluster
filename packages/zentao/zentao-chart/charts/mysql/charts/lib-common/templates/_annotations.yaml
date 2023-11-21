@@ -1,0 +1,21 @@
+{{/*
+Usage: {{ include "lib-common.annotations" (dict "annotations" (dict) "ctx" $) }}
+*/}}
+{{- define "lib-common.annotations" -}}
+{{- range $k, $v := .annotations -}}
+{{ include "lib-common.annotations.field" (dict "key" $k "value" $v "ctx" $.ctx) }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Usage: {{ include "lib-common.annotations.field" (dict "key" "" "value" "" "ctx" $) }}
+*/}}
+{{- define "lib-common.annotations.field" -}}
+{{- if (kindIs "string" .value) }}
+{{ .key }}: {{ include "lib-common.utils.readRef" (dict "value" .value "ctx" .ctx) | quote }}
+{{- else if (kindIs "float64" .value) }}
+{{ .key }}: {{ toString .value | quote }}
+{{- else if (kindIs "bool" .value) }}
+{{ .key }}: {{ toString .value | quote }}
+{{- end }}
+{{- end }}

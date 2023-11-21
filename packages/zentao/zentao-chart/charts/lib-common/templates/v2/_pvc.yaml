@@ -1,0 +1,43 @@
+{{- define "lib-common.pvc.v2.tpl" }}
+{{- $namespace := .ctx.Release.Namespace }}
+{{- range $k, $v := .values.volumes }}
+{{- if and (eq $v.type "pvc") $v.enabled }}
+{{- $pvcName := printf "%s-%s" (include "lib-common.name.fullname" $.ctx) $k -}}
+{{- $pvcSpec := (lookup "v1" "PersistentVolumeClaim" $.ctx.Release.Namespace $pvcName).spec }}
+{{- if (empty $v.existingClaim) }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ $pvcName }}
+  namespace: {{ .namespace }}
+  labels: {{- include "lib-common.labels.standard" $.ctx | nindent 4 }}
+  {{- if $v.annotations }}
+  annotations: {{ toYaml $v.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- if hasKey $pvcSpec "accessModes" }}
+    {{- toYaml $pvcSpec.accessModes | nindent 4}}
+  {{- else }}
+    {{- if not (empty $v.accessModes) }}
+      {{- range $v.accessModes }}
+    - {{ . | quote }}
+      {{- end }}
+    {{- else }}
+    - {{ $v.accessMode | quote }}
+    {{- end }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $v.size | quote }}
+  storageClassName: {{ if hasKey $pvcSpec "storageClassName" }}{{ $pvcSpec.storageClassName }}{{ else }}{{ include "lib-common.storage.class" (list $.ctx $v.storageClass ) }}{{ end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "lib-common.pvc.v2" -}}
+{{- include "lib-common.values.merge" . -}}
+{{- include "lib-common.pvc.v2.tpl" (dict "values" (default .Values .Component.Values) "ctx" .) -}}
+{{- end -}}
