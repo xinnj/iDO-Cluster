@@ -11,11 +11,13 @@ if [ "${TEAM}" == "default" ]; then
 else
   TEAM_URL="${CLUSTER_URL}/${TEAM}"
 fi
-GITEA_URL="${TEAM_URL}/git/"
+GITEA_URL="${TEAM_URL}/git"
+GITEA_URL_PREFIX="/${GITEA_URL#*://*/}" && [[ "/${GITEA_URL}" == "${GITEA_URL_PREFIX}" ]] && GITEA_URL_PREFIX="/"
 
 DOMAIN=$(echo "${GITEA_URL}" | awk -F/ '{print $3}')
 
 echo "GITEA_URL=${GITEA_URL}"
+echo "GITEA_URL_PREFIX=${GITEA_URL_PREFIX}"
 echo "STORAGE_CLASS=${STORAGE_CLASS}"
 echo "SSH_NODE_PORT=${SSH_NODE_PORT}"
 echo "GITEA_SHARED_STORAGE_SIZE=${GITEA_SHARED_STORAGE_SIZE}"

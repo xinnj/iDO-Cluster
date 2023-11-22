@@ -163,7 +163,7 @@ ingress:
   hosts:
     - host: ""
       paths:
-        - path: /git(/|$)(.*)
+        - path: ${GITEA_URL_PREFIX}(/|$)(.*)
           pathType: Prefix
   tls: []
   #  - secretName: chart-example-tls
