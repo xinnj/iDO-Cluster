@@ -17,6 +17,8 @@ imagePullSecrets:
 nexus:
   docker:
     enabled: true
+    ingress:
+      enabled: false
     registries:
       - host:
         port: 5000
