@@ -16,7 +16,10 @@ if [ "${TEAM}" == "default" ]; then
 else
   TEAM_URL="${CLUSTER_URL}/${TEAM}"
 fi
-echo "TEAM_URL=${TEAM_URL}"
+ZENTAO_URL="${TEAM_URL}/pm"
+ZENTAO_URL_PREFIX="/${ZENTAO_URL#*://*/}" && [[ "/${ZENTAO_URL}" == "${ZENTAO_URL_PREFIX}" ]] && ZENTAO_URL_PREFIX="/"
+
+DOMAIN=$(echo "${ZENTAO_URL}" | awk -F/ '{print $3}')
 
 # Create namespaces
 kubectl create ns ${TEAM} --dry-run=client -o yaml | kubectl apply -f -
@@ -25,6 +28,6 @@ kubectl create ns ${TEAM} --dry-run=client -o yaml | kubectl apply -f -
 envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"
 kubectl apply -f "${base}/pvc.yaml"
 
-# Install file-server
-envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
+# Install
+envsubst '${ZENTAO_URL_PREFIX}, ${DOMAIN}' < "${base}/values-override.yaml" > "${base}/values.yaml"
 helm upgrade zentao --install --create-namespace --namespace ${TEAM} -f "${base}"/values.yaml "${base}"/zentao-chart

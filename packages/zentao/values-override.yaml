@@ -48,9 +48,9 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-  # host: "zentao.local"
+  host: ""
   paths:
-  - path: /
+  - path: ${ZENTAO_URL_PREFIX}
     port: 80
     type: Prefix
   tls:
@@ -70,7 +70,8 @@ env:
   IS_CONTAINER: "true"
   SMTP_ENABLED: '$ref:mail.enabled'
   SMTP_FROMNAME: "ZenTao"
-  APP_DOMAIN: "$ref:ingress.host"
+  APP_DOMAIN: "${DOMAIN}"
+  APP_WEB_ROOT: "${ZENTAO_URL_PREFIX}"
 
 mysql:
   enabled: true
@@ -83,6 +84,9 @@ mysql:
   volumes:
     data:
       existingClaim: zentao-mysql-data
+  podSecurityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: "OnRootMismatch"
 
 secret:
   data:
@@ -116,6 +120,16 @@ global:
   allowOverSold: true
   cleanPolicy:
     workflow: true
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: vm-agent
+                operator: NotIn
+                values:
+                  - 'True'
 
 volumes:
   data:
@@ -127,3 +141,15 @@ volumes:
     mounts:
     - mountPath: /data
       subPath: ""
+
+command:
+  - /bin/sh
+  - -c
+  - |
+    if [ ! -e "/apps/zentao/module/install/view/step3.html.php.original" ]; then
+      cp /apps/zentao/module/install/view/step3.html.php /apps/zentao/module/install/view/step3.html.php.original
+      sed -i -e "s/^\([[:blank:]]*\)\(\$configContent[[:blank:]]*=[[:blank:]]*<<<EOT\)/\1\$webRoot = getenv\('APP_WEB_ROOT'\) \. '\/';\n\1\2/" \
+        -e "s/\(config->webRoot[[:blank:]]*=[[:blank:]]*\)getWebRoot();/\1'\$webRoot';/" \
+        /apps/zentao/module/install/view/step3.html.php
+    fi
+    /usr/bin/entrypoint.sh
