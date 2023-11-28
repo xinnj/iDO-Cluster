@@ -337,7 +337,9 @@ alertmanager:
     # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
     # ingressClassName: nginx
 
-    annotations: {}
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
+      kubernetes.io/tls-acme: "${TLS_ACME}"
 
     labels: {}
 
@@ -365,7 +367,10 @@ alertmanager:
     ## TLS configuration for Alertmanager Ingress
     ## Secret must be manually created in the namespace
     ##
-    tls: []
+    ${TLS_KEY}:
+      - secretName: ${TLS_SECRET}
+        hosts:
+          - ${TLS_HOST}
     # - secretName: alertmanager-general-tls
     #   hosts:
     #   - alertmanager.example.com
@@ -917,6 +922,8 @@ grafana:
     annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /$2
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
+      kubernetes.io/tls-acme: "${TLS_ACME}"
       # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
 
@@ -938,7 +945,10 @@ grafana:
     ## TLS configuration for grafana Ingress
     ## Secret must be manually created in the namespace
     ##
-    tls: []
+    ${TLS_KEY}:
+      - secretName: ${TLS_SECRET}
+        hosts:
+          - ${TLS_HOST}
     # - secretName: grafana-general-tls
     #   hosts:
     #   - grafana.example.com
@@ -2778,7 +2788,9 @@ prometheus:
     # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
     # ingressClassName: nginx
 
-    annotations: {}
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
+      kubernetes.io/tls-acme: "${TLS_ACME}"
     labels: {}
 
     ## Redirect ingress to an additional defined port on the service
@@ -2805,7 +2817,10 @@ prometheus:
     ## TLS configuration for Prometheus Ingress
     ## Secret must be manually created in the namespace
     ##
-    tls: []
+    ${TLS_KEY}:
+      - secretName: ${TLS_SECRET}
+        hosts:
+          - ${TLS_HOST}
       # - secretName: prometheus-general-tls
       #   hosts:
       #     - prometheus.example.com

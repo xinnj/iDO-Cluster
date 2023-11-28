@@ -47,7 +47,9 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
-    # kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/preserve-trailing-slash: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
+    kubernetes.io/tls-acme: "${TLS_ACME}"
   hosts:
     - host: ${CLUSTER_HOSTNAME}
       paths:
@@ -55,10 +57,10 @@ ingress:
           pathType: ImplementationSpecific
         - path: /fancyindex
           pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  ${TLS_KEY}:
+    - secretName: ${TLS_SECRET}
+      hosts:
+        - ${TLS_HOST}
 
 resources:
   limits:

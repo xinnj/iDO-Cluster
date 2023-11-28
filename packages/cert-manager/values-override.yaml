@@ -217,10 +217,10 @@ podLabels: {}
 nodeSelector:
   kubernetes.io/os: linux
 
-ingressShim: {}
-  # defaultIssuerName: ""
-  # defaultIssuerKind: ""
-  # defaultIssuerGroup: ""
+ingressShim:
+  defaultIssuerName: "letsencrypt-prod"
+  defaultIssuerKind: "ClusterIssuer"
+  defaultIssuerGroup: "cert-manager.io"
 
 prometheus:
   enabled: false

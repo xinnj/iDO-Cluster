@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/rivo/tview"
+	"golang.org/x/exp/slices"
 	"strings"
 )
 
@@ -30,8 +31,6 @@ func initFlexStorage() {
 
 	formStorage.AddCheckbox("Use existing StorageClass: ", useExistingSC, func(checked bool) {
 		useExistingSC = true
-		storageClass = ""
-		flexStorage.Clear()
 		initFlexStorage()
 	})
 	if useExistingSC {
@@ -40,7 +39,9 @@ func initFlexStorage() {
 			check(err)
 			existingSCs = strings.Split(strings.TrimSpace(string(result)), "\n")
 		}
-		formStorage.AddDropDown("  Select a StorageClass: ", existingSCs, -1, func(option string, optionIndex int) {
+
+		initialOption := slices.Index(existingSCs, storageClass)
+		formStorage.AddDropDown("  Select a StorageClass: ", existingSCs, initialOption, func(option string, optionIndex int) {
 			storageClass = option
 		})
 	}
@@ -48,14 +49,12 @@ func initFlexStorage() {
 	formStorage.AddCheckbox("Use CEPH: ", !useExistingSC && storageClass == storageClassType.ceph, func(checked bool) {
 		useExistingSC = false
 		storageClass = storageClassType.ceph
-		flexStorage.Clear()
 		initFlexStorage()
 	})
 
 	formStorage.AddCheckbox("Use NFS: ", !useExistingSC && storageClass == storageClassType.nfs, func(checked bool) {
 		useExistingSC = false
 		storageClass = storageClassType.nfs
-		flexStorage.Clear()
 		initFlexStorage()
 	})
 	if !useExistingSC && storageClass == storageClassType.nfs {

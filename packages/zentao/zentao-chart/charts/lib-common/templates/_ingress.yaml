@@ -70,7 +70,7 @@ spec:
   {{- if and .tls.enabled }}
   tls:
     - hosts:
-        - {{ .host }}
+        - {{ .tls.host }}
       secretName: {{ .tls.secretName }}
   {{- end }}
 {{ "" }}

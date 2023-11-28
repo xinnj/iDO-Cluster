@@ -36,7 +36,7 @@ func initFlexInstall() {
 
 	listTask = tview.NewList()
 	for index, task := range tasks {
-		listTask.AddItem(task.name, "pending", rune(49+index), nil)
+		listTask.AddItem(task.name, "pending", rune(97+index), nil)
 	}
 	// Disable mouse
 	listTask.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
@@ -216,13 +216,6 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "DOCKER_NODE_PORT="+nexusConfig.dockerNodePort)
 	}
 
-	if installSonar {
-		tasks = append(tasks, task{name: "Install Sonarqube",
-			command: "chmod +x packages/sonar/install.sh; packages/sonar/install.sh"})
-		envs = append(envs, "SONAR_STORAGE_SIZE="+strconv.Itoa(sonarConfig.storageSizeGi)+"Gi")
-		envs = append(envs, "SONAR_PG_STORAGE_SIZE="+strconv.Itoa(sonarConfig.dbStorageSizeGi)+"Gi")
-	}
-
 	if installFileServer {
 		tasks = append(tasks, task{name: "Install File Server",
 			command: "chmod +x packages/file-server/install.sh; packages/file-server/install.sh"})
@@ -233,6 +226,13 @@ func buildTasks() (tasks []task, envs []string) {
 		tasks = append(tasks, task{name: "Install Samba Server",
 			command: "chmod +x packages/samba-server/install.sh; packages/samba-server/install.sh"})
 		envs = append(envs, "SMB_NODE_PORT="+smbConfig.nodePort)
+	}
+
+	if installSonar {
+		tasks = append(tasks, task{name: "Install Sonarqube",
+			command: "chmod +x packages/sonar/install.sh; packages/sonar/install.sh"})
+		envs = append(envs, "SONAR_STORAGE_SIZE="+strconv.Itoa(sonarConfig.storageSizeGi)+"Gi")
+		envs = append(envs, "SONAR_PG_STORAGE_SIZE="+strconv.Itoa(sonarConfig.dbStorageSizeGi)+"Gi")
 	}
 
 	tasks = append(tasks, task{name: "Final Check",

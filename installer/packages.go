@@ -171,7 +171,7 @@ var zentaoConfig = ZentaoConfig{
 	zentaoStorageSizeGi:   200,
 	zentaoDbStorageSizeGi: 20,
 }
-var packages = []string{"Gitea", "Zentao", "Jenkins", "Nexus", "Sonarqube", "File server", "Samba server", "Prometheus"}
+var packages = []string{"Gitea", "Zentao", "Jenkins", "Nexus", "File server", "Samba server", "Sonarqube", "Prometheus"}
 var listPackages = tview.NewList()
 var formPackage = tview.NewForm()
 
@@ -182,7 +182,7 @@ func initFlexPackages() {
 
 	if listPackages.GetItemCount() == 0 {
 		for index, item := range packages {
-			listPackages.AddItem(item, "", rune(49+index), nil)
+			listPackages.AddItem(item, "", rune(97+index), nil)
 		}
 
 		mainText, _ := listPackages.GetItemText(0)

@@ -160,12 +160,17 @@ ingress:
     # kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
+    kubernetes.io/tls-acme: "${TLS_ACME}"
   hosts:
-    - host: ""
+    - host: "${CLUSTER_HOSTNAME}"
       paths:
         - path: ${GITEA_URL_PREFIX}(/|$)(.*)
           pathType: Prefix
-  tls: []
+  ${TLS_KEY}:
+    - secretName: ${TLS_SECRET}
+      hosts:
+        - ${TLS_HOST}
   #  - secretName: chart-example-tls
   #    hosts:
   #      - git.example.com
