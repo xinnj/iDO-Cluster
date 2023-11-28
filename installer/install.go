@@ -5,7 +5,6 @@ import (
 	"github.com/rivo/tview"
 	"io"
 	"net"
-	"net/url"
 	"os"
 	"os/exec"
 	"strconv"
@@ -110,16 +109,39 @@ func initFlexInstall() {
 }
 
 func buildTasks() (tasks []task, envs []string) {
-	envs = append(envs, "CLUSTER_URL="+basicInfo.clusterUrl)
 	envs = append(envs, "TEAM="+basicInfo.team)
 	envs = append(envs, "TIMEZONE="+basicInfo.timezone)
 
-	u, _ := url.Parse(basicInfo.clusterUrl)
-	if net.ParseIP(u.Host) == nil {
-		envs = append(envs, "CLUSTER_HOSTNAME="+u.Host)
+	if net.ParseIP(basicInfo.host) == nil {
+		envs = append(envs, "CLUSTER_HOSTNAME="+basicInfo.host)
 	} else {
 		envs = append(envs, "CLUSTER_HOSTNAME=")
 	}
+
+	if basicInfo.httpsEnabled {
+		envs = append(envs, "CLUSTER_URL=https://"+basicInfo.host)
+		envs = append(envs, "TLS_KEY=tls")
+		envs = append(envs, "TLS_HOST="+basicInfo.host)
+
+		switch basicInfo.tlsCert.certMethod {
+		case certMethod.selfSigned:
+			envs = append(envs, "TLS_ACME=false")
+			envs = append(envs, "TLS_SECRET=")
+		case certMethod.existingTlsSecret:
+			envs = append(envs, "TLS_ACME=false")
+			envs = append(envs, "TLS_SECRET="+basicInfo.tlsCert.existingCertSecret)
+		case certMethod.certManager:
+			envs = append(envs, "TLS_ACME=true")
+			envs = append(envs, "TLS_SECRET="+basicInfo.host)
+		}
+	} else {
+		envs = append(envs, "CLUSTER_URL=http://"+basicInfo.host)
+		envs = append(envs, "TLS_KEY=tls-disabled")
+		envs = append(envs, "TLS_HOST=")
+		envs = append(envs, "TLS_ACME=false")
+		envs = append(envs, "TLS_SECRET=")
+	}
+	envs = append(envs, "FORCE_SSL_REDIRECT="+strconv.FormatBool(basicInfo.tlsCert.forceSslRedirect))
 
 	var finalMirrors map[string]string
 	if enableMirror {
@@ -134,6 +156,11 @@ func buildTasks() (tasks []task, envs []string) {
 	}
 	for k, v := range finalMirrors {
 		envs = append(envs, k+"="+v)
+	}
+
+	if basicInfo.httpsEnabled && basicInfo.tlsCert.certMethod == certMethod.certManager {
+		tasks = append(tasks, task{name: "Install Cert-manager",
+			command: "chmod +x packages/cert-manager/install.sh; packages/cert-manager/install.sh"})
 	}
 
 	envs = append(envs, "ENABLE_PROMETHEUS="+strconv.FormatBool(installPrometheus))

@@ -40,7 +40,7 @@ func initFlexStorage() {
 			check(err)
 			existingSCs = strings.Split(strings.TrimSpace(string(result)), "\n")
 		}
-		formStorage.AddDropDown("Select a StorageClass: ", existingSCs, -1, func(option string, optionIndex int) {
+		formStorage.AddDropDown("  Select a StorageClass: ", existingSCs, -1, func(option string, optionIndex int) {
 			storageClass = option
 		})
 	}
@@ -59,10 +59,10 @@ func initFlexStorage() {
 		initFlexStorage()
 	})
 	if !useExistingSC && storageClass == storageClassType.nfs {
-		formStorage.AddInputField("NFS server: ", nfsConfig.server, 0, nil, func(text string) {
+		formStorage.AddInputField("  NFS server: ", nfsConfig.server, 0, nil, func(text string) {
 			nfsConfig.server = strings.Trim(text, " ")
 		})
-		formStorage.AddInputField("NFS path: ", nfsConfig.path, 0, nil, func(text string) {
+		formStorage.AddInputField("  NFS path: ", nfsConfig.path, 0, nil, func(text string) {
 			nfsConfig.path = strings.Trim(text, " ")
 		})
 	}

@@ -3,18 +3,44 @@ package main
 import (
 	"github.com/rivo/tview"
 	"github.com/thlib/go-timezone-local/tzlocal"
-	"net/url"
+	"golang.org/x/exp/slices"
+	"net"
+	"net/mail"
 	"regexp"
 	"strings"
 )
 
 type BasicInfo struct {
-	clusterUrl string
-	team       string
-	timezone   string
+	host         string
+	httpsEnabled bool
+	team         string
+	timezone     string
+	tlsCert      TlsCert
+}
+type TlsCert struct {
+	certMethod         string
+	forceSslRedirect   bool
+	existingCertSecret string
+	acmeEmail          string
+}
+type CertMethod struct {
+	selfSigned        string
+	existingTlsSecret string
+	certManager       string
 }
 
-var basicInfo = BasicInfo{clusterUrl: "", team: "default", timezone: ""}
+var certMethod = CertMethod{
+	selfSigned:        "Self Signed",
+	existingTlsSecret: "Existing TLS Secret",
+	certManager:       "Cert Manager",
+}
+
+var basicInfo = BasicInfo{host: "", httpsEnabled: false, team: "default", timezone: "", tlsCert: TlsCert{
+	certMethod:         "",
+	forceSslRedirect:   true,
+	existingCertSecret: "",
+	acmeEmail:          "",
+}}
 
 func initFlexBasicInfo() {
 	flexBasicInfo.Clear()
@@ -25,11 +51,6 @@ func initFlexBasicInfo() {
 		basicInfo.team = strings.Trim(text, " ")
 	})
 
-	formBasicInfo.AddInputField("Cluster public access URL: ", basicInfo.clusterUrl, 0, nil,
-		func(text string) {
-			basicInfo.clusterUrl = strings.Trim(text, " ")
-		})
-
 	if basicInfo.timezone == "" {
 		var err error
 		basicInfo.timezone, err = tzlocal.RuntimeTZ()
@@ -39,6 +60,56 @@ func initFlexBasicInfo() {
 	formBasicInfo.AddInputField("Timezone: ", basicInfo.timezone, 0, nil, func(text string) {
 		basicInfo.timezone = text
 	})
+
+	formBasicInfo.AddInputField("Cluster DNS or IP: ", basicInfo.host, 0, nil,
+		func(text string) {
+			basicInfo.host = strings.Trim(text, " ")
+		})
+
+	formBasicInfo.AddCheckbox("Enable https: ", basicInfo.httpsEnabled, func(checked bool) {
+		basicInfo.httpsEnabled = checked
+		initFlexBasicInfo()
+	})
+
+	if basicInfo.httpsEnabled {
+		formBasicInfo.AddCheckbox("  Force SSL redirect: ", basicInfo.tlsCert.forceSslRedirect, func(checked bool) {
+			basicInfo.tlsCert.forceSslRedirect = checked
+		})
+
+		arrCertMethods := []string{certMethod.selfSigned, certMethod.existingTlsSecret, certMethod.certManager}
+		initialOption := slices.Index(arrCertMethods, basicInfo.tlsCert.certMethod)
+		formBasicInfo.AddDropDown("  Select a method to generate SSL certificate: ", arrCertMethods, initialOption,
+			func(option string, optionIndex int) {
+				if basicInfo.tlsCert.certMethod != option {
+					basicInfo.tlsCert.certMethod = option
+					initFlexBasicInfo()
+				}
+			})
+
+		if basicInfo.tlsCert.certMethod == certMethod.existingTlsSecret {
+			reTeam := regexp.MustCompile("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
+			matches := reTeam.FindStringSubmatch(basicInfo.team)
+			if matches == nil {
+				showErrorModal("Format of team is wrong:\n" + basicInfo.team +
+					"\nName must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character.")
+				return
+			}
+
+			result, err := execCommand("kubectl get secret --no-headers --field-selector type=kubernetes.io/tls -o custom-columns=\":metadata.name\" -n "+basicInfo.team, 0)
+			check(err)
+			tlsSecrets := strings.Split(strings.TrimSpace(string(result)), "\n")
+			formBasicInfo.AddDropDown("  Select a TLS secret: ", tlsSecrets, -1, func(option string, optionIndex int) {
+				basicInfo.tlsCert.existingCertSecret = option
+			})
+		}
+
+		if basicInfo.tlsCert.certMethod == certMethod.certManager {
+			formBasicInfo.AddInputField("    Email: ", basicInfo.tlsCert.acmeEmail, 0, nil,
+				func(text string) {
+					basicInfo.tlsCert.acmeEmail = strings.Trim(text, " ")
+				})
+		}
+	}
 
 	formDown := tview.NewForm()
 
@@ -51,16 +122,42 @@ func initFlexBasicInfo() {
 			return
 		}
 
-		if basicInfo.clusterUrl == "" {
-			showErrorModal("Custer public access URL is empty.")
+		if basicInfo.host == "" {
+			showErrorModal("Custer domain name or IP is empty.")
 			return
 		}
 
-		basicInfo.clusterUrl = strings.TrimSuffix(basicInfo.clusterUrl, "/")
-		u, err := url.Parse(basicInfo.clusterUrl)
-		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-			showErrorModal("Format of cluster public access URL is wrong: \n" + basicInfo.clusterUrl)
+		if basicInfo.timezone == "" {
+			showErrorModal("Timezone is empty.")
 			return
+		}
+
+		if basicInfo.httpsEnabled {
+			if basicInfo.tlsCert.certMethod == "" {
+				showErrorModal("Please select a method to generate SSL certificate.")
+				return
+			}
+			if basicInfo.tlsCert.certMethod == certMethod.existingTlsSecret {
+				if basicInfo.tlsCert.existingCertSecret == "" {
+					showErrorModal("Existing TLS secret is empty.")
+					return
+				}
+			}
+
+			if basicInfo.tlsCert.certMethod == certMethod.certManager {
+				if net.ParseIP(basicInfo.host) != nil {
+					showErrorModal(basicInfo.host + " must be a DNS, not an IP address, when using Cert Manager.")
+					return
+				}
+
+				email, err := mail.ParseAddress(basicInfo.tlsCert.acmeEmail)
+				if err != nil {
+					showErrorModal("Email is empty or format is wrong.")
+					return
+				} else {
+					basicInfo.tlsCert.acmeEmail = email.Address
+				}
+			}
 		}
 
 		initFlexStorage()
