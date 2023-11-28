@@ -50,7 +50,7 @@ global:
     # renewal of a leadership.
     # retryPeriod: 15s
 
-installCRDs: false
+installCRDs: true
 
 replicaCount: 1
 
@@ -77,7 +77,7 @@ featureGates: ""
 maxConcurrentChallenges: 60
 
 image:
-  repository: quay.io/jetstack/cert-manager-controller
+  repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-controller
   # You can manage a registry with
   # registry: quay.io
   # repository: jetstack/cert-manager-controller
@@ -223,7 +223,7 @@ ingressShim: {}
   # defaultIssuerGroup: ""
 
 prometheus:
-  enabled: true
+  enabled: false
   servicemonitor:
     enabled: false
     prometheusInstance: default
@@ -252,7 +252,16 @@ prometheus:
 #            operator: In
 #            values:
 #            - master
-affinity: {}
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: vm-agent
+              operator: NotIn
+              values:
+                - 'True'
 
 # A list of Kubernetes Tolerations, if required; see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#toleration-v1-core
 # for example:
@@ -398,7 +407,16 @@ webhook:
   nodeSelector:
     kubernetes.io/os: linux
 
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: vm-agent
+                operator: NotIn
+                values:
+                  - 'True'
 
   tolerations: []
 
@@ -411,7 +429,7 @@ webhook:
   serviceLabels: {}
 
   image:
-    repository: quay.io/jetstack/cert-manager-webhook
+    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-webhook
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-webhook
@@ -560,7 +578,16 @@ cainjector:
   nodeSelector:
     kubernetes.io/os: linux
 
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: vm-agent
+                operator: NotIn
+                values:
+                  - 'True'
 
   tolerations: []
 
@@ -570,7 +597,7 @@ cainjector:
   podLabels: {}
 
   image:
-    repository: quay.io/jetstack/cert-manager-cainjector
+    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-cainjector
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-cainjector
@@ -610,7 +637,7 @@ cainjector:
 
 acmesolver:
   image:
-    repository: quay.io/jetstack/cert-manager-acmesolver
+    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-acmesolver
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-acmesolver
@@ -676,7 +703,16 @@ startupapicheck:
   nodeSelector:
     kubernetes.io/os: linux
 
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: vm-agent
+                operator: NotIn
+                values:
+                  - 'True'
 
   tolerations: []
 
@@ -684,7 +720,7 @@ startupapicheck:
   podLabels: {}
 
   image:
-    repository: quay.io/jetstack/cert-manager-ctl
+    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-ctl
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-ctl
