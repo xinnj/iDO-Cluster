@@ -16,7 +16,7 @@ if [ "${TEAM}" == "default" ]; then
 else
   TEAM_URL="${CLUSTER_URL}/${TEAM}"
 fi
-ZENTAO_URL="${TEAM_URL}/pm"
+ZENTAO_URL="${TEAM_URL}/zentao"
 ZENTAO_URL_PREFIX="/${ZENTAO_URL#*://*/}" && [[ "/${ZENTAO_URL}" == "${ZENTAO_URL_PREFIX}" ]] && ZENTAO_URL_PREFIX="/"
 
 DOMAIN=$(echo "${ZENTAO_URL}" | awk -F/ '{print $3}')
