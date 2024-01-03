@@ -74,7 +74,7 @@ func initFlexStorage() {
 			return
 		}
 
-		if storageClass == storageClassType.nfs {
+		if storageClass == storageClassType.nfs && !useExistingSC {
 			if nfsConfig.server == "" {
 				showErrorModal("NFS server is empty.")
 				return
