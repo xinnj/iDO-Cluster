@@ -25,3 +25,17 @@ spec:
   resources:
     requests:
       storage: ${AGENT_STORAGE_SIZE}
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-lib-data
+  namespace: ${TEAM}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ${STORAGE_CLASS}
+  resources:
+    requests:
+      storage: 5Gi

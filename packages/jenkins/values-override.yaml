@@ -691,15 +691,28 @@ controller:
   customInitContainers:
   - name: custom-init
     image: "${DOCKER_CONTAINER_MIRROR}/xinnj/jenkins-lib:${JENKINS_LIB_VERSION}"
-    imagePullPolicy: IfNotPresent
+    # imagePullPolicy: IfNotPresent
     command:
       - /bin/sh
       - -c
       - |
         set -euaxo pipefail
+        mkdir -p /home/jenkins/agent/jenkins_backup
+        cp -r /additional-settings/* /var/jenkins_home/
+        
         rm -rf /home/jenkins/lib/*
         cp -r /jenkins-lib/. /home/jenkins/lib/
-        mkdir -p /home/jenkins/agent/jenkins_backup
+        if [ -e /var/jenkins_home/customization/config/system.yaml ]; then
+          cp -f /var/jenkins_home/customization/config/system.yaml /var/jenkins_home/customization/config/system.yaml.bak
+          yq '. *= load("/var/jenkins_home/customization/config/system.yaml.bak")' /jenkins-lib/resources/config/system.yaml > /var/jenkins_home/customization/config/system.yaml
+          cp -f /var/jenkins_home/customization/config/system.yaml /home/jenkins/lib/resources/config/
+        fi
+        if [ -e /var/jenkins_home/customization/config/team.yaml ]; then
+          cp -f /var/jenkins_home/customization/config/team.yaml /var/jenkins_home/customization/config/team.yaml.bak
+          yq '. *= load("/var/jenkins_home/customization/config/team.yaml.bak")' /jenkins-lib/resources/config/team.yaml > /var/jenkins_home/customization/config/team.yaml
+          cp -f /var/jenkins_home/customization/config/team.yaml /home/jenkins/lib/resources/config/
+        fi
+
     volumeMounts:
     - mountPath: /home/jenkins/agent
       name: agent-workspace
@@ -1209,7 +1222,8 @@ persistence:
     persistentVolumeClaim:
       claimName: jenkins-agent-data
   - name: jenkins-lib
-    emptyDir: {}
+    persistentVolumeClaim:
+      claimName: jenkins-lib-data
   #  - name: nothing
   #    emptyDir: {}
   mounts:
