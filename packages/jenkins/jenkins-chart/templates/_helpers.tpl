@@ -88,9 +88,9 @@ Returns the Jenkins URL
 {{- else }}
   {{- if .Values.controller.ingress.hostName }}
     {{- if .Values.controller.ingress.tls }}
-      {{- default "https" .Values.controller.jenkinsUrlProtocol }}://{{ .Values.controller.ingress.hostName }}{{ default "" .Values.controller.jenkinsUriPrefix }}
+      {{- default "https" .Values.controller.jenkinsUrlProtocol }}://{{ tpl .Values.controller.ingress.hostName $ }}{{ default "" .Values.controller.jenkinsUriPrefix }}
     {{- else }}
-      {{- default "http" .Values.controller.jenkinsUrlProtocol }}://{{ .Values.controller.ingress.hostName }}{{ default "" .Values.controller.jenkinsUriPrefix }}
+      {{- default "http" .Values.controller.jenkinsUrlProtocol }}://{{ tpl .Values.controller.ingress.hostName $ }}{{ default "" .Values.controller.jenkinsUriPrefix }}
     {{- end }}
   {{- else }}
       {{- default "http" .Values.controller.jenkinsUrlProtocol }}://{{ template "jenkins.fullname" . }}:{{.Values.controller.servicePort}}{{ default "" .Values.controller.jenkinsUriPrefix }}
@@ -140,6 +140,9 @@ jenkins:
   clouds:
   - kubernetes:
       containerCapStr: "{{ .Values.agent.containerCap }}"
+      {{- if .Values.agent.jnlpregistry }}
+      jnlpregistry: "{{ .Values.agent.jnlpregistry }}"
+      {{- end }}
       defaultsProviderTemplate: "{{ .Values.agent.defaultsProviderTemplate }}"
       connectTimeout: "{{ .Values.agent.kubernetesConnectTimeout }}"
       readTimeout: "{{ .Values.agent.kubernetesReadTimeout }}"
@@ -162,9 +165,12 @@ jenkins:
       {{- end }}
       {{- end }}
       maxRequestsPerHostStr: {{ .Values.agent.maxRequestsPerHostStr | quote }}
+      retentionTimeout: {{ .Values.agent.retentionTimeout | quote }}
+      waitForPodSec: {{ .Values.agent.waitForPodSec | quote }}
       name: "{{ .Values.controller.cloudName }}"
       namespace: "{{ template "jenkins.agent.namespace" . }}"
       serverUrl: "{{ .Values.kubernetesURL }}"
+      credentialsId: "{{ .Values.credentialsId }}"
       {{- if .Values.agent.enabled }}
       podLabels:
       - key: "jenkins/{{ .Release.Name }}-{{ .Values.agent.componentName }}"
@@ -201,6 +207,94 @@ jenkins:
         {{- end }}
       {{- end }}
       {{- end }}
+    {{- if .Values.additionalClouds }}
+    {{- /* save root */}}
+    {{- $oldRoot := deepCopy $ }}
+      {{- range $name, $additionalCloud := .Values.additionalClouds }}
+      {{- $newRoot := deepCopy $ }}
+      {{- /* clear additionalAgents from the copy if override set to `true` */}}
+      {{- if .additionalAgentsOverride }}
+      {{- $_ := set $newRoot.Values "additionalAgents" list}}
+      {{- end}}
+      {{- $newValues := merge $additionalCloud $newRoot.Values }}
+      {{- $_ := set $newRoot "Values" $newValues }}
+      {{- /* clear additionalClouds from the copy */}}
+      {{- $_ := set $newRoot.Values "additionalClouds" list }}
+      {{- with $newRoot}}
+  - kubernetes:
+      containerCapStr: "{{ .Values.agent.containerCap }}"
+      {{- if .Values.agent.jnlpregistry }}
+      jnlpregistry: "{{ .Values.agent.jnlpregistry }}"
+      {{- end }}
+      defaultsProviderTemplate: "{{ .Values.agent.defaultsProviderTemplate }}"
+      connectTimeout: "{{ .Values.agent.kubernetesConnectTimeout }}"
+      readTimeout: "{{ .Values.agent.kubernetesReadTimeout }}"
+      {{- if .Values.agent.directConnection }}
+      directConnection: true
+      {{- else }}
+      {{- if .Values.agent.jenkinsUrl }}
+      jenkinsUrl: "{{ tpl .Values.agent.jenkinsUrl . }}"
+      {{- else }}
+      jenkinsUrl: "http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}.svc.{{.Values.clusterZone}}:{{.Values.controller.servicePort}}{{ default "" .Values.controller.jenkinsUriPrefix }}"
+      {{- end }}
+      {{- if not .Values.agent.websocket }}
+      {{- if .Values.agent.jenkinsTunnel }}
+      jenkinsTunnel: "{{ tpl .Values.agent.jenkinsTunnel . }}"
+      {{- else }}
+      jenkinsTunnel: "{{ template "jenkins.fullname" . }}-agent.{{ template "jenkins.namespace" . }}.svc.{{.Values.clusterZone}}:{{ .Values.controller.agentListenerPort }}"
+      {{- end }}
+      {{- else }}
+      webSocket: true
+      {{- end }}
+      {{- end }}
+      maxRequestsPerHostStr: {{ .Values.agent.maxRequestsPerHostStr | quote }}
+      retentionTimeout: {{ .Values.agent.retentionTimeout | quote }}
+      waitForPodSec: {{ .Values.agent.waitForPodSec | quote }}
+      name: {{ $name | quote }}
+      namespace: "{{ template "jenkins.agent.namespace" . }}"
+      serverUrl: "{{ .Values.kubernetesURL }}"
+      credentialsId: "{{ .Values.credentialsId }}"
+      {{- if .Values.agent.enabled }}
+      podLabels:
+      - key: "jenkins/{{ .Release.Name }}-{{ .Values.agent.componentName }}"
+        value: "true"
+      {{- range $key, $val := .Values.agent.podLabels }}
+      - key: {{ $key | quote }}
+        value: {{ $val | quote }}
+      {{- end }}
+      templates:
+     {{- if not .Values.agent.disableDefaultAgent }}
+       {{- include "jenkins.casc.podTemplate" . | nindent 8 }}
+     {{- end }}
+     {{- if .Values.additionalAgents }}
+       {{- /* save .Values.agent */}}
+       {{- $agent := .Values.agent }}
+       {{- range $name, $additionalAgent := .Values.additionalAgents }}
+         {{- $additionalContainersEmpty := and (hasKey $additionalAgent "additionalContainers") (empty $additionalAgent.additionalContainers)  }}
+         {{- /* merge original .Values.agent into additional agent to ensure it at least has the default values */}}
+         {{- $additionalAgent := merge $additionalAgent $agent }}
+         {{- /* clear list of additional containers in case it is configured empty for this agent (merge might have overwritten that) */}}
+         {{- if $additionalContainersEmpty }}
+         {{- $_ := set $additionalAgent "additionalContainers" list }}
+         {{- end }}
+         {{- /* set .Values.agent to $additionalAgent */}}
+         {{- $_ := set $.Values "agent" $additionalAgent }}
+         {{- include "jenkins.casc.podTemplate" $ | nindent 8 }}
+       {{- end }}
+       {{- /* restore .Values.agent */}}
+       {{- $_ := set .Values "agent" $agent }}
+     {{- end }}
+       {{- if .Values.agent.podTemplates }}
+         {{- range $key, $val := .Values.agent.podTemplates }}
+           {{- tpl $val $ | nindent 8 }}
+         {{- end }}
+       {{- end }}
+       {{- end }}
+     {{- end }}
+     {{- end }}
+  {{- /* restore root */}}
+  {{- $_ := set $ "Values" $oldRoot.Values }}
+  {{- end }}
   {{- if .Values.controller.csrf.defaultCrumbIssuer.enabled }}
   crumbIssuer:
     standard:
@@ -267,11 +361,26 @@ Returns kubernetes pod template configuration as code
           {{- end }}
         {{- end }}
     image: "{{ .Values.agent.image }}:{{ .Values.agent.tag }}"
+    {{- if .Values.agent.livenessProbe }}
+    livenessProbe:
+      execArgs: {{.Values.agent.livenessProbe.execArgs | quote}}
+      failureThreshold: {{.Values.agent.livenessProbe.failureThreshold}}
+      initialDelaySeconds: {{.Values.agent.livenessProbe.initialDelaySeconds}}
+      periodSeconds: {{.Values.agent.livenessProbe.periodSeconds}}
+      successThreshold: {{.Values.agent.livenessProbe.successThreshold}}
+      timeoutSeconds: {{.Values.agent.livenessProbe.timeoutSeconds}}
+    {{- end }}
     privileged: "{{- if .Values.agent.privileged }}true{{- else }}false{{- end }}"
     resourceLimitCpu: {{.Values.agent.resources.limits.cpu}}
     resourceLimitMemory: {{.Values.agent.resources.limits.memory}}
+    {{- if .Values.agent.resources.limits.ephemeralStorage }}
+    resourceLimitEphemeralStorage: {{.Values.agent.resources.limits.ephemeralStorage}}
+    {{- end }}
     resourceRequestCpu: {{.Values.agent.resources.requests.cpu}}
     resourceRequestMemory: {{.Values.agent.resources.requests.memory}}
+    {{- if .Values.agent.resources.requests.ephemeralStorage }}
+    resourceRequestEphemeralStorage: {{.Values.agent.resources.requests.ephemeralStorage}}
+    {{- end }}
     runAsUser: {{ .Values.agent.runAsUser }}
     runAsGroup: {{ .Values.agent.runAsGroup }}
     ttyEnabled: {{ .Values.agent.TTYEnabled }}
@@ -290,6 +399,15 @@ Returns kubernetes pod template configuration as code
           value: "http://{{ template "jenkins.fullname" $ }}.{{ template "jenkins.namespace" $ }}.svc.{{ $.Values.clusterZone }}:{{ $.Values.controller.servicePort }}{{ default "/" $.Values.controller.jenkinsUriPrefix }}"
           {{- end }}
     image: "{{ $additionalContainers.image }}:{{ $additionalContainers.tag }}"
+    {{- if $additionalContainers.livenessProbe }}
+    livenessProbe:
+      execArgs: {{$additionalContainers.livenessProbe.execArgs | quote}}
+      failureThreshold: {{$additionalContainers.livenessProbe.failureThreshold}}
+      initialDelaySeconds: {{$additionalContainers.livenessProbe.initialDelaySeconds}}
+      periodSeconds: {{$additionalContainers.livenessProbe.periodSeconds}}
+      successThreshold: {{$additionalContainers.livenessProbe.successThreshold}}
+      timeoutSeconds: {{$additionalContainers.livenessProbe.timeoutSeconds}}
+    {{- end }}
     privileged: "{{- if $additionalContainers.privileged }}true{{- else }}false{{- end }}"
     resourceLimitCpu: {{ if $additionalContainers.resources }}{{ $additionalContainers.resources.limits.cpu }}{{ else }}{{ $.Values.agent.resources.limits.cpu }}{{ end }}
     resourceLimitMemory: {{ if $additionalContainers.resources }}{{ $additionalContainers.resources.limits.memory }}{{ else }}{{ $.Values.agent.resources.limits.memory }}{{ end }}
@@ -344,6 +462,7 @@ Returns kubernetes pod template configuration as code
   {{- range $index, $volume := .Values.agent.volumes }}
     -{{- if (eq $volume.type "ConfigMap") }} configMapVolume:
      {{- else if (eq $volume.type "EmptyDir") }} emptyDirVolume:
+     {{- else if (eq $volume.type "EphemeralVolume") }} genericEphemeralVolume:
      {{- else if (eq $volume.type "HostPath") }} hostPathVolume:
      {{- else if (eq $volume.type "Nfs") }} nfsVolume:
      {{- else if (eq $volume.type "PVC") }} persistentVolumeClaim:
@@ -363,6 +482,8 @@ Returns kubernetes pod template configuration as code
     dynamicPVC:
     {{- else if (eq .Values.agent.workspaceVolume.type "EmptyDir") }}
     emptyDirWorkspaceVolume:
+    {{- else if (eq .Values.agent.workspaceVolume.type "EphemeralVolume") }}
+    genericEphemeralVolume:
     {{- else if (eq .Values.agent.workspaceVolume.type "HostPath") }}
     hostPathWorkspaceVolume:
     {{- else if (eq .Values.agent.workspaceVolume.type "Nfs") }}
@@ -458,4 +579,68 @@ Create the HTTP port for interacting with the controller
 {{- else -}}
     {{- .Values.controller.targetPort -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "jenkins.configReloadContainer" -}}
+{{- $root := index . 0 -}}
+{{- $containerName := index . 1 -}}
+{{- $containerType := index . 2 -}}
+- name: {{ $containerName }}
+  image: "{{ $root.Values.controller.sidecars.configAutoReload.image }}"
+  imagePullPolicy: {{ $root.Values.controller.sidecars.configAutoReload.imagePullPolicy }}
+  {{- if $root.Values.controller.sidecars.configAutoReload.containerSecurityContext }}
+  securityContext: {{- toYaml $root.Values.controller.sidecars.configAutoReload.containerSecurityContext | nindent 4 }}
+  {{- end }}
+  {{- if $root.Values.controller.sidecars.configAutoReload.envFrom }}
+  envFrom:
+{{ (tpl (toYaml $root.Values.controller.sidecars.configAutoReload.envFrom) $root) | indent 4 }}
+  {{- end }}
+  env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: LABEL
+      value: "{{ template "jenkins.fullname" $root }}-jenkins-config"
+    - name: FOLDER
+      value: "{{ $root.Values.controller.sidecars.configAutoReload.folder }}"
+    - name: NAMESPACE
+      value: '{{ $root.Values.controller.sidecars.configAutoReload.searchNamespace | default (include "jenkins.namespace" $root) }}'
+    {{- if eq $containerType "init" }}
+    - name: METHOD
+      value: "LIST"
+    {{- else if $root.Values.controller.sidecars.configAutoReload.sleepTime }}
+    - name: METHOD
+      value: "SLEEP"
+    - name: SLEEP_TIME
+      value: "{{ $root.Values.controller.sidecars.configAutoReload.sleepTime }}"
+    {{- end }}
+    {{- if eq $containerType "sidecar" }}
+    - name: REQ_URL
+      value: "http://localhost:{{- include "controller.httpPort" $root -}}{{- $root.Values.controller.jenkinsUriPrefix -}}/reload-configuration-as-code/?casc-reload-token=$(POD_NAME)"
+    - name: REQ_METHOD
+      value: "POST"
+    - name: REQ_RETRY_CONNECT
+      value: "{{ $root.Values.controller.sidecars.configAutoReload.reqRetryConnect }}"
+    {{- end }}
+
+    {{- if $root.Values.controller.sidecars.configAutoReload.env }}
+    {{- range $envVarItem := $root.Values.controller.sidecars.configAutoReload.env -}}
+        {{- if or (ne $containerType "init") (ne .name "METHOD") }}
+{{- (tpl (toYaml (list $envVarItem)) $root) | nindent 4 }}
+        {{- end -}}
+    {{- end -}}
+    {{- end }}
+
+  resources:
+{{ toYaml $root.Values.controller.sidecars.configAutoReload.resources | indent 4 }}
+  volumeMounts:
+    - name: sc-config-volume
+      mountPath: {{ $root.Values.controller.sidecars.configAutoReload.folder | quote }}
+    - name: jenkins-home
+      mountPath: {{ $root.Values.controller.jenkinsHome }}
+      {{- if $root.Values.persistence.subPath }}
+      subPath: {{ $root.Values.persistence.subPath }}
+      {{- end }}
+
 {{- end -}}

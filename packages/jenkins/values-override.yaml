@@ -16,14 +16,17 @@ clusterZone: "cluster.local"
 # The URL of the Kubernetes API server
 kubernetesURL: "https://kubernetes.default"
 
+# The Jenkins credentials to access the Kubernetes API server. For the the default cluster it is not needed.
+credentialsId:
+
 renderHelmLabels: true
 
 controller:
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-controller"
   image: "${DOCKER_CONTAINER_MIRROR}/jenkins/jenkins"
-  tag: "2.401.2-jdk11"
-  tagLabel: jdk11
+  tag: "2.426.2-jdk17"
+  tagLabel: jdk17
   imagePullPolicy: "IfNotPresent"
   imagePullSecretName:
   # Optionally configure lifetime for controller-container
@@ -415,16 +418,8 @@ controller:
   #  - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
   #  - "new groovy.json.JsonSlurperClassic"
   # List of groovy init scripts to be executed during Jenkins controller start
-  initScripts:
-    - |
-        import jenkins.model.*
-        import java.io.File
-        String sec = jenkins.model.Jenkins.getInstance().getComputer('Workspace').getJnlpMac()
-        sec = "export JENKINS_SECRET=" + sec
-        def secFile = new File('/home/jenkins/agent/.workspace.sec')
-        secFile.write(sec)
-  #  - /home/jenkins/agent/scripts/workspace-node-sec.groovy
-  #  - |
+  initScripts: {}
+  #  test: |-
   #    print 'adding global pipeline libraries, register properties, bootstrap jobs...'
 
   # 'name' is a name of an existing secret in same namespace as jenkins,
@@ -705,7 +700,7 @@ controller:
       - |
         set -euaxo pipefail
         mkdir -p /home/jenkins/agent/jenkins_backup
-        cp -r /additional-settings/* /var/jenkins_home/
+        cp -rn /additional-settings/* /var/jenkins_home/
         
         rm -rf /home/jenkins/lib/*
         cp -r /jenkins-lib/. /home/jenkins/lib/
@@ -951,6 +946,9 @@ controller:
 
   httpsKeyStore:
     jenkinsHttpsJksSecretName: ''
+    jenkinsHttpsJksSecretKey: "jenkins-jks-file"
+    jenkinsHttpsJksPasswordSecretName: ""
+    jenkinsHttpsJksPasswordSecretKey: "https-jks-password"
     enable: false
     disableSecretMount: false
     httpPort: 8081
@@ -1010,9 +1008,13 @@ agent:
   kubernetesConnectTimeout: 5
   kubernetesReadTimeout: 15
   maxRequestsPerHostStr: "32"
+  retentionTimeout: 5
+  waitForPodSec: 600
   namespace:
+  # private registry for agent image
+  jnlpregistry:
   image: "jenkins/inbound-agent"
-  tag: "3107.v665000b_51092-15"
+  tag: "3192.v713e3b_039fb_e-5"
   workingDir: "/home/jenkins/agent"
   nodeUsageMode: "NORMAL"
   customJenkinsLabels: []
@@ -1029,9 +1031,18 @@ agent:
     requests:
       cpu: "512m"
       memory: "512Mi"
+      # ephemeralStorage:
     limits:
       cpu: "512m"
       memory: "512Mi"
+      # ephemeralStorage:
+  livenessProbe: {}
+#    execArgs: "cat /tmp/healthy"
+#    failureThreshold: 3
+#    initialDelaySeconds: 0
+#    periodSeconds: 10
+#    successThreshold: 1
+#    timeoutSeconds: 1
   # You may want to change this to true while testing a new image
   alwaysPullImage: false
   # Controls how agent pods are retained after the Jenkins build completes
@@ -1042,7 +1053,7 @@ agent:
   # or simply to clean up the output to make it easier to read.
   showRawYaml: true
   # You can define the volumes that you want to mount for this container
-  # Allowed types are: ConfigMap, EmptyDir, HostPath, Nfs, PVC, Secret
+  # Allowed types are: ConfigMap, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC, Secret
   # Configure the attributes as they appear in the corresponding Java class for that type
   # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes
   volumes: []
@@ -1052,6 +1063,11 @@ agent:
   # - type: EmptyDir
   #   mountPath: /var/myapp/myemptydir
   #   memory: false
+  # - type: EphemeralVolume
+  #   mountPath: /var/myapp/myephemeralvolume
+  #   accessModes: ReadWriteOnce
+  #   requestsSize: 10Gi
+  #   storageClassName: mystorageclass
   # - type: HostPath
   #   hostPath: /var/lib/containers
   #   mountPath: /var/myapp/myhostpath
@@ -1071,7 +1087,7 @@ agent:
   # Pod-wide environment, these vars are visible to any container in the agent pod
 
   # You can define the workspaceVolume that you want to mount for this container
-  # Allowed types are: DynamicPVC, EmptyDir, HostPath, Nfs, PVC
+  # Allowed types are: DynamicPVC, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC
   # Configure the attributes as they appear in the corresponding Java class for that type
   # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes/workspace
   workspaceVolume: {}
@@ -1081,6 +1097,11 @@ agent:
   ## EmptyDir example
   # type: EmptyDir
   # memory: false
+  ## EphemeralVolume example
+  # type: EphemeralVolume
+  # accessModes: ReadWriteOnce
+  # requestsSize: 10Gi
+  # storageClassName: mystorageclass
   ## HostPath example
   # type: HostPath
   # hostPath: /var/lib/containers
@@ -1206,6 +1227,27 @@ additionalAgents: {}
 #    args: "cat"
 #    TTYEnabled: true
 
+# Here you can add additional clouds
+# They inherit all values from the default cloud (including the main agent), so
+# you only need to specify values which differ. If you want to override
+# default additionalAgents with the additionalClouds.additionalAgents set
+# additionalAgentsOverride to `true`.
+additionalClouds: {}
+#  remote-cloud-1:
+#    kubernetesURL: https://api.remote-cloud.com
+#    additionalAgentsOverride: true
+#    additionalAgents:
+#      maven-2:
+#        podName: maven-2
+#        customJenkinsLabels: maven
+#        # An example of overriding the jnlp container
+#        # sideContainerName: jnlp
+#        image: jenkins/jnlp-agent-maven
+#        tag: latest
+#        namespace: my-other-maven-namespace
+#  remote-cloud-2:
+#    kubernetesURL: https://api.remote-cloud.com
+
 persistence:
   enabled: true
   ## A manually managed Persistent Volume and Claim
@@ -1224,6 +1266,11 @@ persistence:
   labels: {}
   accessMode: "ReadWriteOnce"
   size: "8Gi"
+  # Existing data source to clone PVC from
+  # ref: https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/
+  dataSource:
+  #   name: PVC-NAME
+  #   kind: PersistentVolumeClaim
   volumes:
   - name: agent-workspace
     persistentVolumeClaim:
@@ -1374,7 +1421,7 @@ workspaceAgent:
   componentName: "workspace-agent"
   image:
     repository: "${DOCKER_CONTAINER_MIRROR}/xinnj/inbound-agent"
-    tag: "4.11-1-alpine-jdk11-nolog"
+    tag: "4.13.3-1-alpine-jdk11-nolog"
     pullPolicy: IfNotPresent
   imagePullSecrets: []
   env:

@@ -12,6 +12,150 @@ Use the following links to reference issues, PRs, and commits prior to v2.6.0.
 The changelog until v1.5.7 was auto-generated based on git commits.
 Those entries include a reference to the git commit to be able to get more details.
 
+## 4.12.0
+
+Add support for [generic ephemeral storage](https://github.com/jenkinsci/kubernetes-plugin/pull/1489) in `agent.volumes` and `agents.workspaceVolume`.
+
+| plugin     | old version         | new version        |
+|------------|---------------------|--------------------|
+| kubernetes | 4029.v5712230ccb_f8 | 4174.v4230d0ccd951 |
+
+## 4.11.2
+
+Fixed documentation for controller.initScripts.
+
+## 4.11.1
+
+Updated helm-unittest and made unittests compatible.
+
+## 4.11.0
+
+Add multi-cloud support.
+
+## 4.10.0
+
+Bumped Jenkins inbound agent from 3107.v665000b_51092-15 to 3192.v713e3b_039fb_e-5.
+
+## 4.9.2
+
+Update Jenkins image and appVersion to jenkins lts release version 2.426.2
+
+
+Notes about [Artifact Hub](https://artifacthub.io/packages/helm/jenkinsci/jenkins?modal=changelog) changelog processing:
+- Remove empty lines
+- Keep only ASCII characters (no emojis)
+- One change per line
+- Remove table(s) (lines starting by "|")
+- Backticks aren't rendered on artifacthub.io changelog
+
+## 4.9.1
+
+Restore artifact hub notes location in CHANGELOG.md
+
+## 4.9.0
+
+Update base images from JDK 11 to JDK 17.
+
+## 4.8.6
+
+Proper `artifacthub.io/changes` changelog annotation preprocessing.
+
+## 4.8.5
+
+Fix `artifacthub.io/changes` changelog annotation added to the released chart.
+
+## 4.8.4
+
+Add `artifacthub.io/changes` changelog annotation to the released chart.
+
+## 4.8.3
+
+Update Jenkins image and appVersion to jenkins lts release version 2.426.1
+
+## 4.8.2
+
+Add the ability to modify `retentionTimeout` and `waitForPodSec` default value in JCasC
+
+## 4.8.1
+
+Reintroduces changes from 4.7.0 (reverted in 4.7.1), with additional fixes:
+
+- METHOD is now allowed in `env` and is not duplicated anymore
+- No calls to JCasC reload endpoint from the init container
+
+## 4.8.0
+
+Adds support for ephemeralStorage request and limit in Kubernetes plugin JCasC template
+
+## 4.7.4
+
+Add the config-init-script checksum into the controller statefullset pod annotations to trigger restart of the pod in case of updated init scripts.
+
+## 4.7.3
+
+Update Jenkins image and appVersion to jenkins lts release version 2.414.3
+
+## 4.7.1
+
+Changes in 4.7.0 were reverted.
+
+## 4.7.0
+
+Runs `config-reload` as an init container, in addition to the sidecar container, to ensure that JCasC YAMLS are present before the main Jenkins container starts. This should fix some race conditions and crashes on startup.
+
+## 4.6.7
+
+Change jenkins-test image label to match the other jenkins images
+
+## 4.6.5
+
+Update Jenkins image and appVersion to jenkins lts release version 2.414.2
+
+## 4.6.4
+
+Introducing TPL function on variables related to hostname in `./charts/jenkins/templates/jenkins-controller-ingress.yaml`
+
+## 4.6.3
+
+Add values to documentation
+
+## 4.6.2
+
+Update word from hundreds to over 1800 to align with blurb at <https://github.com/jenkinsci/>.
+
+## 4.6.1
+
+Update `configuration-as-code` plugin to fix dependency issues with `azure-ad` plugin
+
+## 4.6.0
+
+Added `.Values.controller.httpsKeyStore.jenkinsHttpsJksSecretKey` to allow overriding the default secret key containing the JKS file.
+Added `.Values.controller.httpsKeyStore.jenkinsHttpsJksPasswordSecretName` to allow getting the JKS password from a different secret.
+Added `.Values.controller.httpsKeyStore.jenkinsHttpsJksPasswordSecretKey` to allow overriding the default secret key containing the JKS password.
+
+## 4.5.1
+
+Update Jenkins image and appVersion to jenkins lts release version 2.414.1
+
+
+## 4.5.0
+
+Added `.Values.persistence.dataSource` to allow cloning home PVC from existing dataSource.
+
+## 4.4.2
+
+Update Jenkins image and appVersion to jenkins lts release version 2.401.3
+
+
+## 4.4.1
+
+Added `.Values.agent.jnlpregistry` to allow agents to be configured with private registry.
+
+## 4.4.0
+
+Add config keys for liveness probes on agent containers.
+
+
 ## 4.3.30
 
 Update Jenkins version in controller test matching LTS version

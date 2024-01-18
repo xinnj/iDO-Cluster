@@ -5,7 +5,7 @@
 [![Releases downloads](https://img.shields.io/github/downloads/jenkinsci/helm-charts/total.svg)](https://github.com/jenkinsci/helm-charts/releases)
 [![Join the chat at https://app.gitter.im/#/room/#jenkins-ci:matrix.org](https://badges.gitter.im/badge.svg)](https://app.gitter.im/#/room/#jenkins-ci:matrix.org)
 
-[Jenkins](https://www.jenkins.io/) is the leading open source automation server, Jenkins provides hundreds of plugins to support building, deploying and automating any project.
+[Jenkins](https://www.jenkins.io/) is the leading open source automation server, Jenkins provides over 1800 plugins to support building, deploying and automating any project.
 
 This chart installs a Jenkins server which spawns agents on [Kubernetes](http://kubernetes.io) utilizing the [Jenkins Kubernetes plugin](https://plugins.jenkins.io/kubernetes/).
 
@@ -294,6 +294,22 @@ When using agents with containers other than JNLP, The kubernetes plugin will co
 ```yaml
 agent:
   maxRequestsPerHostStr: "32"
+```
+This will change the configuration of the kubernetes "cloud" (as called by jenkins) that is created automatically as part of this helm chart.
+
+### Change container cleanup timeout API
+For tasks that use very large images, this timeout can be increased to avoid early termination of the task while the Kubernetes pod is still deploying.
+```yaml
+agent:
+  retentionTimeout: "32"
+```
+This will change the configuration of the kubernetes "cloud" (as called by jenkins) that is created automatically as part of this helm chart.
+
+### Change seconds to wait for pod to be running
+This will change how long Jenkins will wait (seconds) for pod to be in running state.
+```yaml
+agent:
+  waitForPodSec: "32"
 ```
 This will change the configuration of the kubernetes "cloud" (as called by jenkins) that is created automatically as part of this helm chart.
 
@@ -943,7 +959,8 @@ Here is the [value file section](https://wiki.jenkins.io/pages/viewpage.action?p
 Keystore itself should be placed in front of `jenkinsKeyStoreBase64Encoded` key and in base64 encoded format. To achieve that after having `keystore.jks` file simply do this: `cat keystore.jks | base64` and paste the output in front of `jenkinsKeyStoreBase64Encoded`.
 After enabling `httpsKeyStore.enable` make sure that `httpPort` and `targetPort` are not the same, as `targetPort` will serve https.
 Do not set `controller.httpsKeyStore.httpPort` to `-1` because it will cause readiness and liveliness prob to fail.
-If you already have a kubernetes secret that has keystore and its password you can specify its' name in front of `jenkinsHttpsJksSecretName`, You need to remember that your secret should have proper data key names `jenkins-jks-file` and `https-jks-password`. Example:
+If you already have a kubernetes secret that has keystore and its password you can specify its' name in front of `jenkinsHttpsJksSecretName`, You need to remember that your secret should have proper data key names `jenkins-jks-file` (or override the key name using `jenkinsHttpsJksSecretKey`)
+and `https-jks-password` (or override the key name using `jenkinsHttpsJksPasswordSecretKey`; additionally you can make it get the password from a different secret using `jenkinsHttpsJksPasswordSecretName`). Example:
 
 ```yaml
 controller:
