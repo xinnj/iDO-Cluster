@@ -3,39 +3,39 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-controller-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
-      storage: ${CONTROLLER_STORAGE_SIZE}
+      storage: ${IDO_JENKINS_CONTROLLER_STORAGE_SIZE}
 
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-agent-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
-      storage: ${AGENT_STORAGE_SIZE}
+      storage: ${IDO_JENKINS_AGENT_STORAGE_SIZE}
 
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: jenkins-lib-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
       storage: 5Gi

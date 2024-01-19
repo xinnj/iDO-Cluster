@@ -133,7 +133,7 @@ service:
     port: 2222
     clusterIP: None
     loadBalancerIP:
-    nodePort: ${SSH_NODE_PORT}
+    nodePort: ${IDO_GITEA_SSH_NODE_PORT}
     externalTrafficPolicy:
     externalIPs:
     ipFamilyPolicy:
@@ -160,17 +160,17 @@ ingress:
     # kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
-    kubernetes.io/tls-acme: "${TLS_ACME}"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
+    kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
   hosts:
-    - host: "${CLUSTER_HOSTNAME}"
+    - host: "${IDO_IDO_INGRESS_HOSTNAME}"
       paths:
         - path: ${GITEA_URL_PREFIX}(/|$)(.*)
           pathType: Prefix
-  ${TLS_KEY}:
-    - secretName: ${TLS_SECRET}
+  ${IDO_TLS_KEY}:
+    - secretName: ${IDO_TLS_SECRET}
       hosts:
-        - ${TLS_HOST}
+        - ${IDO_TLS_HOST}
   #  - secretName: chart-example-tls
   #    hosts:
   #      - git.example.com
@@ -274,11 +274,11 @@ persistence:
   create: true
   mount: true
   claimName: gitea-shared-storage
-  size: ${GITEA_SHARED_STORAGE_SIZE}
+  size: ${IDO_GITEA_SHARED_STORAGE_SIZE}
   accessModes:
     - ReadWriteOnce
   labels: {}
-  storageClass: ${STORAGE_CLASS}
+  storageClass: ${IDO_STORAGE_CLASS}
   subPath:
   volumeName: ""
   annotations:
@@ -405,7 +405,7 @@ gitea:
     #  APP_NAME: "Gitea: Git with a cup of tea"
     #  RUN_MODE: dev
     server:
-      SSH_PORT: ${SSH_NODE_PORT} # rootful image
+      SSH_PORT: ${IDO_GITEA_SSH_NODE_PORT} # rootful image
       SSH_LISTEN_PORT: 2222 # rootless image
       ROOT_URL: ${GITEA_URL}
       DOMAIN: ${DOMAIN}
@@ -558,8 +558,8 @@ postgresql:
           postgresql: 5432
   primary:
     persistence:
-      storageClass: ${STORAGE_CLASS}
-      size: ${GITEA_PG_STORAGE_SIZE}
+      storageClass: ${IDO_STORAGE_CLASS}
+      size: ${IDO_GITEA_PG_STORAGE_SIZE}
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:

@@ -37,7 +37,7 @@ var certMethod = CertMethod{
 
 var basicInfo = BasicInfo{host: "", httpsEnabled: false, team: "default", timezone: "", tlsCert: TlsCert{
 	certMethod:         "",
-	forceSslRedirect:   true,
+	forceSslRedirect:   false,
 	existingCertSecret: "",
 	acmeEmail:          "",
 }}

@@ -3,25 +3,25 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: zentao-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
-      storage: ${ZENTAO_STORAGE_SIZE}
+      storage: ${IDO_ZENTAO_STORAGE_SIZE}
 
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: zentao-mysql-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
-      storage: ${ZENTAO_DB_STORAGE_SIZE}
+      storage: ${IDO_ZENTAO_DB_STORAGE_SIZE}

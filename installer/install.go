@@ -109,67 +109,79 @@ func initFlexInstall() {
 }
 
 func buildTasks() (tasks []task, envs []string) {
-	envs = append(envs, "TEAM="+basicInfo.team)
-	envs = append(envs, "TIMEZONE="+basicInfo.timezone)
+	envs = append(envs, "IDO_TEAM="+basicInfo.team)
+	envs = append(envs, "IDO_TIMEZONE="+basicInfo.timezone)
+	envs = append(envs, "IDO_CLUSTER_HOSTNAME="+basicInfo.host)
 
 	if net.ParseIP(basicInfo.host) == nil {
-		envs = append(envs, "CLUSTER_HOSTNAME="+basicInfo.host)
+		envs = append(envs, "IDO_IDO_INGRESS_HOSTNAME="+basicInfo.host)
 	} else {
-		envs = append(envs, "CLUSTER_HOSTNAME=")
+		envs = append(envs, "IDO_IDO_INGRESS_HOSTNAME=")
 	}
 
+	var clusterUrl string
 	if basicInfo.httpsEnabled {
-		envs = append(envs, "CLUSTER_URL=https://"+basicInfo.host)
-		envs = append(envs, "TLS_KEY=tls")
-		envs = append(envs, "TLS_HOST="+basicInfo.host)
+		clusterUrl = "https://" + basicInfo.host
+		envs = append(envs, "IDO_CLUSTER_URL="+clusterUrl)
+		envs = append(envs, "IDO_TLS_KEY=tls")
+		envs = append(envs, "IDO_TLS_HOST="+basicInfo.host)
 
 		switch basicInfo.tlsCert.certMethod {
 		case certMethod.selfSigned:
-			envs = append(envs, "TLS_ACME=false")
-			envs = append(envs, "TLS_SECRET=")
+			envs = append(envs, "IDO_TLS_ACME=false")
+			envs = append(envs, "IDO_TLS_SECRET=")
 		case certMethod.existingTlsSecret:
-			envs = append(envs, "TLS_ACME=false")
-			envs = append(envs, "TLS_SECRET="+basicInfo.tlsCert.existingCertSecret)
+			envs = append(envs, "IDO_TLS_ACME=false")
+			envs = append(envs, "IDO_TLS_SECRET="+basicInfo.tlsCert.existingCertSecret)
 		case certMethod.certManager:
-			envs = append(envs, "TLS_ACME=true")
-			envs = append(envs, "TLS_SECRET="+basicInfo.host)
+			envs = append(envs, "IDO_TLS_ACME=true")
+			envs = append(envs, "IDO_TLS_SECRET="+basicInfo.host)
 		}
 	} else {
-		envs = append(envs, "CLUSTER_URL=http://"+basicInfo.host)
-		envs = append(envs, "TLS_KEY=tls-disabled")
-		envs = append(envs, "TLS_HOST=")
-		envs = append(envs, "TLS_ACME=false")
-		envs = append(envs, "TLS_SECRET=")
+		clusterUrl = "http://" + basicInfo.host
+		envs = append(envs, "IDO_CLUSTER_URL="+clusterUrl)
+		envs = append(envs, "IDO_TLS_KEY=tls-disabled")
+		envs = append(envs, "IDO_TLS_HOST=")
+		envs = append(envs, "IDO_TLS_ACME=false")
+		envs = append(envs, "IDO_TLS_SECRET=")
 	}
-	envs = append(envs, "FORCE_SSL_REDIRECT="+strconv.FormatBool(basicInfo.tlsCert.forceSslRedirect))
+	envs = append(envs, "IDO_FORCE_SSL_REDIRECT="+strconv.FormatBool(basicInfo.tlsCert.forceSslRedirect))
 
 	var finalMirrors map[string]string
 	if enableMirror {
-		finalMirrors = mirrors
+		finalMirrors = map[string]string{
+			"IDO_DOCKER_CONTAINER_MIRROR": mirrors["DOCKER_CONTAINER_MIRROR"],
+			"IDO_QUAY_CONTAINER_MIRROR":   mirrors["QUAY_CONTAINER_MIRROR"],
+			"IDO_K8S_CONTAINER_MIRROR":    mirrors["K8S_CONTAINER_MIRROR"],
+			"IDO_GCR_CONTAINER_MIRROR":    mirrors["GCR_CONTAINER_MIRROR"],
+		}
 	} else {
 		finalMirrors = map[string]string{
-			"DOCKER_CONTAINER_MIRROR": "docker.io",
-			"QUAY_CONTAINER_MIRROR":   "quay.io",
-			"K8S_CONTAINER_MIRROR":    "k8s.io",
-			"GCR_CONTAINER_MIRROR":    "k8s-gcr.io",
+			"IDO_DOCKER_CONTAINER_MIRROR": "docker.io",
+			"IDO_QUAY_CONTAINER_MIRROR":   "quay.io",
+			"IDO_K8S_CONTAINER_MIRROR":    "k8s.io",
+			"IDO_GCR_CONTAINER_MIRROR":    "k8s-gcr.io",
 		}
 	}
 	for k, v := range finalMirrors {
 		envs = append(envs, k+"="+v)
 	}
 
+	tasks = append(tasks, task{name: "Populate Configuration",
+		command: "chmod +x packages/populate-configuration.sh; packages/populate-configuration.sh"})
+
 	if basicInfo.httpsEnabled && basicInfo.tlsCert.certMethod == certMethod.certManager {
 		tasks = append(tasks, task{name: "Install Cert-manager",
 			command: "chmod +x packages/cert-manager/install.sh; packages/cert-manager/install.sh"})
 	}
 
-	envs = append(envs, "ENABLE_PROMETHEUS="+strconv.FormatBool(installPrometheus))
+	envs = append(envs, "IDO_ENABLE_PROMETHEUS="+strconv.FormatBool(installPrometheus))
 	if installPrometheus {
 		tasks = append(tasks, task{name: "Install Prometheus",
 			command: "chmod +x packages/prometheus/install.sh; packages/prometheus/install.sh"})
-		envs = append(envs, "ALTERMANAGER_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.alertmanagerStorageSizeGi)+"Gi")
-		envs = append(envs, "GRAFANA_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.grafanaStorageSizeGi)+"Gi")
-		envs = append(envs, "PROMETHEUS_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.prometheusStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_ALTERMANAGER_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.alertmanagerStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_GRAFANA_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.grafanaStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_PROMETHEUS_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.prometheusStorageSizeGi)+"Gi")
 	}
 
 	if !useExistingSC {
@@ -180,59 +192,67 @@ func buildTasks() (tasks []task, envs []string) {
 		case storageClassType.nfs:
 			tasks = append(tasks, task{name: "Install nfs",
 				command: "chmod +x packages/storage/nfs/install.sh; packages/storage/nfs/install.sh"})
-			envs = append(envs, "NFS_SERVER="+nfsConfig.server)
-			envs = append(envs, "NFS_PATH="+nfsConfig.path)
+			envs = append(envs, "IDO_NFS_SERVER="+nfsConfig.server)
+			envs = append(envs, "IDO_NFS_PATH="+nfsConfig.path)
 		}
 	}
-	envs = append(envs, "STORAGE_CLASS="+storageClass)
+	envs = append(envs, "IDO_STORAGE_CLASS="+storageClass)
 
 	if installGitea {
 		tasks = append(tasks, task{name: "Install Gitea",
 			command: "chmod +x packages/gitea/install.sh; packages/gitea/install.sh"})
-		envs = append(envs, "GITEA_SHARED_STORAGE_SIZE="+strconv.Itoa(giteaConfig.giteaSharedStorageSizeGi)+"Gi")
-		envs = append(envs, "GITEA_PG_STORAGE_SIZE="+strconv.Itoa(giteaConfig.giteaPgStorageSizeGi)+"Gi")
-		envs = append(envs, "SSH_NODE_PORT="+giteaConfig.sshNodePort)
+		envs = append(envs, "IDO_GITEA_SHARED_STORAGE_SIZE="+strconv.Itoa(giteaConfig.giteaSharedStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_GITEA_PG_STORAGE_SIZE="+strconv.Itoa(giteaConfig.giteaPgStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_GITEA_SSH_NODE_PORT="+giteaConfig.sshNodePort)
 	}
 
 	if installZentao {
 		tasks = append(tasks, task{name: "Install Zentao",
 			command: "chmod +x packages/zentao/install.sh; packages/zentao/install.sh"})
-		envs = append(envs, "ZENTAO_STORAGE_SIZE="+strconv.Itoa(zentaoConfig.zentaoStorageSizeGi)+"Gi")
-		envs = append(envs, "ZENTAO_DB_STORAGE_SIZE="+strconv.Itoa(zentaoConfig.zentaoDbStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_ZENTAO_STORAGE_SIZE="+strconv.Itoa(zentaoConfig.zentaoStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_ZENTAO_DB_STORAGE_SIZE="+strconv.Itoa(zentaoConfig.zentaoDbStorageSizeGi)+"Gi")
 	}
 
 	if installJenkins {
 		tasks = append(tasks, task{name: "Install Jenkins",
 			command: "chmod +x packages/jenkins/install.sh; packages/jenkins/install.sh"})
-		envs = append(envs, "CONTROLLER_STORAGE_SIZE="+strconv.Itoa(jenkinsConfig.controllerStorageSizeGi)+"Gi")
-		envs = append(envs, "AGENT_STORAGE_SIZE="+strconv.Itoa(jenkinsConfig.agentStorageSizeGi)+"Gi")
-		envs = append(envs, "JENKINS_LIB_VERSION="+jenkinsConfig.pipelineLibVersion)
+		envs = append(envs, "IDO_JENKINS_CONTROLLER_STORAGE_SIZE="+strconv.Itoa(jenkinsConfig.controllerStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_JENKINS_AGENT_STORAGE_SIZE="+strconv.Itoa(jenkinsConfig.agentStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_JENKINS_LIB_VERSION="+jenkinsConfig.pipelineLibVersion)
 	}
 
 	if installNexus {
 		tasks = append(tasks, task{name: "Install Nexus",
 			command: "chmod +x packages/nexus/install.sh; packages/nexus/install.sh"})
-		envs = append(envs, "NEXUS_STORAGE_SIZE="+strconv.Itoa(nexusConfig.storageSizeGi)+"Gi")
-		envs = append(envs, "DOCKER_NODE_PORT="+nexusConfig.dockerNodePort)
+		envs = append(envs, "IDO_NEXUS_STORAGE_SIZE="+strconv.Itoa(nexusConfig.storageSizeGi)+"Gi")
+		envs = append(envs, "IDO_NEXUS_DOCKER_NODE_PORT="+nexusConfig.dockerNodePort)
 	}
 
 	if installFileServer {
 		tasks = append(tasks, task{name: "Install File Server",
 			command: "chmod +x packages/file-server/install.sh; packages/file-server/install.sh"})
-		envs = append(envs, "FILE_STORAGE_SIZE="+strconv.Itoa(fileServerConfig.storageSizeGi)+"Gi")
+		envs = append(envs, "IDO_FILE_STORAGE_SIZE="+strconv.Itoa(fileServerConfig.storageSizeGi)+"Gi")
+
+		var fileUrl string
+		if basicInfo.team == "default" {
+			fileUrl = clusterUrl + "/download"
+		} else {
+			fileUrl = clusterUrl + "/" + basicInfo.team + "/download"
+		}
+		envs = append(envs, "IDO_FILE_URL="+fileUrl)
 	}
 
 	if installSmb {
 		tasks = append(tasks, task{name: "Install Samba Server",
 			command: "chmod +x packages/samba-server/install.sh; packages/samba-server/install.sh"})
-		envs = append(envs, "SMB_NODE_PORT="+smbConfig.nodePort)
+		envs = append(envs, "IDO_SMB_NODE_PORT="+smbConfig.nodePort)
 	}
 
 	if installSonar {
 		tasks = append(tasks, task{name: "Install Sonarqube",
 			command: "chmod +x packages/sonar/install.sh; packages/sonar/install.sh"})
-		envs = append(envs, "SONAR_STORAGE_SIZE="+strconv.Itoa(sonarConfig.storageSizeGi)+"Gi")
-		envs = append(envs, "SONAR_PG_STORAGE_SIZE="+strconv.Itoa(sonarConfig.dbStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_SONAR_STORAGE_SIZE="+strconv.Itoa(sonarConfig.storageSizeGi)+"Gi")
+		envs = append(envs, "IDO_SONAR_PG_STORAGE_SIZE="+strconv.Itoa(sonarConfig.dbStorageSizeGi)+"Gi")
 	}
 
 	tasks = append(tasks, task{name: "Final Check",

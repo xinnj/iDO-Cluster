@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ${DOCKER_CONTAINER_MIRROR}/xinnj/samba-server
+  repository: ${IDO_DOCKER_CONTAINER_MIRROR}/xinnj/samba-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1.0.0"
@@ -40,7 +40,7 @@ securityContext: {}
 service:
   type: NodePort
   port: 445
-  nodePort: ${SMB_NODE_PORT}
+  nodePort: ${IDO_SMB_NODE_PORT}
 
 ingress:
   enabled: false
@@ -109,4 +109,4 @@ persistence:
 
 env:
   - name: TZ
-    value: ${TIMEZONE}
+    value: ${IDO_TIMEZONE}

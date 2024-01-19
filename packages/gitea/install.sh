@@ -6,10 +6,10 @@ base=$(dirname "$0")
 echo "##########################################################################"
 echo "### Install Gitea ###"
 
-if [ "${TEAM}" == "default" ]; then
-  TEAM_URL="${CLUSTER_URL}"
+if [ "${IDO_TEAM}" == "default" ]; then
+  TEAM_URL="${IDO_CLUSTER_URL}"
 else
-  TEAM_URL="${CLUSTER_URL}/${TEAM}"
+  TEAM_URL="${IDO_CLUSTER_URL}/${IDO_TEAM}"
 fi
 GITEA_URL="${TEAM_URL}/git"
 GITEA_URL_PREFIX="/${GITEA_URL#*://*/}" && [[ "/${GITEA_URL}" == "${GITEA_URL_PREFIX}" ]] && GITEA_URL_PREFIX="/"
@@ -18,15 +18,15 @@ DOMAIN=$(echo "${GITEA_URL}" | awk -F/ '{print $3}')
 
 echo "GITEA_URL=${GITEA_URL}"
 echo "GITEA_URL_PREFIX=${GITEA_URL_PREFIX}"
-echo "STORAGE_CLASS=${STORAGE_CLASS}"
-echo "SSH_NODE_PORT=${SSH_NODE_PORT}"
-echo "GITEA_SHARED_STORAGE_SIZE=${GITEA_SHARED_STORAGE_SIZE}"
+echo "IDO_STORAGE_CLASS=${IDO_STORAGE_CLASS}"
+echo "IDO_GITEA_SSH_NODE_PORT=${IDO_GITEA_SSH_NODE_PORT}"
+echo "IDO_GITEA_SHARED_STORAGE_SIZE=${IDO_GITEA_SHARED_STORAGE_SIZE}"
 echo "DOMAIN=${DOMAIN}"
-echo "GITEA_PG_STORAGE_SIZE=${GITEA_PG_STORAGE_SIZE}"
+echo "IDO_GITEA_PG_STORAGE_SIZE=${IDO_GITEA_PG_STORAGE_SIZE}"
 
 # Create namespaces
-kubectl create ns ${TEAM} --dry-run=client -o yaml | kubectl apply -f -
+kubectl create ns ${IDO_TEAM} --dry-run=client -o yaml | kubectl apply -f -
 
 # Install gitlab
 envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
-helm upgrade gitea --install --create-namespace --namespace ${TEAM} -f "${base}"/values.yaml "${base}"/gitea-chart
+helm upgrade gitea --install --create-namespace --namespace ${IDO_TEAM} -f "${base}"/values.yaml "${base}"/gitea-chart

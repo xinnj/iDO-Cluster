@@ -26,7 +26,7 @@ OpenShift:
 edition: "community"
 
 image:
-  repository: ${DOCKER_CONTAINER_MIRROR}/sonarqube
+  repository: ${IDO_DOCKER_CONTAINER_MIRROR}/sonarqube
   tag: 9.9.0-{{ .Values.edition }}
   pullPolicy: IfNotPresent
   # If using a private repository, the imagePullSecrets to use
@@ -80,7 +80,7 @@ ingress:
   enabled: true
   # Used to create an Ingress record.
   hosts:
-    - name: ${CLUSTER_HOSTNAME}
+    - name: ${IDO_INGRESS_HOSTNAME}
       # Different clouds or configurations might need /* as the default path
       path: ${SONAR_URL_PREFIX}
       # For additional control over serviceName and servicePort
@@ -92,8 +92,8 @@ ingress:
   # kubernetes.io/tls-acme: "true"
   # This property allows for reports up to a certain size to be uploaded to SonarQube
     nginx.ingress.kubernetes.io/proxy-body-size: "64m"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
-    kubernetes.io/tls-acme: "${TLS_ACME}"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
+    kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
 
   # Set ingressClassName if kubernetes version is >= 1.18
   # Reference: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -103,10 +103,10 @@ ingress:
   # labels:
   #  traffic-type: external
   #  traffic-type: internal
-  ${TLS_KEY}:
-    - secretName: ${TLS_SECRET}
+  ${IDO_TLS_KEY}:
+    - secretName: ${IDO_TLS_SECRET}
       hosts:
-        - ${TLS_HOST}
+        - ${IDO_TLS_HOST}
   # Secrets must be manually created in the namespace. To generate a self-signed certificate (and private key) and then create the secret in the cluster please refer to official documentation available at https://kubernetes.github.io/ingress-nginx/user-guide/tls/#tls-secrets
   # - secretName: chart-example-tls
   #   hosts:
@@ -406,7 +406,7 @@ postgresql:
   enabled: true
   ## postgresql Chart global settings
   global:
-    imageRegistry: '${DOCKER_CONTAINER_MIRROR}'
+    imageRegistry: '${IDO_DOCKER_CONTAINER_MIRROR}'
   #   imagePullSecrets: ''
   ## bitnami/postgres image tag
   # image:
@@ -499,7 +499,7 @@ podLabels: {}
 sonarqubeFolder: /opt/sonarqube
 
 tests:
-  image: ${DOCKER_CONTAINER_MIRROR}/bitnami/minideb-extras
+  image: ${IDO_DOCKER_CONTAINER_MIRROR}/bitnami/minideb-extras
   enabled: true
   resources: {}
   initContainers:

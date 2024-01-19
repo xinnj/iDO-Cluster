@@ -77,7 +77,7 @@ featureGates: ""
 maxConcurrentChallenges: 60
 
 image:
-  repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-controller
+  repository: ${IDO_QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-controller
   # You can manage a registry with
   # registry: quay.io
   # repository: jetstack/cert-manager-controller
@@ -429,7 +429,7 @@ webhook:
   serviceLabels: {}
 
   image:
-    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-webhook
+    repository: ${IDO_QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-webhook
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-webhook
@@ -597,7 +597,7 @@ cainjector:
   podLabels: {}
 
   image:
-    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-cainjector
+    repository: ${IDO_QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-cainjector
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-cainjector
@@ -637,7 +637,7 @@ cainjector:
 
 acmesolver:
   image:
-    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-acmesolver
+    repository: ${IDO_QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-acmesolver
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-acmesolver
@@ -720,7 +720,7 @@ startupapicheck:
   podLabels: {}
 
   image:
-    repository: ${QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-ctl
+    repository: ${IDO_QUAY_CONTAINER_MIRROR}/jetstack/cert-manager-ctl
     # You can manage a registry with
     # registry: quay.io
     # repository: jetstack/cert-manager-ctl

@@ -5,22 +5,22 @@ base=$(dirname "$0")
 
 echo "##########################################################################"
 echo "### Install Nexus ###"
-echo "TEAM=${TEAM}"
-echo "STORAGE_CLASS=${STORAGE_CLASS}"
-echo "NEXUS_STORAGE_SIZE=${NEXUS_STORAGE_SIZE}"
-echo "DOCKER_NODE_PORT=${DOCKER_NODE_PORT}"
-echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
+echo "IDO_TEAM=${IDO_TEAM}"
+echo "IDO_STORAGE_CLASS=${IDO_STORAGE_CLASS}"
+echo "IDO_NEXUS_STORAGE_SIZE=${IDO_NEXUS_STORAGE_SIZE}"
+echo "IDO_NEXUS_DOCKER_NODE_PORT=${IDO_NEXUS_DOCKER_NODE_PORT}"
+echo "IDO_DOCKER_CONTAINER_MIRROR=${IDO_DOCKER_CONTAINER_MIRROR}"
 
-if [ "${TEAM}" == "default" ]; then
-  TEAM_URL="${CLUSTER_URL}"
+if [ "${IDO_TEAM}" == "default" ]; then
+  TEAM_URL="${IDO_CLUSTER_URL}"
 else
-  TEAM_URL="${CLUSTER_URL}/${TEAM}"
+  TEAM_URL="${IDO_CLUSTER_URL}/${IDO_TEAM}"
 fi
 NEXUS_URL="${TEAM_URL}/nexus"
 NEXUS_URL_PATH="${NEXUS_URL#*://*/}" && [[ "${NEXUS_URL}" == "${NEXUS_URL_PATH}" ]] && NEXUS_URL_PATH=""
 
 # Create namespaces
-kubectl create ns ${TEAM} --dry-run=client -o yaml | kubectl apply -f -
+kubectl create ns ${IDO_TEAM} --dry-run=client -o yaml | kubectl apply -f -
 
 # Create PVC
 envsubst < "${base}/pvc-template.yaml" > "${base}/pvc.yaml"
@@ -28,4 +28,4 @@ kubectl apply -f "${base}/pvc.yaml"
 
 # Install nexus
 envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
-helm upgrade nexus --install --create-namespace --namespace ${TEAM} -f "${base}"/values.yaml "${base}"/nexus-repository-manager-chart
+helm upgrade nexus --install --create-namespace --namespace ${IDO_TEAM} -f "${base}"/values.yaml "${base}"/nexus-repository-manager-chart

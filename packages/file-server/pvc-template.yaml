@@ -3,11 +3,11 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: file-server-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
-      storage: ${FILE_STORAGE_SIZE}
+      storage: ${IDO_FILE_STORAGE_SIZE}

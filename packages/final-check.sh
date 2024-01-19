@@ -26,7 +26,7 @@ while [ "$result" != "" ]; do
 done
 
 helm list --no-headers=true | awk '{print $1'} > packages.txt
-kubectl delete -n ${TEAM} cm packages-installed --ignore-not-found=true
-kubectl create -n ${TEAM} cm packages-installed --from-file=packages=./packages.txt
+kubectl delete -n ${IDO_TEAM} cm packages-installed --ignore-not-found=true
+kubectl create -n ${IDO_TEAM} cm packages-installed --from-file=packages=./packages.txt
 
 echo "Done!"

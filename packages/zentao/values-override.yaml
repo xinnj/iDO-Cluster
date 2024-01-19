@@ -49,17 +49,17 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/preserve-trailing-slash: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
-    kubernetes.io/tls-acme: "${TLS_ACME}"
-  host: "${CLUSTER_HOSTNAME}"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
+    kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
+  host: "${IDO_INGRESS_HOSTNAME}"
   paths:
   - path: ${ZENTAO_URL_PREFIX}
     port: 80
     type: Prefix
   tls:
     enabled: ${TLS_ENABLED}
-    secretName: ${TLS_SECRET}
-    host: ${TLS_HOST}
+    secretName: ${IDO_TLS_SECRET}
+    host: ${IDO_TLS_HOST}
 
 env:
   ZT_MYSQL_PASSWORD:

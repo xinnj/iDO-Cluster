@@ -3,25 +3,25 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: sonarqube-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
-      storage: ${SONAR_STORAGE_SIZE}
+      storage: ${IDO_SONAR_STORAGE_SIZE}
 
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: sonarqube-pg-data
-  namespace: ${TEAM}
+  namespace: ${IDO_TEAM}
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: ${STORAGE_CLASS}
+  storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
-      storage: ${SONAR_PG_STORAGE_SIZE}
+      storage: ${IDO_SONAR_PG_STORAGE_SIZE}

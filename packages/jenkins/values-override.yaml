@@ -24,7 +24,7 @@ renderHelmLabels: true
 controller:
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-controller"
-  image: "${DOCKER_CONTAINER_MIRROR}/jenkins/jenkins"
+  image: "${IDO_DOCKER_CONTAINER_MIRROR}/jenkins/jenkins"
   tag: "2.426.2-jdk17"
   tagLabel: jdk17
   imagePullPolicy: "IfNotPresent"
@@ -42,7 +42,7 @@ controller:
   executorMode: "NORMAL"
   # This is ignored if enableRawHtmlMarkupFormatter is true
   markupFormatter: plainText
-  customJenkinsLabels: []
+  customJenkinsLabels: [ ]
   # The default configuration uses this secret to configure an admin user
   # If you don't need that user or use a different security realm then you can disable it
   adminSecret: true
@@ -94,7 +94,7 @@ controller:
   #     value: "http://192.168.64.1:3128"
   # Set min/max heap here if needed with:
   # javaOpts: "-Xms512m -Xmx512m"
-  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=${TIMEZONE} -Duser.timezone=${TIMEZONE} -Dfile.encoding=UTF-8 
+  javaOpts: "-Dorg.apache.commons.jelly.tags.fmt.timeZone=${IDO_TIMEZONE} -Duser.timezone=${IDO_TIMEZONE} -Dfile.encoding=UTF-8 
     -Dkubernetes.websocket.timeout=60000 -Dorg.csanchez.jenkins.plugins.kubernetes.PodTemplate.connectionTimeout=3600 
     -Dorg.csanchez.jenkins.plugins.kubernetes.pipeline.ContainerExecDecorator.websocketConnectionTimeout=3600 
     -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true"
@@ -115,7 +115,7 @@ controller:
   runAsUser: 1000
   fsGroup: 1000
   # If you have PodSecurityPolicies that require dropping of capabilities as suggested by CIS K8s benchmark, put them here
-  securityContextCapabilities: {}
+  securityContextCapabilities: { }
   #  drop:
   #    - NET_RAW
   # Completely overwrites the contents of the `securityContext`, ignoring the
@@ -143,16 +143,16 @@ controller:
   # but risks potentially imbalanced traffic spreading.
   serviceExternalTrafficPolicy:
   # Jenkins controller service annotations
-  serviceAnnotations: {}
+  serviceAnnotations: { }
   # Jenkins controller custom labels
-  statefulSetLabels: {}
+  statefulSetLabels: { }
   #   foo: bar
   #   bar: foo
   # Jenkins controller service labels
-  serviceLabels: {}
+  serviceLabels: { }
   #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
   # Put labels on Jenkins controller pod
-  podLabels: {}
+  podLabels: { }
   # Used to create Ingress record (should be used with ServiceType: ClusterIP)
   # nodePort: <to set explicitly, choose port between 30000-32767
   # Enable Kubernetes Startup, Liveness and Readiness Probes
@@ -194,8 +194,8 @@ controller:
     # For Kubernetes v1.5+, use 'policy/v1beta1'
     # For Kubernetes v1.21+, use 'policy/v1'
     apiVersion: "policy/v1beta1"
-    annotations: {}
-    labels: {}
+    annotations: { }
+    labels: { }
     # maxUnavailable: "0"
 
   agentListenerEnabled: false
@@ -204,7 +204,7 @@ controller:
   agentListenerNodePort:
   agentListenerExternalTrafficPolicy:
   agentListenerLoadBalancerSourceRanges:
-  - 0.0.0.0/0
+    - 0.0.0.0/0
   disabledAgentProtocols:
     - JNLP-connect
     - JNLP2-connect
@@ -222,7 +222,7 @@ controller:
   # Optionally assign an IP to the LoadBalancer agentListenerService LoadBalancer
   # GKE users: only regional static IPs will work for Service Load balancer.
   agentListenerLoadBalancerIP:
-  agentListenerServiceAnnotations: {}
+  agentListenerServiceAnnotations: { }
 
   # Example of 'LoadBalancer' type of agent listener with annotations securing it
   # agentListenerServiceType: LoadBalancer
@@ -233,7 +233,7 @@ controller:
   # LoadBalancerSourcesRange is a list of allowed CIDR values, which are combined with ServicePort to
   # set allowed inbound rules on the security group assigned to the controller load balancer
   loadBalancerSourceRanges:
-  - 0.0.0.0/0
+    - 0.0.0.0/0
   # Optionally assign a known public LB IP
   # loadBalancerIP: 1.2.3.4
   # Optionally configure a JMX port
@@ -244,7 +244,7 @@ controller:
   #   -Dcom.sun.management.jmxremote.ssl=false
   # jmxPort: 4000
   # Optionally configure other ports to expose in the controller container
-  extraPorts: []
+  extraPorts: [ ]
   # - name: BuildInfoProxy
   #   port: 9000
   #   targetPort: 9010 (Optional: Use to explicitly set targetPort if different from port)
@@ -394,7 +394,7 @@ controller:
   installLatestSpecifiedPlugins: false
 
   # List of plugins to install in addition to those listed in controller.installPlugins
-  additionalPlugins: []
+  additionalPlugins: [ ]
 
   # Enable to initialize the Jenkins controller only once on initial installation.
   # Without this, whenever the controller gets restarted (Evicted, etc.) it will fetch plugin updates which has the potential to cause breakage.
@@ -414,11 +414,11 @@ controller:
   # The plugin is not installed by default, please update controller.installPlugins.
   enableRawHtmlMarkupFormatter: false
   # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
-  scriptApproval: []
+  scriptApproval: [ ]
   #  - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
   #  - "new groovy.json.JsonSlurperClassic"
   # List of groovy init scripts to be executed during Jenkins controller start
-  initScripts: {}
+  initScripts: { }
   #  test: |-
   #    print 'adding global pipeline libraries, register properties, bootstrap jobs...'
 
@@ -432,13 +432,13 @@ controller:
   # When using existingSecret no need to specify the keyName under additionalExistingSecrets.
   existingSecret:
 
-  additionalExistingSecrets: []
+  additionalExistingSecrets: [ ]
   #  - name: secret-name-1
   #    keyName: username
   #  - name: secret-name-1
   #    keyName: password
 
-  additionalSecrets: []
+  additionalSecrets: [ ]
   #  - name: nameOfSecret
   #    value: secretText
 
@@ -447,7 +447,7 @@ controller:
   # 'path' is the fully qualified path to the secret in Vault
   # 'type' is an optional Kubernetes secret type. Defaults to 'Opaque'
   # 'renew' is an optional secret renewal time in seconds
-  secretClaims: []
+  secretClaims: [ ]
   # - name: secretName        # required
   #   path: testPath          # required
   #   type: kubernetes.io/tls # optional
@@ -465,7 +465,7 @@ controller:
   # etc.  Best reference is https://<jenkins_url>/configuration-as-code/reference.  The example below creates a welcome message:
   JCasC:
     defaultConfig: false
-    configUrls: []
+    configUrls: [ ]
     # - https://acme.org/jenkins.yaml
     # Remote URL:s for configuration files.
     configScripts:
@@ -506,7 +506,7 @@ controller:
               maxRequestsPerHost: 4
               maxRequestsPerHostStr: "4"
               name: "kubernetes"
-              namespace: "${TEAM}"
+              namespace: "${IDO_TEAM}"
               retentionTimeout: 60
               serverUrl: "https://kubernetes.default"
               waitForPodSec: 3600
@@ -691,37 +691,19 @@ controller:
         allowAnonymousRead: false
   # Optionally specify additional init-containers
   customInitContainers:
-  - name: custom-init
-    image: "${DOCKER_CONTAINER_MIRROR}/xinnj/jenkins-lib:${JENKINS_LIB_VERSION}"
-    # imagePullPolicy: IfNotPresent
-    command:
-      - /bin/sh
-      - -c
-      - |
-        set -euaxo pipefail
-        mkdir -p /home/jenkins/agent/jenkins_backup
-        cp -rn /additional-settings/* /var/jenkins_home/
-        
-        rm -rf /home/jenkins/lib/*
-        cp -r /jenkins-lib/. /home/jenkins/lib/
-        if [ -e /var/jenkins_home/customization/config/system.yaml ]; then
-          cp -f /var/jenkins_home/customization/config/system.yaml /var/jenkins_home/customization/config/system.yaml.bak
-          yq '. *= load("/var/jenkins_home/customization/config/system.yaml.bak")' /jenkins-lib/resources/config/system.yaml > /var/jenkins_home/customization/config/system.yaml
-          cp -f /var/jenkins_home/customization/config/system.yaml /home/jenkins/lib/resources/config/
-        fi
-        if [ -e /var/jenkins_home/customization/config/team.yaml ]; then
-          cp -f /var/jenkins_home/customization/config/team.yaml /var/jenkins_home/customization/config/team.yaml.bak
-          yq '. *= load("/var/jenkins_home/customization/config/team.yaml.bak")' /jenkins-lib/resources/config/team.yaml > /var/jenkins_home/customization/config/team.yaml
-          cp -f /var/jenkins_home/customization/config/team.yaml /home/jenkins/lib/resources/config/
-        fi
-
-    volumeMounts:
-    - mountPath: /home/jenkins/agent
-      name: agent-workspace
-    - mountPath: /var/jenkins_home
-      name: jenkins-home
-    - name: jenkins-lib
-      mountPath: /home/jenkins/lib
+    - name: custom-init
+      image: "${IDO_DOCKER_CONTAINER_MIRROR}/xinnj/jenkins-lib:${IDO_JENKINS_LIB_VERSION}"
+      # imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - mountPath: /home/jenkins/agent
+          name: agent-workspace
+        - mountPath: /var/jenkins_home
+          name: jenkins-home
+        - name: jenkins-lib
+          mountPath: /home/jenkins/lib
+      envFrom:
+        - configMapRef:
+            name: packages-env
 
   sidecars:
     configAutoReload:
@@ -731,13 +713,13 @@ controller:
       enabled: false
       image: kiwigrid/k8s-sidecar:1.24.4
       imagePullPolicy: IfNotPresent
-      resources: {}
+      resources: { }
         #   limits:
         #     cpu: 100m
         #     memory: 100Mi
         #   requests:
         #     cpu: 50m
-        #     memory: 50Mi
+      #     memory: 50Mi
       # How many connection-related errors to retry on
       reqRetryConnect: 10
       # env:
@@ -760,7 +742,7 @@ controller:
         allowPrivilegeEscalation: false
 
     # Allows you to inject additional/other sidecars
-    other: []
+    other: [ ]
     ## The example below runs the client for https://smee.io as sidecar container next to Jenkins,
     ## that allows to trigger build behind a secure firewall.
     ## https://jenkins.io/blog/2019/01/07/webhook-firewalls/#triggering-builds-with-webhooks-behind-a-secure-firewall
@@ -781,14 +763,14 @@ controller:
   # Node labels and tolerations for pod assignment
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
-  nodeSelector: {}
+  nodeSelector: { }
 
   terminationGracePeriodSeconds:
 
   terminationMessagePath:
   terminationMessagePolicy:
 
-  tolerations: []
+  tolerations: [ ]
 
   affinity:
     nodeAffinity:
@@ -804,18 +786,18 @@ controller:
   # ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
   priorityClassName:
 
-  podAnnotations: {}
+  podAnnotations: { }
   # Add StatefulSet annotations
-  statefulSetAnnotations: {}
+  statefulSetAnnotations: { }
 
   # StatefulSet updateStrategy
   # ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
-  updateStrategy: {}
+  updateStrategy: { }
 
   ingress:
     enabled: true
     # Override for the default paths that map requests to the backend
-    paths: []
+    paths: [ ]
     # - backend:
     #     serviceName: ssl-redirect
     #     servicePort: use-annotation
@@ -827,12 +809,12 @@ controller:
     # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
     # For Kubernetes v1.19+, use 'networking.k8s.io/v1'
     apiVersion: "extensions/v1"
-    labels: {}
+    labels: { }
     annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/proxy-body-size: 50m
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "${FORCE_SSL_REDIRECT}"
-      kubernetes.io/tls-acme: "${TLS_ACME}"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
+      kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
     # kubernetes.io/tls-acme: "true"
     # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
     # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
@@ -840,11 +822,11 @@ controller:
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     path: "${JENKINS_URL_PREFIX}"
     # configures the hostname e.g. jenkins.example.com
-    hostName: ${CLUSTER_HOSTNAME}
-    ${TLS_KEY}:
-      - secretName: ${TLS_SECRET}
+    hostName: ${IDO_IDO_INGRESS_HOSTNAME}
+    ${IDO_TLS_KEY}:
+      - secretName: ${IDO_TLS_SECRET}
         hosts:
-          - ${TLS_HOST}
+          - ${IDO_TLS_HOST}
     # - secretName: jenkins.cluster.local
     #   hosts:
     #     - jenkins.cluster.local
@@ -857,12 +839,12 @@ controller:
     enabled: false
     # paths you want forwarded to the backend
     # ex /github-webhook
-    paths: []
+    paths: [ ]
     # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
     # For Kubernetes v1.19+, use 'networking.k8s.io/v1'
     apiVersion: "extensions/v1beta1"
-    labels: {}
-    annotations: {}
+    labels: { }
+    annotations: { }
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
@@ -882,20 +864,20 @@ controller:
     enabled: false
     apiVersion: "extensions/v1beta1"
     name:
-    labels: {}
-    annotations: {}
-    spec: {}
+    labels: { }
+    annotations: { }
+    spec: { }
 
   # Openshift route
   route:
     enabled: false
-    labels: {}
-    annotations: {}
+    labels: { }
+    annotations: { }
     # path: "/jenkins"
 
   # controller.hostAliases allows for adding entries to Pod /etc/hosts:
   # https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
-  hostAliases: []
+  hostAliases: [ ]
   # - ip: 192.168.50.50
   #   hostnames:
   #     - something.local
@@ -907,20 +889,20 @@ controller:
   prometheus:
     # If enabled, add the prometheus plugin to the list of plugins to install
     # https://plugins.jenkins.io/prometheus
-    enabled: ${ENABLE_PROMETHEUS}
+    enabled: ${IDO_ENABLE_PROMETHEUS}
     # Additional labels to add to the ServiceMonitor object
-    serviceMonitorAdditionalLabels: {}
+    serviceMonitorAdditionalLabels: { }
     # Set a custom namespace where to deploy ServiceMonitor resource
     # serviceMonitorNamespace: monitoring
     scrapeInterval: 60s
     # This is the default endpoint used by the prometheus plugin
     scrapeEndpoint: /prometheus
     # Additional labels to add to the PrometheusRule object
-    alertingRulesAdditionalLabels: {}
+    alertingRulesAdditionalLabels: { }
     # An array of prometheus alerting rules
     # See here: https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
     # The `groups` root object is added by default, simply add the rule entries
-    alertingrules: []
+    alertingrules: [ ]
     # Set a custom namespace where to deploy PrometheusRule resource
     prometheusRuleNamespace: ""
 
@@ -928,9 +910,9 @@ controller:
     # relabelings for a few standard Kubernetes fields. The original scrape job’s name
     # is available via the __tmp_prometheus_job_name label.
     # More info: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
-    relabelings: []
+    relabelings: [ ]
     # MetricRelabelConfigs to apply to samples before ingestion.
-    metricRelabelings: []
+    metricRelabelings: [ ]
 
   googlePodMonitor:
     # If enabled, It creates Google Managed Prometheus scraping config
@@ -957,46 +939,46 @@ controller:
     password: "password"
     # Convert keystore.jks files content to base64 ( cat keystore.jks | base64 ) and put the output here
     jenkinsKeyStoreBase64Encoded: |
-        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
+      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
 
 agent:
   enabled: false
@@ -1017,7 +999,7 @@ agent:
   tag: "3192.v713e3b_039fb_e-5"
   workingDir: "/home/jenkins/agent"
   nodeUsageMode: "NORMAL"
-  customJenkinsLabels: []
+  customJenkinsLabels: [ ]
   # name of the secret to be used for image pulling
   imagePullSecretName:
   componentName: "jenkins-agent"
@@ -1036,13 +1018,13 @@ agent:
       cpu: "512m"
       memory: "512Mi"
       # ephemeralStorage:
-  livenessProbe: {}
-#    execArgs: "cat /tmp/healthy"
-#    failureThreshold: 3
-#    initialDelaySeconds: 0
-#    periodSeconds: 10
-#    successThreshold: 1
-#    timeoutSeconds: 1
+  livenessProbe: { }
+  #    execArgs: "cat /tmp/healthy"
+  #    failureThreshold: 3
+  #    initialDelaySeconds: 0
+  #    periodSeconds: 10
+  #    successThreshold: 1
+  #    timeoutSeconds: 1
   # You may want to change this to true while testing a new image
   alwaysPullImage: false
   # Controls how agent pods are retained after the Jenkins build completes
@@ -1056,7 +1038,7 @@ agent:
   # Allowed types are: ConfigMap, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC, Secret
   # Configure the attributes as they appear in the corresponding Java class for that type
   # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes
-  volumes: []
+  volumes: [ ]
   # - type: ConfigMap
   #   configMapName: myconfigmap
   #   mountPath: /var/myapp/myconfigmap
@@ -1090,7 +1072,7 @@ agent:
   # Allowed types are: DynamicPVC, EmptyDir, EphemeralVolume, HostPath, Nfs, PVC
   # Configure the attributes as they appear in the corresponding Java class for that type
   # https://github.com/jenkinsci/kubernetes-plugin/tree/master/src/main/java/org/csanchez/jenkins/plugins/kubernetes/volumes/workspace
-  workspaceVolume: {}
+  workspaceVolume: { }
   ## DynamicPVC example
   # type: DynamicPVC
   # configMapName: myconfigmap
@@ -1116,16 +1098,16 @@ agent:
   # readOnly: false
   #
   # Pod-wide environment, these vars are visible to any container in the agent pod
-  envVars: []
+  envVars: [ ]
   # - name: PATH
   #   value: /usr/local/bin
   # Mount a secret as environment variable
-  secretEnvVars: []
+  secretEnvVars: [ ]
   # - key: PATH
   #   optional: false # default: false
   #   secretKey: MY-K8S-PATH
   #   secretName: my-k8s-secret
-  nodeSelector: {}
+  nodeSelector: { }
   # Key Value selectors. Ex:
   # jenkins-agent: v1
 
@@ -1160,11 +1142,11 @@ agent:
   # Timeout in seconds for an agent to be online
   connectTimeout: 600
   # Annotations to apply to the pod.
-  annotations: {}
+  annotations: { }
 
   # Add additional containers to the agents.
   # Containers specified here are added to all agents. Set key empty to remove container from additional agents.
-  additionalContainers: []
+  additionalContainers: [ ]
   #  - sideContainerName: dind
   #    image: docker
   #    tag: dind
@@ -1190,7 +1172,7 @@ agent:
   # For this pod templates configuration to be loaded the following values must be set:
   # controller.JCasC.defaultConfig: true
   # Best reference is https://<jenkins_url>/configuration-as-code/reference#Cloud-kubernetes. The example below creates a python pod template.
-  podTemplates: {}
+  podTemplates: { }
   #  python: |
   #    - name: python
   #      label: jenkins-python
@@ -1209,7 +1191,7 @@ agent:
 
 # Here you can add additional agents
 # They inherit all values from `agent` so you only need to specify values which differ
-additionalAgents: {}
+additionalAgents: { }
 #  maven:
 #    podName: maven
 #    customJenkinsLabels: maven
@@ -1232,7 +1214,7 @@ additionalAgents: {}
 # you only need to specify values which differ. If you want to override
 # default additionalAgents with the additionalClouds.additionalAgents set
 # additionalAgentsOverride to `true`.
-additionalClouds: {}
+additionalClouds: { }
 #  remote-cloud-1:
 #    kubernetesURL: https://api.remote-cloud.com
 #    additionalAgentsOverride: true
@@ -1262,8 +1244,8 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   storageClass:
-  annotations: {}
-  labels: {}
+  annotations: { }
+  labels: { }
   accessMode: "ReadWriteOnce"
   size: "8Gi"
   # Existing data source to clone PVC from
@@ -1272,19 +1254,19 @@ persistence:
   #   name: PVC-NAME
   #   kind: PersistentVolumeClaim
   volumes:
-  - name: agent-workspace
-    persistentVolumeClaim:
-      claimName: jenkins-agent-data
-  - name: jenkins-lib
-    persistentVolumeClaim:
-      claimName: jenkins-lib-data
+    - name: agent-workspace
+      persistentVolumeClaim:
+        claimName: jenkins-agent-data
+    - name: jenkins-lib
+      persistentVolumeClaim:
+        claimName: jenkins-lib-data
   #  - name: nothing
   #    emptyDir: {}
   mounts:
-  - name: agent-workspace
-    mountPath: /home/jenkins/agent
-  - name: jenkins-lib
-    mountPath: /home/jenkins/lib
+    - name: agent-workspace
+      mountPath: /home/jenkins/agent
+    - name: jenkins-lib
+      mountPath: /home/jenkins/lib
   #  - mountPath: /var/nothing
   #    name: nothing
   #    readOnly: true
@@ -1298,10 +1280,10 @@ networkPolicy:
   # You can allow agents to connect from both within the cluster (from within specific/all namespaces) AND/OR from a given external IP range
   internalAgents:
     allowed: true
-    podLabels: {}
-    namespaceLabels: {}
-      # project: myproject
-  externalAgents: {}
+    podLabels: { }
+    namespaceLabels: { }
+    # project: myproject
+  externalAgents: { }
   #   ipCIDR: 172.17.0.0/16
   #   except:
   #     - 172.17.1.0/24
@@ -1315,8 +1297,8 @@ serviceAccount:
   create: true
   # The name of the service account is autogenerated by default
   name:
-  annotations: {}
-  extraLabels: {}
+  annotations: { }
+  extraLabels: { }
   imagePullSecretName:
 
 
@@ -1326,8 +1308,8 @@ serviceAccountAgent:
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
-  annotations: {}
-  extraLabels: {}
+  annotations: { }
+  extraLabels: { }
   imagePullSecretName:
 
 ## Backup cronjob configuration
@@ -1341,11 +1323,11 @@ backup:
   # Schedule to run jobs. Must be in cron time format
   # Ref: https://crontab.guru/
   schedule: "0 2 * * *"
-  labels: {}
+  labels: { }
   serviceAccount:
     create: true
     name:
-    annotations: {}
+    annotations: { }
     # Example for authorization to AWS S3 using kube2iam or IRSA
     # Can also be done using environment variables
     # iam.amazonaws.com/role: "jenkins"
@@ -1358,20 +1340,20 @@ backup:
   imagePullSecretName:
   # Additional arguments for kube-tasks
   # Ref: https://github.com/maorfr/kube-tasks#simple-backup
-  extraArgs: []
+  extraArgs: [ ]
   # Add existingSecret for AWS credentials
-  existingSecret: {}
-  ## Example for using an existing secret
-   # jenkinsaws:
-  ## Use this key for AWS access key ID
-     # awsaccesskey: jenkins_aws_access_key
-  ## Use this key for AWS secret access key
-     # awssecretkey: jenkins_aws_secret_key
-  # Add additional environment variables
-   # jenkinsgcp:
-  ## Use this key for GCP credentials
-     # gcpcredentials: credentials.json
-  env: []
+  existingSecret: { }
+    ## Example for using an existing secret
+    # jenkinsaws:
+    ## Use this key for AWS access key ID
+    # awsaccesskey: jenkins_aws_access_key
+    ## Use this key for AWS secret access key
+    # awssecretkey: jenkins_aws_secret_key
+    # Add additional environment variables
+    # jenkinsgcp:
+    ## Use this key for GCP credentials
+  # gcpcredentials: credentials.json
+  env: [ ]
   # Example environment variable required for AWS credentials chain
   # - name: "AWS_REGION"
   #   value: "us-east-1"
@@ -1394,7 +1376,7 @@ backup:
   # When setting runAsUser to a different value than 0 also set fsGroup to the same value:
   runAsUser: 1000
   fsGroup: 1000
-  securityContextCapabilities: {}
+  securityContextCapabilities: { }
   #  drop:
   #    - NET_RAW
 cronJob:
@@ -1406,8 +1388,8 @@ awsSecurityGroupPolicies:
   enabled: false
   policies:
     - name: ""
-      securityGroupIds: []
-      podSelector: {}
+      securityGroupIds: [ ]
+      podSelector: { }
 
 # Here you can configure unit tests values when executing the helm unittest in the CONTRIBUTING.md
 helmtest:
@@ -1420,10 +1402,10 @@ helmtest:
 workspaceAgent:
   componentName: "workspace-agent"
   image:
-    repository: "${DOCKER_CONTAINER_MIRROR}/xinnj/inbound-agent"
+    repository: "${IDO_DOCKER_CONTAINER_MIRROR}/xinnj/inbound-agent"
     tag: "4.13.3-1-alpine-jdk11-nolog"
     pullPolicy: IfNotPresent
-  imagePullSecrets: []
+  imagePullSecrets: [ ]
   env:
     - name: JENKINS_SECRET
       value: ""

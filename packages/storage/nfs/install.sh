@@ -5,9 +5,9 @@ base=$(dirname "$0")
 
 echo "##########################################################################"
 echo "### Install NFS Provisioner ###"
-echo "NFS_SERVER=${NFS_SERVER}"
-echo "NFS_PATH=${NFS_PATH}"
-echo "GCR_CONTAINER_MIRROR=${GCR_CONTAINER_MIRROR}"
+echo "IDO_NFS_SERVER=${IDO_NFS_SERVER}"
+echo "IDO_NFS_PATH=${IDO_NFS_PATH}"
+echo "IDO_GCR_CONTAINER_MIRROR=${IDO_GCR_CONTAINER_MIRROR}"
 
 # Install nfs provisioner
 envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"

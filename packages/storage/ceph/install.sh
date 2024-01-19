@@ -4,9 +4,9 @@ base=$(dirname "$0")
 
 echo "##########################################################################"
 echo "### Install Ceph ###"
-echo "DOCKER_CONTAINER_MIRROR=${DOCKER_CONTAINER_MIRROR}"
-echo "QUAY_CONTAINER_MIRROR=${QUAY_CONTAINER_MIRROR}"
-echo "K8S_CONTAINER_MIRROR=${K8S_CONTAINER_MIRROR}"
+echo "IDO_DOCKER_CONTAINER_MIRROR=${IDO_DOCKER_CONTAINER_MIRROR}"
+echo "IDO_QUAY_CONTAINER_MIRROR=${IDO_QUAY_CONTAINER_MIRROR}"
+echo "IDO_K8S_CONTAINER_MIRROR=${IDO_K8S_CONTAINER_MIRROR}"
 
 node_num=$(kubectl get node --no-headers|wc -l)
 if (( node_num >= 3 )); then
