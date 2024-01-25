@@ -429,7 +429,9 @@ gitea:
   #       name: gitea-app-ini-plaintext
 
   ## @param gitea.additionalConfigFromEnvs Additional configuration sources from environment variables
-  additionalConfigFromEnvs: []
+  additionalConfigFromEnvs:
+    - name: GITEA__WEBHOOK__ALLOWED_HOST_LIST
+      value: private
 
   ## @param gitea.podAnnotations Annotations for the Gitea pod
   podAnnotations: {}
