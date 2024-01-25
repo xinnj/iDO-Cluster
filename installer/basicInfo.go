@@ -133,10 +133,16 @@ func initFlexBasicInfo() {
 		}
 
 		if basicInfo.httpsEnabled {
+			if net.ParseIP(basicInfo.host) != nil {
+				showErrorModal(basicInfo.host + " must be a DNS, not an IP address, when https is enabled.")
+				return
+			}
+
 			if basicInfo.tlsCert.certMethod == "" {
 				showErrorModal("Please select a method to generate SSL certificate.")
 				return
 			}
+
 			if basicInfo.tlsCert.certMethod == certMethod.existingTlsSecret {
 				if basicInfo.tlsCert.existingCertSecret == "" {
 					showErrorModal("Existing TLS secret is empty.")
@@ -145,11 +151,6 @@ func initFlexBasicInfo() {
 			}
 
 			if basicInfo.tlsCert.certMethod == certMethod.certManager {
-				if net.ParseIP(basicInfo.host) != nil {
-					showErrorModal(basicInfo.host + " must be a DNS, not an IP address, when using Cert Manager.")
-					return
-				}
-
 				email, err := mail.ParseAddress(basicInfo.tlsCert.acmeEmail)
 				if err != nil {
 					showErrorModal("Email is empty or format is wrong.")
