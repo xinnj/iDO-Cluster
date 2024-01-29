@@ -635,7 +635,7 @@ controller:
                   scm:
                     git:
                       id: "ae57f135-5f41-453a-817e-a22796295685"
-                      remote: "file:///home/jenkins/lib"
+                      remote: "file:///home/jenkins/lib/active"
                       traits:
                       - "gitBranchDiscovery"
             - name: "iDO-lib"
