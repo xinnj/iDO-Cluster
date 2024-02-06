@@ -701,9 +701,6 @@ controller:
           name: jenkins-home
         - name: jenkins-lib
           mountPath: /home/jenkins/lib
-      envFrom:
-        - configMapRef:
-            name: packages-env
 
   sidecars:
     configAutoReload:
@@ -1260,6 +1257,9 @@ persistence:
     - name: jenkins-lib
       persistentVolumeClaim:
         claimName: jenkins-lib-data
+    - name: packages-env
+      configMap:
+        name: packages-env
   #  - name: nothing
   #    emptyDir: {}
   mounts:
@@ -1267,6 +1267,8 @@ persistence:
       mountPath: /home/jenkins/agent
     - name: jenkins-lib
       mountPath: /home/jenkins/lib
+    - name: packages-env
+      mountPath: /home/jenkins/lib/active/resources/config/env
   #  - mountPath: /var/nothing
   #    name: nothing
   #    readOnly: true
