@@ -38,6 +38,9 @@ spec:
           volumeMounts:
             - mountPath: /home/jenkins/agent
               name: workspace-volume
+          envFrom:
+            - configMapRef:
+                name: packages-env
           workingDir: /home/jenkins/agent
           command:
             - /bin/sh
