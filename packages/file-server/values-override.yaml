@@ -51,7 +51,7 @@ ingress:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
     kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
   hosts:
-    - host: ${IDO_IDO_INGRESS_HOSTNAME}
+    - host: ${IDO_INGRESS_HOSTNAME}
       paths:
         - path: ${FILE_URL_PREFIX}
           pathType: ImplementationSpecific

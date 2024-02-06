@@ -822,7 +822,7 @@ controller:
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     path: "${JENKINS_URL_PREFIX}"
     # configures the hostname e.g. jenkins.example.com
-    hostName: ${IDO_IDO_INGRESS_HOSTNAME}
+    hostName: ${IDO_INGRESS_HOSTNAME}
     ${IDO_TLS_KEY}:
       - secretName: ${IDO_TLS_SECRET}
         hosts:

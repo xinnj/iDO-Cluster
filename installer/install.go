@@ -114,9 +114,9 @@ func buildTasks() (tasks []task, envs []string) {
 	envs = append(envs, "IDO_CLUSTER_HOSTNAME="+basicInfo.host)
 
 	if net.ParseIP(basicInfo.host) == nil {
-		envs = append(envs, "IDO_IDO_INGRESS_HOSTNAME="+basicInfo.host)
+		envs = append(envs, "IDO_INGRESS_HOSTNAME="+basicInfo.host)
 	} else {
-		envs = append(envs, "IDO_IDO_INGRESS_HOSTNAME=")
+		envs = append(envs, "IDO_INGRESS_HOSTNAME=")
 	}
 
 	var clusterUrl string
