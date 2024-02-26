@@ -1,10 +1,10 @@
 annotations:
   artifacthub.io/category: integration-delivery
   artifacthub.io/changes: |
-    - Add support for [generic ephemeral storage](https://github.com/jenkinsci/kubernetes-plugin/pull/1489) in `agent.volumes` and `agents.workspaceVolume`.
+    - Update Jenkins image and appVersion to jenkins lts release version 2.426.3
   artifacthub.io/images: |
     - name: jenkins
-      image: jenkins/jenkins:2.426.2-jdk17
+      image: jenkins/jenkins:2.426.3-jdk17
     - name: k8s-sidecar
       image: kiwigrid/k8s-sidecar:1.24.4
     - name: inbound-agent
@@ -20,7 +20,7 @@ annotations:
     - name: support
       url: https://github.com/jenkinsci/helm-charts/issues
 apiVersion: v2
-appVersion: 2.426.2
+appVersion: 2.426.3
 description: Jenkins - Build great things at any scale! The leading open source automation
   server, Jenkins provides over 1800 plugins to support building, deploying and automating
   any project.
@@ -47,4 +47,4 @@ sources:
 - https://github.com/jenkinsci/docker-inbound-agent
 - https://github.com/maorfr/kube-tasks
 - https://github.com/jenkinsci/configuration-as-code-plugin
-version: 4.12.0
+version: 4.12.1
