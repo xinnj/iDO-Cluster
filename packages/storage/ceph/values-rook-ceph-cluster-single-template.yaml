@@ -514,7 +514,7 @@ cephFileSystems:
 # -- Settings for the filesystem snapshot class
 # @default -- See [CephFS Snapshots](../Storage-Configuration/Ceph-CSI/ceph-csi-snapshot.md#cephfs-snapshots)
 cephFileSystemVolumeSnapshotClass:
-  enabled: false
+  enabled: true
   name: ceph-filesystem
   isDefault: true
   deletionPolicy: Delete

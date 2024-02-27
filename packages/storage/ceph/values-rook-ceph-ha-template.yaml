@@ -78,7 +78,7 @@ csi:
   # there is significant drop in read/write performance
   enableCSIHostNetwork: true
   # -- Enable Snapshotter in CephFS provisioner pod
-  enableCephfsSnapshotter: false
+  enableCephfsSnapshotter: true
   # -- Enable Snapshotter in NFS provisioner pod
   enableNFSSnapshotter: false
   # -- Enable Snapshotter in RBD provisioner pod
