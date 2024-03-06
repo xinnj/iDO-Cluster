@@ -1,16 +1,14 @@
 annotations:
   artifacthub.io/category: integration-delivery
   artifacthub.io/changes: |
-    - Update Jenkins image and appVersion to jenkins lts release version 2.426.3
+    - Update `docker.io/kiwigrid/k8s-sidecar` to version `1.26.0`
   artifacthub.io/images: |
     - name: jenkins
-      image: jenkins/jenkins:2.426.3-jdk17
+      image: docker.io/jenkins/jenkins:2.440.1-jdk17
     - name: k8s-sidecar
-      image: kiwigrid/k8s-sidecar:1.24.4
+      image: docker.io/kiwigrid/k8s-sidecar:1.26.0
     - name: inbound-agent
-      image: jenkins/inbound-agent:3192.v713e3b_039fb_e-5
-    - name: backup
-      image: maorfr/kube-tasks:0.2.0
+      image: jenkins/inbound-agent:3206.vb_15dcf73f6a_9-3
   artifacthub.io/license: Apache-2.0
   artifacthub.io/links: |
     - name: Chart Source
@@ -20,7 +18,7 @@ annotations:
     - name: support
       url: https://github.com/jenkinsci/helm-charts/issues
 apiVersion: v2
-appVersion: 2.426.3
+appVersion: 2.440.1
 description: Jenkins - Build great things at any scale! The leading open source automation
   server, Jenkins provides over 1800 plugins to support building, deploying and automating
   any project.
@@ -47,4 +45,4 @@ sources:
 - https://github.com/jenkinsci/docker-inbound-agent
 - https://github.com/maorfr/kube-tasks
 - https://github.com/jenkinsci/configuration-as-code-plugin
-version: 4.12.1
+version: 5.0.17
