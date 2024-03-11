@@ -18,7 +18,7 @@ echo "Install ceph as $install_mode mode..."
 
 # Install rook-ceph operator
 envsubst < "${base}/values-rook-ceph-${install_mode}-template.yaml" > "${base}/values-rook-ceph-${install_mode}.yaml"
-helm upgrade rook-ceph --install --create-namespace --namespace rook-ceph --wait --wait-for-jobs --timeout 10m -f "${base}/values-rook-ceph-${install_mode}.yaml" "${base}/rook-ceph-chart"
+helm upgrade rook-ceph --install --create-namespace --namespace rook-ceph --wait --wait-for-jobs --timeout 30m -f "${base}/values-rook-ceph-${install_mode}.yaml" "${base}/rook-ceph-chart"
 
 # Install ceph cluster
 envsubst < "${base}/values-rook-ceph-cluster-${install_mode}-template.yaml" > "${base}/values-rook-ceph-cluster-${install_mode}.yaml"

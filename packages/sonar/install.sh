@@ -29,4 +29,4 @@ kubectl apply -f "${base}"/pvc.yaml
 
 # Install Sonarqube
 envsubst < "${base}/values-override.yaml" > "${base}/values.yaml"
-helm upgrade sonarqube --install --create-namespace --namespace ${IDO_TEAM} --wait --timeout 30m -f "${base}"/values.yaml "${base}"/sonarqube-chart
+helm upgrade sonarqube --install --create-namespace --namespace ${IDO_TEAM} --timeout 30m -f "${base}"/values.yaml "${base}"/sonarqube-chart

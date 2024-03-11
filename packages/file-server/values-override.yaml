@@ -8,7 +8,7 @@ image:
   repository: ${IDO_DOCKER_CONTAINER_MIRROR}/xinnj/file-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.2.0"
+  tag: "1.3.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -119,3 +119,7 @@ env:
 
 probe:
   path: ${FILE_URL_PREFIX}
+
+houseKeeping:
+  schedule: "3 5 * * *"
+  timeZone: ${IDO_TIMEZONE}

@@ -1,25 +1,37 @@
 #! /bin/bash
 set -euao pipefail
 
+not_ready_pod_list() {
+  pod_list=""
+  for p in $(kubectl -n ${IDO_TEAM} get pods --field-selector=status.phase!=Running,status.phase!=Succeeded -o=jsonpath="{range .items[*]}{.metadata.name}{';'}{.metadata.ownerReferences[?(@.kind != 'Job')].name}{'\n'}{end}"); do
+    v_owner_name=$(echo $p | cut -d';' -f2)
+    if [ ! -z "$v_owner_name" ]; then
+      v_pod_name=$(echo $p | cut -d';' -f1)
+      pod_list="$pod_list $v_pod_name"
+    fi
+  done
+  echo $pod_list
+}
+
 kubectl delete pod --all -n ingress-nginx >/dev/null
 
 echo "##########################################################################"
 
-result=$(kubectl get pods --field-selector=status.phase!=Running,status.phase!=Succeeded -o custom-columns=Name:.metadata.name --no-headers=true -A)
+result=$(not_ready_pod_list)
 if [ "${result}" != "" ]; then
   echo "Please wait for these pods to be ready..."
-  kubectl get pods --field-selector=status.phase!=Running,status.phase!=Succeeded -A
+  kubectl get pods $result
 fi
 
 while [ "$result" != "" ]; do
   sleep 10
 
-  new_result=$(kubectl get pods --field-selector=status.phase!=Running,status.phase!=Succeeded -o custom-columns=Name:.metadata.name --no-headers=true -A)
+  new_result=$(not_ready_pod_list)
   if [ "${new_result}" != "" ]; then
     if [ "${new_result}" != "${result}" ]; then
       echo "##########################################################################"
       echo "Please wait for these pods to be ready..."
-      kubectl get pods --field-selector=status.phase!=Running,status.phase!=Succeeded -A
+      kubectl get pods $new_result
     fi
   fi
   result=${new_result}
