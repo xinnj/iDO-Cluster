@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ${IDO_DOCKER_CONTAINER_MIRROR}/xinnj/file-server
+  repository: docker.io/xinnj/file-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1.3.0"
