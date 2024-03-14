@@ -28,7 +28,7 @@ toolbox:
   # -- Enable Ceph debugging pod deployment. See [toolbox](../Troubleshooting/ceph-toolbox.md)
   enabled: true
   # -- Toolbox image, defaults to the image used by the Ceph cluster
-  image: ${IDO_QUAY_CONTAINER_MIRROR}/ceph/ceph:v17.2.6
+  image: ${IDO_QUAY_CONTAINER_MIRROR}/ceph/ceph:v18.2.2
   # -- Toolbox tolerations
   tolerations: []
   # -- Toolbox affinity
@@ -42,10 +42,16 @@ toolbox:
                 operator: NotIn
                 values:
                   - 'True'
+  # -- Toolbox container security context
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 2016
+    runAsGroup: 2016
+    capabilities:
+      drop: ["ALL"]
   # -- Toolbox resources
   resources:
     limits:
-      cpu: "500m"
       memory: "1Gi"
     requests:
       cpu: "100m"
@@ -66,6 +72,8 @@ monitoring:
   # Monitoring settings for external clusters:
   # externalMgrEndpoints: <list of endpoints>
   # externalMgrPrometheusPort: <port>
+  # Scrape interval for prometheus
+  # interval: 10s
   # allow adding custom labels and annotations to the prometheus rule
   prometheusRule:
     # -- Labels applied to PrometheusRule
@@ -465,7 +473,7 @@ cephBlockPools: {}
 # @default -- See [below](#ceph-file-systems)
 cephFileSystems:
   - name: ceph-filesystem
-    # see https://github.com/rook/rook/blob/master/Documentation/CRDs/Shared-Filesystem/ceph-filesystem-crd.md#filesystem-settings for available configuration
+    # see https://github.com/rook/rook/blob/v1.13.7/Documentation/CRDs/Shared-Filesystem/ceph-filesystem-crd.md#filesystem-settings for available configuration
     spec:
       metadataPool:
         replicated:
@@ -481,7 +489,6 @@ cephFileSystems:
         activeStandby: true
         resources:
           limits:
-            cpu: "2000m"
             memory: "4Gi"
           requests:
             cpu: "100m"
@@ -497,7 +504,7 @@ cephFileSystems:
       allowVolumeExpansion: true
       volumeBindingMode: "Immediate"
       mountOptions: []
-      # see https://github.com/rook/rook/blob/master/Documentation/ceph-filesystem.md#provision-storage for available configuration
+      # see https://github.com/rook/rook/blob/v1.13.7/Documentation/Storage-Configuration/Shared-Filesystem-CephFS/filesystem-storage.md#provision-storage for available configuration
       parameters:
         # The secrets contain Ceph admin credentials.
         csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
