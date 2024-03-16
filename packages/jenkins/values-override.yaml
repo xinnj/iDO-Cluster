@@ -423,7 +423,14 @@ controller:
   #  - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
   #  - "new groovy.json.JsonSlurperClassic"
   # List of groovy init scripts to be executed during Jenkins controller start
-  initScripts: {}
+  initScripts:
+    - |
+      import jenkins.model.*
+      import java.io.File
+      String sec = jenkins.model.Jenkins.getInstance().getComputer('Workspace').getJnlpMac()
+      sec = "export JENKINS_SECRET=" + sec
+      def secFile = new File('/home/jenkins/agent/.workspace.sec')
+      secFile.write(sec)
   #  test: |-
   #    print 'adding global pipeline libraries, register properties, bootstrap jobs...'
 
