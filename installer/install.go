@@ -127,7 +127,7 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "IDO_TLS_HOST="+basicInfo.host)
 
 		switch basicInfo.tlsCert.certMethod {
-		case certMethod.selfSigned:
+		case certMethod.defaultTlsSecret:
 			envs = append(envs, "IDO_TLS_ACME=false")
 			envs = append(envs, "IDO_TLS_SECRET=")
 		case certMethod.existingTlsSecret:

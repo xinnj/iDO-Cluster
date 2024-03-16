@@ -24,13 +24,13 @@ type TlsCert struct {
 	acmeEmail          string
 }
 type CertMethod struct {
-	selfSigned        string
+	defaultTlsSecret  string
 	existingTlsSecret string
 	certManager       string
 }
 
 var certMethod = CertMethod{
-	selfSigned:        "Self Signed",
+	defaultTlsSecret:  "Default TLS Secret (Secret name: default-tls, Namespace: default)",
 	existingTlsSecret: "Existing TLS Secret",
 	certManager:       "Cert Manager",
 }
@@ -76,7 +76,7 @@ func initFlexBasicInfo() {
 			basicInfo.tlsCert.forceSslRedirect = checked
 		})
 
-		arrCertMethods := []string{certMethod.selfSigned, certMethod.existingTlsSecret, certMethod.certManager}
+		arrCertMethods := []string{certMethod.defaultTlsSecret, certMethod.certManager}
 		initialOption := slices.Index(arrCertMethods, basicInfo.tlsCert.certMethod)
 		formBasicInfo.AddDropDown("  Select a method to generate SSL certificate: ", arrCertMethods, initialOption,
 			func(option string, optionIndex int) {
@@ -141,6 +141,14 @@ func initFlexBasicInfo() {
 			if basicInfo.tlsCert.certMethod == "" {
 				showErrorModal("Please select a method to generate SSL certificate.")
 				return
+			}
+
+			if basicInfo.tlsCert.certMethod == certMethod.defaultTlsSecret {
+				_, err := execCommand("kubectl get secret default-tls", 0)
+				if err != nil {
+					showErrorModal("Secret 'default-tls' not existing.")
+					return
+				}
 			}
 
 			if basicInfo.tlsCert.certMethod == certMethod.existingTlsSecret {
