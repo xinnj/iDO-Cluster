@@ -22,7 +22,7 @@ func initFlexMirror() {
 	if enableMirror {
 		if mirrors == nil {
 			mirrors = map[string]string{
-				"DOCKER_CONTAINER_MIRROR": "docker.m.daocloud.io",
+				"DOCKER_CONTAINER_MIRROR": "docker.io",
 				"QUAY_CONTAINER_MIRROR":   "quay.m.daocloud.io",
 				"K8S_CONTAINER_MIRROR":    "k8s.m.daocloud.io",
 				"GCR_CONTAINER_MIRROR":    "k8s-gcr.m.daocloud.io",

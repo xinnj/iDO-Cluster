@@ -1,0 +1,13 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: keycloak-pg-data
+  namespace: ${IDO_TEAM}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ${IDO_STORAGE_CLASS}
+  resources:
+    requests:
+      storage: ${IDO_KEYCLOAK_PG_STORAGE_SIZE}

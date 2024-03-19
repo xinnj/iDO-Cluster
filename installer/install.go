@@ -147,6 +147,12 @@ func buildTasks() (tasks []task, envs []string) {
 	}
 	envs = append(envs, "IDO_FORCE_SSL_REDIRECT="+strconv.FormatBool(basicInfo.tlsCert.forceSslRedirect))
 
+	if basicInfo.team == "default" {
+		envs = append(envs, "TEAM_URL="+clusterUrl)
+	} else {
+		envs = append(envs, "TEAM_URL="+clusterUrl+"/"+basicInfo.team)
+	}
+
 	var finalMirrors map[string]string
 	if enableMirror {
 		finalMirrors = map[string]string{
@@ -197,6 +203,12 @@ func buildTasks() (tasks []task, envs []string) {
 		}
 	}
 	envs = append(envs, "IDO_STORAGE_CLASS="+storageClass)
+
+	if installKeycloak {
+		tasks = append(tasks, task{name: "Install Keycloak",
+			command: "chmod +x packages/keycloak/install.sh; packages/keycloak/install.sh"})
+		envs = append(envs, "IDO_KEYCLOAK_PG_STORAGE_SIZE="+strconv.Itoa(keycloakConfig.dbStorageSizeGi)+"Gi")
+	}
 
 	if installGitea {
 		tasks = append(tasks, task{name: "Install Gitea",

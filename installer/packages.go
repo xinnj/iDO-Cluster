@@ -130,6 +130,17 @@ func (config *ZentaoConfig) validate() error {
 	return nil
 }
 
+type KeycloakConfig struct {
+	dbStorageSizeGi int
+}
+
+func (config *KeycloakConfig) validate() error {
+	if config.dbStorageSizeGi == 0 {
+		return errors.New("Keycloak DB storage size is 0.")
+	}
+	return nil
+}
+
 var installJenkins = false
 var installNexus = false
 var installSonar = false
@@ -138,6 +149,7 @@ var installSmb = false
 var installPrometheus = false
 var installGitea = false
 var installZentao = false
+var installKeycloak = false
 var jenkinsConfig = JenkinsConfig{
 	controllerStorageSizeGi: 20,
 	agentStorageSizeGi:      200,
@@ -171,7 +183,11 @@ var zentaoConfig = ZentaoConfig{
 	zentaoStorageSizeGi:   200,
 	zentaoDbStorageSizeGi: 20,
 }
-var packages = []string{"Gitea", "Zentao", "Jenkins", "Nexus", "File server", "Samba server", "Sonarqube", "Prometheus"}
+
+var keycloakConfig = KeycloakConfig{
+	dbStorageSizeGi: 8,
+}
+var packages = []string{"Keycloak", "Gitea", "Zentao", "Jenkins", "Nexus", "File server", "Samba server", "Sonarqube", "Prometheus"}
 var listPackages = tview.NewList()
 var formPackage = tview.NewForm()
 
@@ -246,6 +262,13 @@ func initFlexPackages() {
 
 		if installZentao {
 			err := zentaoConfig.validate()
+			if err != nil {
+				showErrorModal(err.Error())
+			}
+		}
+
+		if installKeycloak {
+			err := keycloakConfig.validate()
 			if err != nil {
 				showErrorModal(err.Error())
 			}
@@ -406,6 +429,18 @@ func selectPackage(index int, mainText string) {
 			formPackage.AddInputField("Prometheus storage size (Gi): ", strconv.Itoa(prometheusConfig.prometheusStorageSizeGi),
 				0, nil, func(text string) {
 					prometheusConfig.prometheusStorageSizeGi, _ = strconv.Atoi(text)
+				})
+		}
+	case "Keycloak":
+		formPackage.AddCheckbox("Install Keycloak: ", installKeycloak, func(checked bool) {
+			installKeycloak = checked
+			selectPackage(index, mainText)
+		})
+		if installKeycloak {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Keycloak DB storage size (Gi): ", strconv.Itoa(keycloakConfig.dbStorageSizeGi),
+				0, nil, func(text string) {
+					keycloakConfig.dbStorageSizeGi, _ = strconv.Atoi(text)
 				})
 		}
 	}

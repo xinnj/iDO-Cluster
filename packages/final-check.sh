@@ -2,7 +2,7 @@
 set -euao pipefail
 
 not_ready_pod_list() {
-  kubectl get pods -A -o=custom-columns=':.metadata.namespace,:.metadata.name,:.status.containerStatuses[*].ready,:.status.phase,:.status.containerStatuses[*].restartCount,:.metadata.ownerReferences[*].kind' | grep -v -E "^(\S+\s+)(\S+\s+)(\S+\s+)(\S+\s+)(\S+\s+)Job" | grep -E "^(\S+\s+)(\S+\s+)\S*?false\S*?\s+" | awk '{print $1,$2}'
+  kubectl get pods -A -o=custom-columns=':.metadata.namespace,:.metadata.name,:.status.containerStatuses[*].ready,:.status.phase,:.status.containerStatuses[*].restartCount,:.metadata.ownerReferences[*].kind' | grep -v -E "^(\S+\s+)(\S+\s+)(\S+\s+)(\S+\s+)(\S+\s+)Job" | grep -E "^(\S+\s+)(\S+\s+)\S*?false\S*?\s+" | awk '{print $1,$2}' || true
 }
 
 display_not_ready_pod() {
