@@ -53,11 +53,11 @@ ingress:
     kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
   host: "${IDO_INGRESS_HOSTNAME}"
   paths:
-  - path: ${ZENTAO_URL_PREFIX}
+  - path: ${IDO_ZENTAO_URL_PREFIX}
     port: 80
     type: Prefix
   tls:
-    enabled: ${TLS_ENABLED}
+    enabled: ${IDO_TLS_ENABLED}
     secretName: ${IDO_TLS_SECRET}
     host: ${IDO_TLS_HOST}
 
@@ -74,8 +74,8 @@ env:
   IS_CONTAINER: "true"
   SMTP_ENABLED: '$ref:mail.enabled'
   SMTP_FROMNAME: "ZenTao"
-  APP_DOMAIN: "${DOMAIN}"
-  APP_WEB_ROOT: "${ZENTAO_URL_PREFIX}"
+  APP_DOMAIN: "${IDO_ZENTAO_DOMAIN}"
+  APP_WEB_ROOT: "${IDO_ZENTAO_URL_PREFIX}"
 
 mysql:
   enabled: true

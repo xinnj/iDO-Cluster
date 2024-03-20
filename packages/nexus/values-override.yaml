@@ -37,7 +37,7 @@ nexus:
     - name: NEXUS_SECURITY_RANDOMPASSWORD
       value: "false"
     - name: NEXUS_CONTEXT
-      value: "${NEXUS_URL_PATH}"
+      value: "${IDO_NEXUS_URL_PATH}"
   properties:
     override: false
     data:
@@ -78,13 +78,13 @@ nexus:
     periodSeconds: 30
     failureThreshold: 6
     timeoutSeconds: 10
-    path: "/${NEXUS_URL_PATH}"
+    path: "/${IDO_NEXUS_URL_PATH}"
   readinessProbe:
     initialDelaySeconds: 300
     periodSeconds: 30
     failureThreshold: 6
     timeoutSeconds: 10
-    path: "/${NEXUS_URL_PATH}"
+    path: "/${IDO_NEXUS_URL_PATH}"
   # hostAliases allows the modification of the hosts file inside a container
   hostAliases: []
   # - ip: "192.168.1.10"
@@ -125,7 +125,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
     kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
-  hostPath: "/${NEXUS_URL_PATH}"
+  hostPath: "/${IDO_NEXUS_URL_PATH}"
   hostRepo: "${IDO_INGRESS_HOSTNAME}"
   ${IDO_TLS_KEY}:
     - secretName: ${IDO_TLS_SECRET}

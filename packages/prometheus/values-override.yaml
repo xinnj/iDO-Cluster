@@ -897,7 +897,8 @@ grafana:
   ##
   defaultDashboardsTimezone: ${IDO_TIMEZONE}
 
-  adminPassword: idocluster
+  adminUser: admin
+  adminPassword: admin123
 
   deploymentStrategy:
     type: Recreate

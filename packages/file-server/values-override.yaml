@@ -52,7 +52,7 @@ ingress:
   hosts:
     - host: ${IDO_INGRESS_HOSTNAME}
       paths:
-        - path: ${FILE_URL_PREFIX}
+        - path: ${IDO_FILE_URL_PREFIX}
           pathType: ImplementationSpecific
         - path: /fancyindex
           pathType: ImplementationSpecific
@@ -114,10 +114,10 @@ env:
   - name: TZ
     value: ${IDO_TIMEZONE}
   - name: URL_PREFIX
-    value: ${FILE_URL_PREFIX}
+    value: ${IDO_FILE_URL_PREFIX}
 
 probe:
-  path: ${FILE_URL_PREFIX}
+  path: ${IDO_FILE_URL_PREFIX}
 
 houseKeeping:
   schedule: "3 5 * * *"

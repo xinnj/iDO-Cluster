@@ -148,9 +148,9 @@ func buildTasks() (tasks []task, envs []string) {
 	envs = append(envs, "IDO_FORCE_SSL_REDIRECT="+strconv.FormatBool(basicInfo.tlsCert.forceSslRedirect))
 
 	if basicInfo.team == "default" {
-		envs = append(envs, "TEAM_URL="+clusterUrl)
+		envs = append(envs, "IDO_TEAM_URL="+clusterUrl)
 	} else {
-		envs = append(envs, "TEAM_URL="+clusterUrl+"/"+basicInfo.team)
+		envs = append(envs, "IDO_TEAM_URL="+clusterUrl+"/"+basicInfo.team)
 	}
 
 	var finalMirrors map[string]string
@@ -179,6 +179,7 @@ func buildTasks() (tasks []task, envs []string) {
 	if basicInfo.httpsEnabled && basicInfo.tlsCert.certMethod == certMethod.certManager {
 		tasks = append(tasks, task{name: "Install Cert-manager",
 			command: "chmod +x packages/cert-manager/install.sh; packages/cert-manager/install.sh"})
+		envs = append(envs, "IDO_ACME_EMAIL="+basicInfo.tlsCert.acmeEmail)
 	}
 
 	envs = append(envs, "IDO_ENABLE_PROMETHEUS="+strconv.FormatBool(installPrometheus))
@@ -244,14 +245,6 @@ func buildTasks() (tasks []task, envs []string) {
 		tasks = append(tasks, task{name: "Install File Server",
 			command: "chmod +x packages/file-server/install.sh; packages/file-server/install.sh"})
 		envs = append(envs, "IDO_FILE_STORAGE_SIZE="+strconv.Itoa(fileServerConfig.storageSizeGi)+"Gi")
-
-		var fileUrl string
-		if basicInfo.team == "default" {
-			fileUrl = clusterUrl + "/download"
-		} else {
-			fileUrl = clusterUrl + "/" + basicInfo.team + "/download"
-		}
-		envs = append(envs, "IDO_FILE_URL="+fileUrl)
 	}
 
 	if installSmb {

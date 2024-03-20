@@ -171,7 +171,7 @@ ingress:
   hosts:
     - host: "${IDO_INGRESS_HOSTNAME}"
       paths:
-        - path: ${GITEA_URL_PREFIX}(/|$)(.*)
+        - path: ${IDO_GITEA_URL_PREFIX}(/|$)(.*)
           pathType: Prefix
   ${IDO_TLS_KEY}:
     - secretName: ${IDO_TLS_SECRET}
@@ -360,7 +360,7 @@ gitea:
     # existingSecret: gitea-admin-secret
     existingSecret:
     username: root
-    password: idocluster
+    password: admin123
     email: "gitea@local.domain"
 
   ## @param gitea.metrics.enabled Enable Gitea metrics
@@ -413,9 +413,9 @@ gitea:
     server:
       SSH_PORT: ${IDO_GITEA_SSH_NODE_PORT} # rootful image
       SSH_LISTEN_PORT: 2222 # rootless image
-      ROOT_URL: ${GITEA_URL}
-      DOMAIN: ${DOMAIN}
-      SSH_DOMAIN: ${DOMAIN}
+      ROOT_URL: ${IDO_GITEA_URL}
+      DOMAIN: ${IDO_GITEA_DOMAIN}
+      SSH_DOMAIN: ${IDO_GITEA_DOMAIN}
     service:
       DISABLE_REGISTRATION: true
     cache:

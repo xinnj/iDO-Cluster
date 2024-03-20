@@ -4,9 +4,6 @@ base=$(dirname "$0")
 
 echo "##########################################################################"
 echo "### Install Ceph ###"
-echo "IDO_DOCKER_CONTAINER_MIRROR=${IDO_DOCKER_CONTAINER_MIRROR}"
-echo "IDO_QUAY_CONTAINER_MIRROR=${IDO_QUAY_CONTAINER_MIRROR}"
-echo "IDO_K8S_CONTAINER_MIRROR=${IDO_K8S_CONTAINER_MIRROR}"
 
 node_num=$(kubectl get node --no-headers|wc -l)
 if (( node_num >= 3 )); then
@@ -18,10 +15,12 @@ echo "Install ceph as $install_mode mode..."
 
 # Install rook-ceph operator
 envsubst < "${base}/values-rook-ceph-${install_mode}-template.yaml" > "${base}/values-rook-ceph-${install_mode}.yaml"
+"${base}/../../check-undefined-env.sh" "${base}/values-rook-ceph-${install_mode}.yaml"
 helm upgrade rook-ceph --install --create-namespace --namespace rook-ceph --wait --wait-for-jobs --timeout 30m -f "${base}/values-rook-ceph-${install_mode}.yaml" "${base}/rook-ceph-chart"
 
 # Install ceph cluster
 envsubst < "${base}/values-rook-ceph-cluster-${install_mode}-template.yaml" > "${base}/values-rook-ceph-cluster-${install_mode}.yaml"
+"${base}/../../check-undefined-env.sh" "${base}/values-rook-ceph-cluster-${install_mode}.yaml"
 helm upgrade rook-ceph-cluster --install --create-namespace --namespace rook-ceph -f "${base}/values-rook-ceph-cluster-${install_mode}.yaml" "${base}/rook-ceph-cluster-chart"
 
 echo Wait the ceph cluster is ready...
