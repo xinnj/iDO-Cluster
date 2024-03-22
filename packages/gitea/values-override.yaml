@@ -168,6 +168,9 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
     kubernetes.io/tls-acme: "${IDO_TLS_ACME}"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
   hosts:
     - host: "${IDO_INGRESS_HOSTNAME}"
       paths:
@@ -193,8 +196,8 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-    cpu: 1000m
-    memory: 2Gi
+    cpu: 2000m
+    memory: 4Gi
   requests:
     cpu: 100m
     memory: 128Mi
@@ -423,6 +426,15 @@ gitea:
       ADAPTER: memory
     session:
       PROVIDER: memory
+    Webhook:
+      ALLOWED_HOST_LIST: private
+    ssh.minimum_key_sizes:
+      RSA: 2048
+    oauth2_client:
+      ENABLE_AUTO_REGISTRATION: true
+      ACCOUNT_LINKING: auto
+    git.timeout:
+      MIGRATE: 7200
   #
   #  security:
   #    PASSWORD_COMPLEXITY: spec
@@ -435,11 +447,7 @@ gitea:
   #       name: gitea-app-ini-plaintext
 
   ## @param gitea.additionalConfigFromEnvs Additional configuration sources from environment variables
-  additionalConfigFromEnvs:
-    - name: GITEA__WEBHOOK__ALLOWED_HOST_LIST
-      value: private
-    - name: GITEA__SSH_0X2E_MINIMUM_KEY_SIZES__RSA
-      value: "2048"
+  additionalConfigFromEnvs: []
 
   ## @param gitea.podAnnotations Annotations for the Gitea pod
   podAnnotations: {}
