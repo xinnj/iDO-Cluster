@@ -181,14 +181,21 @@ func buildTasks() (tasks []task, envs []string) {
 			command: "chmod +x packages/cert-manager/install.sh; packages/cert-manager/install.sh"})
 		envs = append(envs, "IDO_ACME_EMAIL="+basicInfo.tlsCert.acmeEmail)
 	}
-
-	envs = append(envs, "IDO_ENABLE_PROMETHEUS="+strconv.FormatBool(installPrometheus))
+	
 	if installPrometheus {
 		tasks = append(tasks, task{name: "Install Prometheus",
 			command: "chmod +x packages/prometheus/install.sh; packages/prometheus/install.sh"})
 		envs = append(envs, "IDO_ALTERMANAGER_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.alertmanagerStorageSizeGi)+"Gi")
 		envs = append(envs, "IDO_GRAFANA_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.grafanaStorageSizeGi)+"Gi")
 		envs = append(envs, "IDO_PROMETHEUS_STORAGE_SIZE="+strconv.Itoa(prometheusConfig.prometheusStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_ENABLE_PROMETHEUS=true")
+	} else {
+		_, err := execCommand("helm -n monitoring status prometheus", 0)
+		if err == nil {
+			envs = append(envs, "IDO_ENABLE_PROMETHEUS=true")
+		} else {
+			envs = append(envs, "IDO_ENABLE_PROMETHEUS=false")
+		}
 	}
 
 	if !useExistingSC {

@@ -674,10 +674,7 @@ dashboardProviders:
 ##
 ## dashboards per provider, use provider name as key.
 ##
-dashboards:
-  default:
-    jenkins-dashboard:
-      file: dashboards/jenkins.json
+dashboards: {}
   # default:
   #   some-dashboard:
   #     json: |
