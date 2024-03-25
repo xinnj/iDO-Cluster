@@ -21,7 +21,7 @@ nexus:
       enabled: false
     registries:
       - host:
-        port: 5000
+        port: 5001
         nodePort: ${IDO_NEXUS_DOCKER_NODE_PORT}
     #     secretName: registry-secret
   env:

@@ -36,6 +36,11 @@ func (config *NexusConfig) validate() error {
 	}
 	if config.dockerNodePort == "" {
 		return errors.New("Nexus docker node port is emtpy.")
+	} else {
+		portNum, err := strconv.Atoi(config.dockerNodePort)
+		if err != nil || portNum < 30001 || portNum > 32767 {
+			return errors.New("Nexus docker node port can only be in [30001 - 32767].")
+		}
 	}
 	return nil
 }
@@ -157,7 +162,7 @@ var jenkinsConfig = JenkinsConfig{
 }
 var nexusConfig = NexusConfig{
 	storageSizeGi:  200,
-	dockerNodePort: "30000",
+	dockerNodePort: "30001",
 }
 var sonarConfig = SonarConfig{
 	storageSizeGi:   5,
