@@ -24,7 +24,7 @@ jobs:
 
     - name: Package
       run: |
-        chmod +x ido-cluster-installer
+        chmod +x ido-cluster-installer packages/*.sh
         tar czf ido-cluster-installer-${{ github.ref_name }}.tgz --transform 's,^,ido-cluster-installer-${{ github.ref_name }}/,' packages images ido-cluster-installer LICENSE README.md
 
     - name: Release

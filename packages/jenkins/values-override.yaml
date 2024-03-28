@@ -677,6 +677,7 @@ controller:
                   permissions:
                   - "Overall/Administer"
                 - entries:
+                  - group: "authenticated"
                   - group: "jenkins_user"
                   name: "user"
                   pattern: ".*"
@@ -685,7 +686,9 @@ controller:
                   - "Overall/Read"
                   - "Job/Build"
                   - "Run/Update"
+                  - "Job/Read"
                   - "Job/Workspace"
+                  - "View/Read"
                   - "Run/Replay"
           clouds:
           - kubernetes:
