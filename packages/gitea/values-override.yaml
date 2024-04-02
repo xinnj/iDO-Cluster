@@ -197,7 +197,7 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
     cpu: 2000m
-    memory: 4Gi
+    memory: 8Gi
   requests:
     cpu: 100m
     memory: 128Mi
@@ -435,6 +435,9 @@ gitea:
       ACCOUNT_LINKING: auto
     git.timeout:
       MIGRATE: 7200
+      CLONE: 7200
+    cron.repo_health_check:
+      TIMEOUT: 600s
   #
   #  security:
   #    PASSWORD_COMPLEXITY: spec
