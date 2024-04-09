@@ -967,7 +967,7 @@ metrics:
   serviceMonitor:
     ## @param metrics.serviceMonitor.enabled Create ServiceMonitor Resource for scraping metrics using PrometheusOperator
     ##
-    enabled: true
+    enabled: ${IDO_ENABLE_PROMETHEUS}
     ## @param metrics.serviceMonitor.port Metrics service HTTP port
     ##
     port: http
@@ -1014,7 +1014,7 @@ metrics:
   prometheusRule:
     ## @param metrics.prometheusRule.enabled Create PrometheusRule Resource for scraping metrics using PrometheusOperator
     ##
-    enabled: true
+    enabled: ${IDO_ENABLE_PROMETHEUS}
     ## @param metrics.prometheusRule.namespace Namespace which Prometheus is running in
     ##
     namespace: "monitoring"

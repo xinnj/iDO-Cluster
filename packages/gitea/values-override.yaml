@@ -371,7 +371,7 @@ gitea:
   metrics:
     enabled: ${IDO_ENABLE_PROMETHEUS}
     serviceMonitor:
-      enabled: true
+      enabled: ${IDO_ENABLE_PROMETHEUS}
       #  additionalLabels:
       #    prometheus-release: prom1
 
