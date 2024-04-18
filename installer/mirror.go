@@ -59,7 +59,7 @@ func initFlexMirror() {
 	})
 
 	formDown.AddButton("Back", func() {
-		pages.SwitchToPage("Packages")
+		pages.SwitchToPage("Backup")
 	})
 
 	formDown.AddButton("Quit", func() {

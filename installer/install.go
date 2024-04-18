@@ -181,7 +181,7 @@ func buildTasks() (tasks []task, envs []string) {
 			command: "chmod +x packages/cert-manager/install.sh; packages/cert-manager/install.sh"})
 		envs = append(envs, "IDO_ACME_EMAIL="+basicInfo.tlsCert.acmeEmail)
 	}
-	
+
 	if installPrometheus {
 		tasks = append(tasks, task{name: "Install Prometheus",
 			command: "chmod +x packages/prometheus/install.sh; packages/prometheus/install.sh"})
@@ -265,6 +265,28 @@ func buildTasks() (tasks []task, envs []string) {
 			command: "chmod +x packages/sonar/install.sh; packages/sonar/install.sh"})
 		envs = append(envs, "IDO_SONAR_STORAGE_SIZE="+strconv.Itoa(sonarConfig.storageSizeGi)+"Gi")
 		envs = append(envs, "IDO_SONAR_PG_STORAGE_SIZE="+strconv.Itoa(sonarConfig.dbStorageSizeGi)+"Gi")
+	}
+
+	// backup
+	envs = append(envs, "IDO_BACKUP_EXCLUDE_GITEA="+strconv.FormatBool(!backupInfo.backupGitea))
+	envs = append(envs, "IDO_BACKUP_EXCLUDE_JENKINS_CONTROLLER="+strconv.FormatBool(!backupInfo.backupJenkinsController))
+	envs = append(envs, "IDO_BACKUP_EXCLUDE_KEYCLOAK="+strconv.FormatBool(!backupInfo.backupKeycloak))
+	envs = append(envs, "IDO_BACKUP_EXCLUDE_NEXUS="+strconv.FormatBool(!backupInfo.backupNexus))
+	envs = append(envs, "IDO_BACKUP_EXCLUDE_FILE_SERVER="+strconv.FormatBool(!backupInfo.backupFileServer))
+	envs = append(envs, "IDO_BACKUP_EXCLUDE_SONARQUBE="+strconv.FormatBool(!backupInfo.backupSonarqube))
+	envs = append(envs, "IDO_BACKUP_EXCLUDE_ZENTAO="+strconv.FormatBool(!backupInfo.backupZentao))
+
+	if enableBackup {
+		tasks = append(tasks, task{name: "Install Velero",
+			command: "chmod +x packages/velero/install.sh; packages/velero/install.sh"})
+
+		envs = append(envs, "IDO_BACKUP_PROVIDER="+backupInfo.provider)
+		envs = append(envs, "IDO_BACKUP_BUCKET="+backupInfo.bucket)
+		envs = append(envs, "IDO_BACKUP_LOCATION_CONFIG="+backupInfo.locationConfig)
+		envs = append(envs, "IDO_BACKUP_REGION="+backupInfo.region)
+		envs = append(envs, "IDO_BACKUP_CLOUD_SECRET="+backupInfo.cloudSecret)
+		envs = append(envs, "IDO_BACKUP_SCHEDULE="+backupInfo.schedule)
+		envs = append(envs, "IDO_BACKUP_TTL="+strconv.Itoa(backupInfo.ttl)+"h")
 	}
 
 	tasks = append(tasks, task{name: "Final Check",

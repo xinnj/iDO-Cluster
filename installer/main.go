@@ -14,6 +14,7 @@ var modalQuit = tview.NewModal()
 var flexBasicInfo = tview.NewFlex()
 var flexStorage = tview.NewFlex()
 var flexPackages = tview.NewFlex()
+var flexBackup = tview.NewFlex()
 var flexMirror = tview.NewFlex()
 var flexInstall = tview.NewFlex()
 
@@ -42,6 +43,7 @@ func main() {
 	pages.AddPage("Basic Info", flexBasicInfo, true, true)
 	pages.AddPage("Storage", flexStorage, true, false)
 	pages.AddPage("Packages", flexPackages, true, false)
+	pages.AddPage("Backup", flexBackup, true, false)
 	pages.AddPage("Mirror", flexMirror, true, false)
 	pages.AddPage("Install", flexInstall, true, false)
 
