@@ -16,23 +16,17 @@ var providers = []string{
 }
 
 type BackupInfo struct {
-	backupGitea             bool
-	backupJenkinsController bool
-	backupKeycloak          bool
-	backupNexus             bool
-	backupFileServer        bool
-	backupSonarqube         bool
-	backupZentao            bool
-	provider                string
-	bucket                  string
-	locationConfig          string
-	cloudSecret             string
-	schedule                string
-	ttl                     int
-	region                  string
+	backupItems    map[string]bool
+	provider       string
+	bucket         string
+	locationConfig string
+	cloudSecret    string
+	schedule       string
+	ttl            int
+	region         string
 }
 
-var backupInfo = BackupInfo{}
+var backupInfo = BackupInfo{backupItems: make(map[string]bool)}
 var providerSelected = "minio"
 
 // Minio: region, s3ForcePathStyle, s3Url
@@ -69,26 +63,26 @@ func initFlexBackup() {
 		formBackupRight.SetBorder(true).SetTitle("Backup Config")
 
 		// left form
-		formBackupLeft.AddCheckbox("Backup Gitea: ", backupInfo.backupGitea, func(checked bool) {
-			backupInfo.backupGitea = checked
+		formBackupLeft.AddCheckbox("Backup Gitea: ", backupInfo.backupItems["gitea"], func(checked bool) {
+			backupInfo.backupItems["gitea"] = checked
 		})
-		formBackupLeft.AddCheckbox("Backup Jenkins Controller: ", backupInfo.backupJenkinsController, func(checked bool) {
-			backupInfo.backupJenkinsController = checked
+		formBackupLeft.AddCheckbox("Backup Jenkins Controller: ", backupInfo.backupItems["jenkins"], func(checked bool) {
+			backupInfo.backupItems["jenkins"] = checked
 		})
-		formBackupLeft.AddCheckbox("Backup Zentao: ", backupInfo.backupZentao, func(checked bool) {
-			backupInfo.backupZentao = checked
+		formBackupLeft.AddCheckbox("Backup Zentao: ", backupInfo.backupItems["zentao"], func(checked bool) {
+			backupInfo.backupItems["zentao"] = checked
 		})
-		formBackupLeft.AddCheckbox("Backup Keycloak: ", backupInfo.backupKeycloak, func(checked bool) {
-			backupInfo.backupKeycloak = checked
+		formBackupLeft.AddCheckbox("Backup Keycloak: ", backupInfo.backupItems["keycloak"], func(checked bool) {
+			backupInfo.backupItems["keycloak"] = checked
 		})
-		formBackupLeft.AddCheckbox("Backup Nexus: ", backupInfo.backupNexus, func(checked bool) {
-			backupInfo.backupNexus = checked
+		formBackupLeft.AddCheckbox("Backup Nexus: ", backupInfo.backupItems["nexus"], func(checked bool) {
+			backupInfo.backupItems["nexus"] = checked
 		})
-		formBackupLeft.AddCheckbox("Backup File Server: ", backupInfo.backupFileServer, func(checked bool) {
-			backupInfo.backupFileServer = checked
+		formBackupLeft.AddCheckbox("Backup File Server: ", backupInfo.backupItems["fileserver"], func(checked bool) {
+			backupInfo.backupItems["fileserver"] = checked
 		})
-		formBackupLeft.AddCheckbox("Backup Sonarqube: ", backupInfo.backupSonarqube, func(checked bool) {
-			backupInfo.backupSonarqube = checked
+		formBackupLeft.AddCheckbox("Backup Sonarqube: ", backupInfo.backupItems["sonarqube"], func(checked bool) {
+			backupInfo.backupItems["sonarqube"] = checked
 		})
 
 		// right form

@@ -623,8 +623,15 @@ schedules:
       includedNamespaces:
         - ${IDO_TEAM}
       snapshotMoveData: true
+      includedResources:
+        - pod
+        - pvc
+        - pv
       ttl: "${IDO_BACKUP_TTL}"
-
+      orLabelSelectors:
+        - matchLabels:
+            velero.io/backup-app: none
+${IDO_BACKUP_SELECTORS}
 
 # Velero ConfigMaps.
 # Eg:

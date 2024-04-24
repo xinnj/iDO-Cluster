@@ -268,14 +268,6 @@ func buildTasks() (tasks []task, envs []string) {
 	}
 
 	// backup
-	envs = append(envs, "IDO_BACKUP_EXCLUDE_GITEA="+strconv.FormatBool(!backupInfo.backupGitea))
-	envs = append(envs, "IDO_BACKUP_EXCLUDE_JENKINS_CONTROLLER="+strconv.FormatBool(!backupInfo.backupJenkinsController))
-	envs = append(envs, "IDO_BACKUP_EXCLUDE_KEYCLOAK="+strconv.FormatBool(!backupInfo.backupKeycloak))
-	envs = append(envs, "IDO_BACKUP_EXCLUDE_NEXUS="+strconv.FormatBool(!backupInfo.backupNexus))
-	envs = append(envs, "IDO_BACKUP_EXCLUDE_FILE_SERVER="+strconv.FormatBool(!backupInfo.backupFileServer))
-	envs = append(envs, "IDO_BACKUP_EXCLUDE_SONARQUBE="+strconv.FormatBool(!backupInfo.backupSonarqube))
-	envs = append(envs, "IDO_BACKUP_EXCLUDE_ZENTAO="+strconv.FormatBool(!backupInfo.backupZentao))
-
 	if enableBackup {
 		tasks = append(tasks, task{name: "Install Velero",
 			command: "chmod +x packages/velero/install.sh; packages/velero/install.sh"})
@@ -287,6 +279,14 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "IDO_BACKUP_CLOUD_SECRET="+backupInfo.cloudSecret)
 		envs = append(envs, "IDO_BACKUP_SCHEDULE="+backupInfo.schedule)
 		envs = append(envs, "IDO_BACKUP_TTL="+strconv.Itoa(backupInfo.ttl)+"h")
+
+		backupSelectors := ""
+		for key, value := range backupInfo.backupItems {
+			if value {
+				backupSelectors = backupSelectors + "        - matchLabels:\n            velero.io/backup-app: " + key + "\n"
+			}
+		}
+		envs = append(envs, "IDO_BACKUP_SELECTORS="+backupSelectors)
 	}
 
 	tasks = append(tasks, task{name: "Final Check",

@@ -118,8 +118,7 @@ service:
     ipFamilyPolicy:
     ipFamilies:
     loadBalancerSourceRanges: []
-    annotations:
-      velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
+    annotations: {}
     labels: {}
   ## @param service.ssh.type Kubernetes service type for ssh traffic
   ## @param service.ssh.port Port number for ssh traffic
@@ -146,8 +145,7 @@ service:
     ipFamilies:
     hostPort:
     loadBalancerSourceRanges: []
-    annotations:
-      velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
+    annotations: {}
     labels: {}
 
 ## @section Ingress
@@ -173,7 +171,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: "500m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
   hosts:
     - host: "${IDO_INGRESS_HOSTNAME}"
       paths:
@@ -248,9 +245,9 @@ deployment:
     # - name: VARIABLE
     #   value: my-value
   terminationGracePeriodSeconds: 60
-  labels: {}
-  annotations:
-    velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
+  labels:
+    velero.io/backup-app: gitea
+  annotations: {}
 
 ## @section ServiceAccount
 
@@ -266,8 +263,7 @@ serviceAccount:
   automountServiceAccountToken: false
   imagePullSecrets: []
   # - name: private-registry-access
-  annotations:
-    velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
+  annotations: {}
   labels: {}
 
 ## @section Persistence
@@ -291,13 +287,13 @@ persistence:
   size: ${IDO_GITEA_SHARED_STORAGE_SIZE}
   accessModes:
     - ReadWriteOnce
-  labels: {}
+  labels:
+    velero.io/backup-app: gitea
   storageClass: ${IDO_STORAGE_CLASS}
   subPath:
   volumeName: ""
   annotations:
     helm.sh/resource-policy: keep
-    velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
 
 ## @param extraVolumes Additional volumes to mount to the Gitea deployment
 extraVolumes: []
@@ -460,7 +456,6 @@ gitea:
 
   ## @param gitea.podAnnotations Annotations for the Gitea pod
   podAnnotations:
-    velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
     backup.velero.io/backup-volumes: data
     pre.hook.backup.velero.io/container: gitea
     pre.hook.backup.velero.io/command: '["/usr/local/bin/gitea", "manager", "flush-queues"]'
@@ -583,8 +578,6 @@ postgresql-ha:
 ## @param postgresql.primary.persistence.size PVC Storage Request for PostgreSQL volume
 postgresql:
   enabled: true
-  commonAnnotations:
-    velero.io/exclude-from-backup: '${IDO_BACKUP_EXCLUDE_GITEA}'
   global:
     postgresql:
       auth:
@@ -596,9 +589,13 @@ postgresql:
         ports:
           postgresql: 5432
   primary:
+    podLabels:
+      velero.io/backup-app: gitea
     podAnnotations:
       pre.hook.backup.velero.io/command: '["/bin/sh", "-c", "PGPASSWORD=postgres psql gitea -U postgres -c \"select pg_backup_start(''velero'', fast := true)\""]'
     persistence:
+      labels:
+        velero.io/backup-app: gitea
       storageClass: ${IDO_STORAGE_CLASS}
       size: ${IDO_GITEA_PG_STORAGE_SIZE}
     affinity:

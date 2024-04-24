@@ -240,7 +240,8 @@ controller:
 
   # Put labels on Jenkins controller pod
   # -- Custom Pod labels (an object with `label-key: label-value` pairs)
-  podLabels: {}
+  podLabels:
+    velero.io/backup-app: jenkins
 
   # Enable Kubernetes Startup, Liveness and Readiness Probes
   # if Startup Probe is supported, enable it too
@@ -1052,7 +1053,8 @@ controller:
   priorityClassName:
 
   # -- Annotations for controller pod
-  podAnnotations: {}
+  podAnnotations:
+    backup.velero.io/backup-volumes: jenkins-home
   # -- Annotations for controller StatefulSet
   statefulSetAnnotations: {}
 
