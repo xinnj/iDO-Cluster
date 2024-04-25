@@ -4,6 +4,8 @@ apiVersion: v1
 metadata:
   name: nexus-data
   namespace: ${IDO_TEAM}
+  labels:
+    velero.io/backup-app: nexus
 spec:
   accessModes:
     - ReadWriteMany

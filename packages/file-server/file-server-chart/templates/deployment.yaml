@@ -19,6 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "file-server.selectorLabels" . | nindent 8 }}
+        velero.io/backup-app: fileserver
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

@@ -72,7 +72,8 @@ nexus:
     runAsUser: 200
     runAsGroup: 200
     fsGroup: 200
-  podAnnotations: {}
+  podAnnotations:
+    backup.velero.io/backup-volumes: nexus-data
   livenessProbe:
     initialDelaySeconds: 600
     periodSeconds: 30

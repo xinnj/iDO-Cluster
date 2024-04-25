@@ -1251,13 +1251,17 @@ keycloakConfigCli:
 postgresql:
   enabled: true
   auth:
-    postgresPassword: ""
+    postgresPassword: "postgres"
     username: bn_keycloak
     password: "keycloak"
     database: bitnami_keycloak
     existingSecret: ""
   architecture: standalone
   primary:
+    podLabels:
+      velero.io/backup-app: keycloak
+    podAnnotations:
+      pre.hook.backup.velero.io/command: '["/bin/sh", "-c", "PGPASSWORD=postgres psql bitnami_keycloak -U postgres -c \"select pg_backup_start(''velero'', fast := true)\""]'
     resourcesPreset: "small"
     persistence:
       enabled: true

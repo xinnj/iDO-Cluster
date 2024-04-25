@@ -324,7 +324,8 @@ env:
 #     value: my-value
 
 # Set annotations for pods
-annotations: {}
+annotations:
+  backup.velero.io/backup-volumes: sonarqube
 
 ## We usually don't make specific ressource recommandations, as they are heavily dependend on
 ## The usage of SonarQube and the surrounding infrastructure.
@@ -420,6 +421,7 @@ postgresql:
   #
   # The bitnami chart enforces the key to be "postgresql-password". This value is only here for historic purposes
   # existingSecretPasswordKey: "postgresql-password"
+  postgresqlPostgresPassword: "postgres"
   postgresqlUsername: "sonarUser"
   postgresqlPassword: "sonarPass"
   postgresqlDatabase: "sonarDB"
@@ -468,6 +470,10 @@ postgresql:
     enabled: false
     # name:
   primary:
+    podLabels:
+      velero.io/backup-app: sonarqube
+    podAnnotations:
+      pre.hook.backup.velero.io/command: '["/bin/sh", "-c", "PGPASSWORD=postgres psql sonarDB -U postgres -c \"select pg_backup_start(''velero'', fast := true)\""]'
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -493,7 +499,8 @@ postgresql:
 # Additional labels to add to the pods:
 # podLabels:
 #   key: value
-podLabels: {}
+podLabels:
+  velero.io/backup-app: sonarqube
 # For compatibility with 8.0 replace by "/opt/sq"
 # For compatibility with 8.2, leave the default. They changed it back to /opt/sonarqube
 sonarqubeFolder: /opt/sonarqube

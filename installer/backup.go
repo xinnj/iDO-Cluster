@@ -63,17 +63,17 @@ func initFlexBackup() {
 		formBackupRight.SetBorder(true).SetTitle("Backup Config")
 
 		// left form
+		formBackupLeft.AddCheckbox("Backup Keycloak: ", backupInfo.backupItems["keycloak"], func(checked bool) {
+			backupInfo.backupItems["keycloak"] = checked
+		})
 		formBackupLeft.AddCheckbox("Backup Gitea: ", backupInfo.backupItems["gitea"], func(checked bool) {
 			backupInfo.backupItems["gitea"] = checked
-		})
-		formBackupLeft.AddCheckbox("Backup Jenkins Controller: ", backupInfo.backupItems["jenkins"], func(checked bool) {
-			backupInfo.backupItems["jenkins"] = checked
 		})
 		formBackupLeft.AddCheckbox("Backup Zentao: ", backupInfo.backupItems["zentao"], func(checked bool) {
 			backupInfo.backupItems["zentao"] = checked
 		})
-		formBackupLeft.AddCheckbox("Backup Keycloak: ", backupInfo.backupItems["keycloak"], func(checked bool) {
-			backupInfo.backupItems["keycloak"] = checked
+		formBackupLeft.AddCheckbox("Backup Jenkins Controller: ", backupInfo.backupItems["jenkins"], func(checked bool) {
+			backupInfo.backupItems["jenkins"] = checked
 		})
 		formBackupLeft.AddCheckbox("Backup Nexus: ", backupInfo.backupItems["nexus"], func(checked bool) {
 			backupInfo.backupItems["nexus"] = checked

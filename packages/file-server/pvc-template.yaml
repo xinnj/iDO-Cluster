@@ -4,6 +4,8 @@ apiVersion: v1
 metadata:
   name: file-server-data
   namespace: ${IDO_TEAM}
+  labels:
+    velero.io/backup-app: fileserver
 spec:
   accessModes:
     - ReadWriteMany

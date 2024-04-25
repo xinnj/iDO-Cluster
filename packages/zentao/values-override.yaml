@@ -91,6 +91,12 @@ mysql:
   podSecurityContext:
     fsGroup: 1001
     fsGroupChangePolicy: "OnRootMismatch"
+  db:
+    labels:
+      velero.io/backup-app: zentao
+    annotations:
+      pre.hook.backup.velero.io/command: '["/bin/sh", "-c", "mysql -u root -ppass4zenTao -e \"FLUSH TABLES WITH READ LOCK\""]'
+      post.hook.backup.velero.io/command: '["/bin/sh", "-c", "mysql -u root -ppass4zenTao -e \"UNLOCK TABLES\""]'
 
 secret:
   data:
@@ -157,3 +163,9 @@ command:
         /apps/zentao/module/install/view/step3.html.php
     fi
     /usr/bin/entrypoint.sh
+
+podLabels:
+  velero.io/backup-app: zentao
+
+podAnnotations:
+  backup.velero.io/backup-volumes: data
