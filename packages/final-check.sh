@@ -9,7 +9,7 @@ display_not_ready_pod() {
   kubectl get pods -A -o=custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,READY:.status.containerStatuses[*].ready,STATUS:.status.phase,RESTARTS:.status.containerStatuses[*].restartCount,OWNER-KIND:.metadata.ownerReferences[*].kind' | grep -v -E "^(\S+\s+)(\S+\s+)(\S+\s+)(\S+\s+)(\S+\s+)Job" | awk 'NR==1 || /^(\S+\s+)(\S+\s+)\S*?false\S*?\s+/'
 }
 
-kubectl delete pod --all -n ingress-nginx >/dev/null
+# kubectl delete pod --all -n ingress-nginx >/dev/null
 
 echo "##########################################################################"
 

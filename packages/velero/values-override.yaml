@@ -544,7 +544,7 @@ nodeAgent:
       memory: 512Mi
     limits:
       cpu: 1000m
-      memory: 1024Mi
+      memory: 2Gi
 
   # Tolerations to use for the node-agent daemonset. Optional.
   tolerations: []
@@ -628,6 +628,8 @@ schedules:
         - pvc
         - pv
       ttl: "${IDO_BACKUP_TTL}"
+      uploaderConfig:
+        parallelFilesUpload: 5
       orLabelSelectors:
         - matchLabels:
             velero.io/backup-app: none
