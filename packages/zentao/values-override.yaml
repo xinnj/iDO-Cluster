@@ -3,7 +3,7 @@ scalable: true
 
 image:
   repository: app/zentao
-  tag: "18.8"
+  tag: "18.12"
   pullPolicy: Always
 
 service:
@@ -36,18 +36,19 @@ probe:
           port: 80
 
 resources:
-  cpu: 200m
-  memory: 256Mi
+  cpu: 1000m
+  memory: 1024Mi
 
 oversold:
-  cpu: 100m
-  memory: 128Mi
+  cpu: 500m
+  memory: 512Mi
 
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
     nginx.ingress.kubernetes.io/preserve-trailing-slash: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
     kubernetes.io/tls-acme: "${IDO_TLS_ACME}"

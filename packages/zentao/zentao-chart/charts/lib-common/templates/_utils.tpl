@@ -59,6 +59,7 @@ Usage: include "lib-common.utils.generateResources.v2" (dict "resources" dict "o
 */}}
 {{- define "lib-common.utils.generateResources.v2" -}}
 {{- if .resources -}}
+ {{- if eq "on" (default .values.global.switchLimit .resources.switchLimit) }}
 limits:
   {{- with .resources }}
   {{- if .cpu }}
@@ -68,6 +69,7 @@ limits:
   memory: {{ .memory }}
   {{- end }}
   {{- end }}
+ {{- end }}
 requests:
   {{- if and .values.global.allowOverSold .oversold }}
     {{- with .oversold }}

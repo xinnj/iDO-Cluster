@@ -3,7 +3,7 @@ scalable: true
 
 image:
   repository: app/zentao
-  tag: "18.8"
+  tag: "18.12"
   pullPolicy: Always
 
 service:
@@ -36,12 +36,12 @@ probe:
           port: 80
 
 resources:
-  cpu: 200m
-  memory: 256Mi
+  cpu: 1000m
+  memory: 1024Mi
 
 oversold:
-  cpu: 100m
-  memory: 128Mi
+  cpu: 500m
+  memory: 512Mi
 
 ingress:
   enabled: false

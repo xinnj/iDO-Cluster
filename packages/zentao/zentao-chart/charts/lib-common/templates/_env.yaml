@@ -11,9 +11,12 @@ Usage: include "lib-common.env.container.v2" (dict "env" dict "values" .Values "
 */}}
 {{- define "lib-common.env.container.v2" }}
 {{- $envMap := dict -}}
-{{- $envMap = merge $envMap .env .values.global.env -}}
+{{- if .values.global.timezone }}
+  {{- $_ := set $envMap "TZ" .values.global.timezone }}
+{{- end }}
+{{- $envMap = mergeOverwrite $envMap .values.global.env .env -}}
 {{- range $k, $v := $envMap -}}
-{{ include "lib-common.env.field" (dict "key" $k "value" $v "ctx" $.ctx) }}
+  {{ include "lib-common.env.field" (dict "key" $k "value" $v "ctx" $.ctx) }}
 {{- end -}}
 {{- end -}}
 
@@ -24,6 +27,9 @@ Usage: {{ include "lib-common.env.field" (dict "key" "" "value" "" "ctx" $) }}
 {{- if (kindIs "string" .value) }}
 - name: {{ .key }}
   value: {{ include "lib-common.utils.readRef" (dict "value" .value "ctx" .ctx) | quote }}
+{{- else if (kindIs "int64" .value) }}
+- name: {{ .key }}
+  value: {{ toString .value | quote }}
 {{- else if (kindIs "float64" .value) }}
 - name: {{ .key }}
   value: {{ toString .value | quote }}

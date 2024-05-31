@@ -11,6 +11,8 @@ global:
   cleanPolicy: {}
   cloudProvider: ""  # cloud provider, like tke/ack
   cloudLoadBalancerId: ""
+  timezone: ""
+  switchLimit: "on"
 
 workflow:
   kind: Deployment
@@ -70,7 +72,31 @@ podSecurityContext: {}
 
 securityContext: {}
 
+
+##############################################
+# resources: 生成资源描述 
+# 生成相等的 limits 和 requests
+# 仅当 switchLimit=on 时, 会生成 limits
+# switchLimit 的值会覆盖 global.switchLimit 的值，该值默认为 on
+# requests 的值, 会被 oversold 配置覆盖
+#---------------------------------------------
+# resources:
+#   switchLimit: on|off
+#   cpu: 1
+#   memory: 2Gi
+#---------------------------------------------
 resources: {}
+
+##############################################
+# oversold: 设置资源超卖
+# 将会覆盖 resources 配置里生成的 requests
+# oversold 的值必须小于等于 resources 的值
+#---------------------------------------------
+# oversold:
+#  cpu: 100m
+#  memory: 512Mi
+#---------------------------------------------
+oversold: {}
 
 nodeSelector: {}
 

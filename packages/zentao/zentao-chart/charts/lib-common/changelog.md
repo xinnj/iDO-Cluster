@@ -1,5 +1,14 @@
 # Changelog
 
+# 1.1.14 2024.3.28 by qisy
+
+- 支持通过 global.switchLimit=off 全局关闭资源限制
+- 支持通过 resources.switchLimit=off 关闭单个实例的资源限制
+
+# 1.1.13 2023.11.18 by qisy
+
+- 支持设置全局环境变量TZ
+
 # 1.1.12 2023.09.18 by qisy
 
 - sidecard 容器支持超卖 (oversold)
