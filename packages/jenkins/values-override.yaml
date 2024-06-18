@@ -399,35 +399,39 @@ controller:
     - ansicolor:1.0.4
     - antisamy-markup-formatter:162.v0e6ec0fcfcf6
     - apache-httpcomponents-client-4-api:4.5.14-208.v438351942757
-    - asm-api:9.6-3.v2e1fa_b_338cd7
-    - authentication-tokens:1.53.v1c90fd9191a_b_
+    - asm-api:9.7-33.v4d23ef79fcc8
+    - authentication-tokens:1.113.v81215a_241826
+    - aws-credentials:231.v08a_59f17d742
+    - aws-java-sdk-ec2:1.12.730-457.v3403b_37d2170
+    - aws-java-sdk-minimal:1.12.730-457.v3403b_37d2170
     - basic-branch-build-strategies:81.v05e333931c7d
     - bootstrap5-api:5.3.3-1
-    - bouncycastle-api:2.30.1.77-225.v26ea_c9455fd9
-    - branch-api:2.1152.v6f101e97dd77
+    - bouncycastle-api:2.30.1.78.1-233.vfdcdeb_0a_08a_a_
+    - branch-api:2.1169.va_f810c56e895
     - build-discarder:139.v05696a_7fe240
-    - build-history-manager:1.8.0
+    - build-history-manager:1.9.1
     - build-timeout:1.32
     - caffeine-api:3.1.8-133.v17b_1ff2e0599
-    - checks-api:2.0.2
-    - cloudbees-bitbucket-branch-source:880.vcf4056c5a_71f
+    - checks-api:2.2.0
+    - cloudbees-bitbucket-branch-source:886.v44cf5e4ecec5
     - cloudbees-disk-usage-simple:203.v3f46a_7462b_1a_
     - cloudbees-folder:6.901.vb_4c7a_da_75da_3
     - command-launcher:107.v773860566e2e
-    - commons-lang3-api:3.13.0-62.v7d18e55f51e2
-    - commons-text-api:1.11.0-95.v22a_d30ee5d36
-    - configuration-as-code:1775.v810dc950b_514
-    - copyartifact:722.v0662a_9b_e22a_c
-    - coverage:1.13.0
-    - credentials-binding:657.v2b_19db_7d6e6d
+    - commons-lang3-api:3.14.0-76.vda_5591261cfe
+    - commons-text-api:1.12.0-119.v73ef73f2345d
+    - configuration-as-code:1810.v9b_c30a_249a_4c
+    - copyartifact:746.vd2a_674fb_4f6f
+    - coverage:1.15.0
+    - credentials-binding:677.vdc9d38cb_254d
     - credentials:1337.v60b_d7b_c7b_c9f
     - dashboard-view:2.508.va_74654f026d1
-    - data-tables-api:2.0.2-1
+    - data-tables-api:2.0.8-1
     - dingding-notifications:2.7.3
-    - display-url-api:2.200.vb_9327d658781
-    - durable-task:550.v0930093c4b_a_6
+    - display-url-api:2.204.vf6fddd8a_8b_e9
+    - durable-task:555.v6802fe0f0b_82
     - echarts-api:5.5.0-1
-    - email-ext:2.105
+    - eddsa-api:0.3.0-4.v84c6f0f4969e
+    - email-ext:1814.v404722f34263
     - emailext-template:1.5
     - enhanced-old-build-discarder:1.4
     - envinject-api:1.199.v3ce31253ed13
@@ -435,104 +439,104 @@ controller:
     - file-operations:214.v2e7dc7f25757
     - folder-auth:1.4
     - folder-properties:1.2.1
-    - font-awesome-api:6.5.1-3
+    - font-awesome-api:6.5.2-1
     - forensics-api:2.4.0
     - git-client:4.7.0
     - git-parameter:0.9.19
-    - git:5.2.1
+    - git:5.2.2
     - gitea:1.4.7
-    - gitee:1165.vd01443918414
+    - gitee:1170.v3d4640b_34233
     - github-api:1.318-461.v7a_c09c9fa_d63
-    - github-branch-source:1781.va_153cda_09d1b_
-    - github:1.38.0
+    - github-branch-source:1789.v5b_0c0cea_18c3
+    - github:1.39.0
     - gitlab-api:5.3.0-91.v1f9a_fda_d654f
-    - gitlab-branch-source:703.vc5fd7effcc6b_
-    - gson-api:2.10.1-15.v0d99f670e0a_7
+    - gitlab-branch-source:704.vc7f1202d7e14
+    - gson-api:2.11.0-41.v019fcf6125dc
     - handy-uri-templates-2-api:2.1.8-30.v7e777411b_148
-    - htmlpublisher:1.33
+    - htmlpublisher:1.34
     - http_request:1.18
     - instance-identity:185.v303dc7c645f9
-    - ionicons-api:56.v1b_1c8c49374e
+    - ionicons-api:74.v93d5eb_813d5f
     - jackson2-api:2.17.0-379.v02de8ec9f64c
     - jakarta-activation-api:2.1.3-1
     - jakarta-mail-api:2.1.3-1
-    - javax-activation-api:1.2.0-6
-    - javax-mail-api:1.6.2-9
+    - javax-activation-api:1.2.0-7
+    - javax-mail-api:1.6.2-10
     - jaxb:2.3.9-1
     - jdk-tool:73.vddf737284550
-    - jersey2-api:2.41-133.va_03323b_a_1396
-    - jjwt-api:0.11.5-77.v646c772fddb_0
+    - jersey2-api:2.42-147.va_28a_44603b_d5
+    - jjwt-api:0.11.5-112.ve82dfb_224b_a_d
     - joda-time-api:2.12.7-29.v5a_b_e3a_82269a_
     - jquery3-api:3.7.1-2
     - jsch:0.2.16-86.v42e010d9484b_
     - json-api:20240303-41.v94e11e6de726
-    - json-path-api:2.9.0-52.v57de85cc4722
-    - junit:1259.v65ffcef24a_88
+    - json-path-api:2.9.0-58.v62e3e85b_a_655
+    - junit:1265.v65b_14fa_f12f0
     - keycloak:2.3.2
+    - kubernetes-cli:1.12.1
     - kubernetes-client-api:6.10.0-240.v57880ce8b_0b_2
-    - kubernetes-credentials:0.11
-    - kubernetes:4203.v1dd44f5b_1cf9
-    - ldap:719.vcb_d039b_77d0d
-    - lockable-resources:1246.v28b_e4cc6fa_16
+    - kubernetes-credentials:174.va_36e093562d9
+    - kubernetes:4246.v5a_12b_1fe120e
+    - ldap:725.v3cb_b_711b_1a_ef
+    - lockable-resources:1255.vf48745da_35d0
     - mailer:472.vf7c289a_4b_420
     - matrix-auth:3.2.2
     - matrix-project:822.824.v14451b_c0fd42
-    - metrics:4.2.21-449.v6960d7c54c69
-    - mina-sshd-api-common:2.12.0-90.v9f7fb_9fa_3d3b_
-    - mina-sshd-api-core:2.12.0-90.v9f7fb_9fa_3d3b_
+    - metrics:4.2.21-451.vd51df8df52ec
+    - mina-sshd-api-common:2.12.1-113.v4d3ea_5eb_7f72
+    - mina-sshd-api-core:2.12.1-113.v4d3ea_5eb_7f72
     - okhttp-api:4.11.0-172.vda_da_1feeb_c6e
-    - parameterized-trigger:787.v665fcf2a_830b_
+    - parameterized-trigger:806.vf6fff3e28c3e
     - pipeline-build-step:540.vb_e8849e1a_b_d8
     - pipeline-graph-analysis:216.vfd8b_ece330ca_
-    - pipeline-groovy-lib:704.vc58b_8890a_384
-    - pipeline-input-step:491.vb_07d21da_1a_fb_
-    - pipeline-milestone-step:111.v449306f708b_7
-    - pipeline-model-api:2.2184.v0b_358b_953e69
-    - pipeline-model-definition:2.2184.v0b_358b_953e69
-    - pipeline-model-extensions:2.2184.v0b_358b_953e69
+    - pipeline-groovy-lib:727.ve832a_9244dfa_
+    - pipeline-input-step:495.ve9c153f6067b_
+    - pipeline-milestone-step:119.vdfdc43fc3b_9a_
+    - pipeline-model-api:2.2198.v41dd8ef6dd56
+    - pipeline-model-definition:2.2198.v41dd8ef6dd56
+    - pipeline-model-extensions:2.2198.v41dd8ef6dd56
     - pipeline-rest-api:2.34
-    - pipeline-stage-step:305.ve96d0205c1c6
-    - pipeline-stage-tags-metadata:2.2184.v0b_358b_953e69
+    - pipeline-stage-step:312.v8cd10304c27a_
+    - pipeline-stage-tags-metadata:2.2198.v41dd8ef6dd56
     - pipeline-stage-view:2.34
     - pipeline-utility-steps:2.16.2
-    - plain-credentials:179.vc5cb_98f6db_38
+    - plain-credentials:182.v468b_97b_9dcb_8
     - plugin-util-api:4.1.0
-    - prism-api:1.29.0-13
-    - prometheus:2.5.1
-    - rebuild:330.v645b_7df10e2a_
+    - prism-api:1.29.0-15
+    - prometheus:773.v3b_62d8178eec
+    - rebuild:332.va_1ee476d8f6d
     - remote-file:1.24
     - resource-disposer:0.23
-    - role-strategy:713.vb_3837801b_8cc
+    - role-strategy:717.v6a_69a_fe98974
     - run-condition:1.7
     - saml:4.464.vea_cb_75d7f5e0
-    - scm-api:689.v237b_6d3a_ef7f
-    - script-security:1326.vdb_c154de8669
-    - slack:684.v833089650554
+    - scm-api:690.vfc8b_54395023
+    - script-security:1341.va_2819b_414686
+    - slack:722.vd07f1ea_7ff40
     - snakeyaml-api:2.2-111.vc6598e30cc65
     - sonar:2.17.2
-    - ssh-agent:346.vda_a_c4f2c8e50
-    - ssh-credentials:326.v7fcb_a_ef6194b_
+    - ssh-agent:367.vf9076cd4ee21
+    - ssh-credentials:337.v395d2403ccd4
     - ssh-steps:2.0.68.va_d21a_12a_6476
-    - sshd:3.322.v159e91f6a_550
+    - sshd:3.330.vc866a_8389b_58
     - structs:337.v1b_04ea_4df7c8
-    - thinBackup:1.19
-    - timestamper:1.26
+    - timestamper:1.27
     - token-macro:400.v35420b_922dcb_
-    - trilead-api:2.142.v748523a_76693
+    - trilead-api:2.147.vb_73cc728a_32e
     - variant:60.v7290fc0eb_b_cd
-    - view-job-filters:369.ve0513a_a_f5524
+    - view-job-filters:382.vdf2d5e3f02f0
     - webhook-step:342.v620877effe14
     - workflow-aggregator:596.v8c21c963d92d
-    - workflow-api:1291.v51fd2a_625da_7
-    - workflow-basic-steps:1049.v257a_e6b_30fb_d
-    - workflow-cps:3883.vb_3ff2a_e3eea_f
-    - workflow-durable-task-step:1331.vc8c2fed35334
+    - workflow-api:1316.v33eb_726c50b_a_
+    - workflow-basic-steps:1058.vcb_fc1e3a_21a_9
+    - workflow-cps:999999-SNAPSHOT (tag: 3894.vd0f0248b_a_fc4)
+    - workflow-durable-task-step:1353.v1891a_b_01da_18
     - workflow-job:1400.v7fd111b_ec82f
     - workflow-multibranch:773.vc4fe1378f1d5
     - workflow-scm-step:427.v4ca_6512e7df1
     - workflow-step-api:657.v03b_e8115821b_
-    - workflow-support:881.v7663695646cf
-    - ws-cleanup:0.45
+    - workflow-support:907.v6713a_ed8a_573
+    - ws-cleanup:0.46
 
   # If set to false, Jenkins will download the minimum required version of all dependencies.
   # -- Download the minimum required version or latest version of all dependencies
@@ -656,10 +660,10 @@ controller:
               - string:
                   id: "sonarqube"
                   scope: GLOBAL
-                  secret: "{AQAAABAAAAAwBrDgqQurxX9hVUQZjgETrJnneHcl+n1JzWezlPLsBE/6iEcxVpbhmhpf6/mMOonHjOIdB8EZLqMhN9oMTJFfWw==}"
+                  secret: "{AQAAABAAAAAwIf12sKWl52o8HGEebVXMg/BFL165We/GmI+t4sCgr8udWa6Jh63ql2oqXD5/3on4CN327QuutU4IRN79wQNgTQ==}"
               - usernamePassword:
                   id: "uploader"
-                  password: "{AQAAABAAAAAQPD5d9T/VibcRmKb3+9BdKW4qdj+eokbjRN3YV4F6hrU=}"
+                  password: "{AQAAABAAAAAgyFTFq1CBzPe/XUC06Vapg09mvc4fKlKp3ZMbApPc0UIYJamlSib46XX+1iZFW0zV}"
                   scope: GLOBAL
                   username: "uploader"
         jenkins:
@@ -668,10 +672,20 @@ controller:
           - "Ping"
           authorizationStrategy:
             roleBased:
+              permissionTemplates:
+              - name: "users"
+                permissions:
+                - "Job/Cancel"
+                - "Job/Build"
+                - "Run/Update"
+                - "Job/Read"
+                - "Job/Workspace"
+                - "View/Read"
+                - "Run/Replay"
               roles:
                 global:
                 - entries:
-                  - user: "admin"
+        
                   - group: "jenkins_admin"
                   name: "admin"
                   pattern: ".*"
@@ -679,18 +693,65 @@ controller:
                   - "Overall/Administer"
                 - entries:
                   - group: "authenticated"
-                  - group: "jenkins_user"
+        
                   name: "user"
                   pattern: ".*"
                   permissions:
-                  - "Job/Cancel"
+        
                   - "Overall/Read"
+                items:
+                - entries:
+                  - group: "authenticated"
+                  name: "CD - DEV"
+                  pattern: "^CD($|/DEV($|/.*))"
+                  permissions:
+                  - "Job/Cancel"
                   - "Job/Build"
                   - "Run/Update"
                   - "Job/Read"
                   - "Job/Workspace"
                   - "View/Read"
                   - "Run/Replay"
+                  templateName: "users"
+                - entries:
+                  - group: "jenkins_om"
+                  name: "CD - PROD"
+                  pattern: "^CD($|/PROD($|/.*))"
+                  permissions:
+                  - "Job/Cancel"
+                  - "Job/Build"
+                  - "Run/Update"
+                  - "Job/Read"
+                  - "Job/Workspace"
+                  - "View/Read"
+                  - "Run/Replay"
+                  templateName: "users"
+                - entries:
+                  - group: "jenkins_qa"
+                  name: "CD - QA"
+                  pattern: "^CD($|/QA($|/.*))"
+                  permissions:
+                  - "Job/Cancel"
+                  - "Job/Build"
+                  - "Run/Update"
+                  - "Job/Read"
+                  - "Job/Workspace"
+                  - "View/Read"
+                  - "Run/Replay"
+                  templateName: "users"
+                - entries:
+                  - group: "authenticated"
+                  name: "CI"
+                  pattern: "^CI($|/.*)"
+                  permissions:
+                  - "Job/Cancel"
+                  - "Job/Build"
+                  - "Run/Update"
+                  - "Job/Read"
+                  - "Job/Workspace"
+                  - "View/Read"
+                  - "Run/Replay"
+                  templateName: "users"
           clouds:
           - kubernetes:
               connectTimeout: 10
@@ -731,8 +792,8 @@ controller:
               freeSpaceWarningThreshold: "2GB"
           - architecture:
               ignored: true
-          - clock:
-              ignored: false
+          - "clock"
+        
           - swapSpace:
               ignored: true
           - responseTime:
@@ -846,7 +907,7 @@ controller:
                   scm:
                     git:
                       id: "ae57f135-5f41-453a-817e-a22796295685"
-                      remote: "file:///home/jenkins/lib/active"
+                      remote: "file:///home/jenkins/lib"
                       traits:
                       - "gitBranchDiscovery"
             - name: "iDO-lib"
