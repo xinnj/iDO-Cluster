@@ -871,6 +871,8 @@ controller:
           sSHD:
             port: -1
         unclassified:
+          ansiColorBuildWrapper:
+            globalColorMapName: "xterm"
           buildDiscarders:
             configuredBuildDiscarders:
             - "jobBuildDiscarder"
