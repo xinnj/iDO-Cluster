@@ -331,7 +331,7 @@ alertmanager:
   #       {{ end }}
 
   ingress:
-    enabled: true
+    enabled: false
 
     # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
     # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
@@ -646,17 +646,18 @@ alertmanager:
 
     ## AlermanagerConfig to be used as top level configuration
     ##
-    alertmanagerConfiguration: {}
+    alertmanagerConfiguration:
     ## Example with select a global alertmanagerconfig
     # alertmanagerConfiguration:
-    #   name: global-alertmanager-Configuration
+      name: global-alertmanager-configuration
 
     ## Defines the strategy used by AlertmanagerConfig objects to match alerts. eg:
     ##
-    alertmanagerConfigMatcherStrategy: {}
+    alertmanagerConfigMatcherStrategy:
     ## Example with use OnNamespace strategy
     # alertmanagerConfigMatcherStrategy:
     #   type: OnNamespace
+      type: None
 
     ## Define Log Format
     # Use logfmt (default) or json logging
@@ -682,7 +683,7 @@ alertmanager:
      volumeClaimTemplate:
        spec:
          storageClassName: ${IDO_STORAGE_CLASS}
-         accessModes: ["ReadWriteMany"]
+         accessModes: ["ReadWriteOnce"]
          resources:
            requests:
              storage: ${IDO_ALTERMANAGER_STORAGE_SIZE}
@@ -1111,17 +1112,20 @@ grafana:
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     ##
-    relabelings: []
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+    relabelings:
+      - sourceLabels: ['pod']
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
   initChownData:
     image:
       repository: ${IDO_DOCKER_CONTAINER_MIRROR}/library/busybox
+
+  downloadDashboardsImage:
+    repository: ${IDO_DOCKER_CONTAINER_MIRROR}/curlimages/curl
 
 ## Flag to disable all the kubernetes component scrapers
 ##
@@ -1187,7 +1191,13 @@ kubeApiServer:
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     ##
-    relabelings: []
+    relabelings:
+      - sourceLabels: [ __meta_kubernetes_pod_node_name ]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
     # - sourceLabels:
     #     - __meta_kubernetes_namespace
     #     - __meta_kubernetes_service_name
@@ -1319,12 +1329,12 @@ kubelet:
       - action: replace
         sourceLabels: [__metrics_path__]
         targetLabel: metrics_path
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+      - sourceLabels: ['node']
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
@@ -1333,12 +1343,12 @@ kubelet:
       - action: replace
         sourceLabels: [__metrics_path__]
         targetLabel: metrics_path
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+      - sourceLabels: ['node']
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
@@ -1377,12 +1387,12 @@ kubelet:
       - action: replace
         sourceLabels: [__metrics_path__]
         targetLabel: metrics_path
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+      - sourceLabels: ['node']
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
     ## Additional labels
     ##
@@ -1466,13 +1476,13 @@ kubeControllerManager:
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     ##
-    relabelings: []
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+    relabelings:
+      - sourceLabels: [ __meta_kubernetes_pod_node_name ]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
     ## Additional labels
     ##
@@ -1528,13 +1538,13 @@ coreDns:
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     ##
-    relabelings: []
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+    relabelings:
+      - sourceLabels: ['pod']
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
     ## Additional labels
     ##
@@ -1641,7 +1651,7 @@ kubeEtcd:
   ## Etcd service. If using kubeEtcd.endpoints only the port and targetPort are used
   ##
   service:
-    enabled: true
+    enabled: false
     port: 2381
     targetPort: 2381
     # selector:
@@ -1705,13 +1715,13 @@ kubeEtcd:
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     ##
-    relabelings: []
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+    relabelings:
+      - sourceLabels: ['node']
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
     ## Additional labels
     ##
@@ -1794,13 +1804,13 @@ kubeScheduler:
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     ##
-    relabelings: []
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+    relabelings:
+      - sourceLabels: [ __meta_kubernetes_pod_node_name ]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
     ## Additional labels
     ##
@@ -1872,7 +1882,13 @@ kubeProxy:
     ## RelabelConfigs to apply to samples before scraping
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
     ##
-    relabelings: []
+    relabelings:
+      - sourceLabels: [ __meta_kubernetes_pod_node_name ]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
     # - action: keep
     #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
     #   sourceLabels: [__name__]
@@ -2040,13 +2056,14 @@ prometheus-node-exporter:
       ## RelabelConfigs to apply to samples before scraping
       ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#relabelconfig
       ##
-      relabelings: []
-      # - sourceLabels: [__meta_kubernetes_pod_node_name]
-      #   separator: ;
-      #   regex: ^(.*)$
-      #   targetLabel: nodename
-      #   replacement: $1
-      #   action: replace
+      relabelings:
+        - sourceLabels: [ __meta_kubernetes_pod_node_name ]
+          separator: ;
+          regex: ^(.*)$
+          targetLabel: instance
+          replacement: $1
+          action: replace
+
   rbac:
     ## If true, create PSPs for node-exporter
     ##
@@ -2789,7 +2806,7 @@ prometheus:
   #     someoneelse:$apr1$DMZX2Z4q$6SbQIfyuLQd.xmo/P0m2c.
 
   ingress:
-    enabled: true
+    enabled: false
 
     # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
     # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
@@ -2931,13 +2948,13 @@ prometheus:
 
     #   relabel configs to apply to samples before ingestion.
     ##
-    relabelings: []
-    # - sourceLabels: [__meta_kubernetes_pod_node_name]
-    #   separator: ;
-    #   regex: ^(.*)$
-    #   targetLabel: nodename
-    #   replacement: $1
-    #   action: replace
+    relabelings:
+      - sourceLabels: ['pod']
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: instance
+        replacement: $1
+        action: replace
 
   ## Settings affecting prometheusSpec
   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#prometheusspec
@@ -3340,7 +3357,7 @@ prometheus:
       volumeClaimTemplate:
         spec:
           storageClassName: ${IDO_STORAGE_CLASS}
-          accessModes: ["ReadWriteMany"]
+          accessModes: ["ReadWriteOnce"]
           resources:
             requests:
               storage: ${IDO_PROMETHEUS_STORAGE_SIZE}
