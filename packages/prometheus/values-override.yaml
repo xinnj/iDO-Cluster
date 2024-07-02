@@ -646,17 +646,18 @@ alertmanager:
 
     ## AlermanagerConfig to be used as top level configuration
     ##
-    alertmanagerConfiguration: {}
+    alertmanagerConfiguration:
     ## Example with select a global alertmanagerconfig
     # alertmanagerConfiguration:
-    #   name: global-alertmanager-Configuration
+      name: global-alertmanager-configuration
 
     ## Defines the strategy used by AlertmanagerConfig objects to match alerts. eg:
     ##
-    alertmanagerConfigMatcherStrategy: {}
+    alertmanagerConfigMatcherStrategy:
     ## Example with use OnNamespace strategy
     # alertmanagerConfigMatcherStrategy:
     #   type: OnNamespace
+      type: None
 
     ## Define Log Format
     # Use logfmt (default) or json logging
@@ -682,7 +683,7 @@ alertmanager:
      volumeClaimTemplate:
        spec:
          storageClassName: ${IDO_STORAGE_CLASS}
-         accessModes: ["ReadWriteMany"]
+         accessModes: ["ReadWriteOnce"]
          resources:
            requests:
              storage: ${IDO_ALTERMANAGER_STORAGE_SIZE}
@@ -1122,6 +1123,9 @@ grafana:
   initChownData:
     image:
       repository: ${IDO_DOCKER_CONTAINER_MIRROR}/library/busybox
+
+  downloadDashboardsImage:
+    repository: ${IDO_DOCKER_CONTAINER_MIRROR}/curlimages/curl
 
 ## Flag to disable all the kubernetes component scrapers
 ##
