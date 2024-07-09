@@ -3343,10 +3343,10 @@ prometheus:
     resources:
       limits:
         cpu: 500m
-        memory: 1Gi
+        memory: 2Gi
       requests:
         cpu: 200m
-        memory: 400Mi
+        memory: 512Mi
     # requests:
     #   memory: 400Mi
 

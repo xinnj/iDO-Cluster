@@ -529,7 +529,6 @@ controller:
     - workflow-aggregator:596.v8c21c963d92d
     - workflow-api:1316.v33eb_726c50b_a_
     - workflow-basic-steps:1058.vcb_fc1e3a_21a_9
-    - workflow-cps:999999-SNAPSHOT (tag: 3894.vd0f0248b_a_fc4)
     - workflow-durable-task-step:1353.v1891a_b_01da_18
     - workflow-job:1400.v7fd111b_ec82f
     - workflow-multibranch:773.vc4fe1378f1d5

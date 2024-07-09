@@ -11,7 +11,7 @@ metadata:
 spec:
   accessModes:
   {{- if gt .Values.replicaCount 1.0 }}
-      - ReadWriteMany
+      - ReadWriteOnce
   {{- else }}
     {{- .Values.persistence.accessModes | toYaml | nindent 4 }}
   {{- end }}
