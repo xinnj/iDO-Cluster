@@ -8,7 +8,7 @@ metadata:
     velero.io/backup-app: nexus
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   storageClassName: ${IDO_STORAGE_CLASS}
   resources:
     requests:
