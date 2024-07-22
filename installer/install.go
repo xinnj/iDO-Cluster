@@ -166,7 +166,7 @@ func buildTasks() (tasks []task, envs []string) {
 			"IDO_DOCKER_CONTAINER_MIRROR": "docker.io",
 			"IDO_QUAY_CONTAINER_MIRROR":   "quay.io",
 			"IDO_K8S_CONTAINER_MIRROR":    "registry.k8s.io",
-			"IDO_GCR_CONTAINER_MIRROR":    "k8s-gcr.io",
+			"IDO_GCR_CONTAINER_MIRROR":    "gcr.io",
 		}
 	}
 	for k, v := range finalMirrors {
@@ -203,6 +203,7 @@ func buildTasks() (tasks []task, envs []string) {
 		case storageClassType.ceph:
 			tasks = append(tasks, task{name: "Install Ceph",
 				command: "chmod +x packages/storage/ceph/install.sh; packages/storage/ceph/install.sh"})
+			envs = append(envs, "IDO_INSTALL_CSI_ADDON_CONTROLLER="+strconv.FormatBool(installCsiAddonController))
 		case storageClassType.nfs:
 			tasks = append(tasks, task{name: "Install nfs",
 				command: "chmod +x packages/storage/nfs/install.sh; packages/storage/nfs/install.sh"})

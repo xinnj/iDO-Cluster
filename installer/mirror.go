@@ -25,7 +25,7 @@ func initFlexMirror() {
 				"DOCKER_CONTAINER_MIRROR": "docker.m.daocloud.io",
 				"QUAY_CONTAINER_MIRROR":   "quay.m.daocloud.io",
 				"K8S_CONTAINER_MIRROR":    "k8s.m.daocloud.io",
-				"GCR_CONTAINER_MIRROR":    "k8s-gcr.m.daocloud.io",
+				"GCR_CONTAINER_MIRROR":    "gcr.m.daocloud.io",
 			}
 		}
 

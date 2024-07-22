@@ -13,6 +13,14 @@ else
 fi
 echo "Install ceph as $install_mode mode..."
 
+# Install CSI-Addon controller
+if (( "${IDO_INSTALL_CSI_ADDON_CONTROLLER}" == "true" )); then
+  envsubst < "${base}/csi-addon-controller/setup-controller-template.yaml" > "${base}/csi-addon-controller/setup-controller.yaml"
+  kubectl apply -f "${base}/csi-addon-controller/crds.yaml"
+  kubectl apply -f "${base}/csi-addon-controller/rbac.yaml"
+  kubectl apply -f "${base}/csi-addon-controller/setup-controller.yaml"
+fi
+
 # Install rook-ceph operator
 envsubst < "${base}/values-rook-ceph-${install_mode}-template.yaml" > "${base}/values-rook-ceph-${install_mode}.yaml"
 "${base}/../../check-undefined-env.sh" "${base}/values-rook-ceph-${install_mode}.yaml"

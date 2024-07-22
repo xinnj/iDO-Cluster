@@ -23,6 +23,7 @@ var storageClass = ""
 var useExistingSC = true
 var existingSCs []string
 var nfsConfig NfsConfig
+var installCsiAddonController = false
 
 func initFlexStorage() {
 	flexStorage.Clear()
@@ -51,6 +52,11 @@ func initFlexStorage() {
 		storageClass = storageClassType.ceph
 		initFlexStorage()
 	})
+	if !useExistingSC && storageClass == storageClassType.ceph {
+		formStorage.AddCheckbox("  Install CSI-Addon controller: ", installCsiAddonController, func(checked bool) {
+			installCsiAddonController = checked
+		})
+	}
 
 	formStorage.AddCheckbox("Use NFS: ", !useExistingSC && storageClass == storageClassType.nfs, func(checked bool) {
 		useExistingSC = false

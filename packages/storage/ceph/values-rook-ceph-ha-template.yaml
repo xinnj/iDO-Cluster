@@ -511,7 +511,7 @@ csi:
 
   csiAddons:
     # -- Enable CSIAddons
-    enabled: false
+    enabled: ${IDO_INSTALL_CSI_ADDON_CONTROLLER}
     # -- CSIAddons Sidecar image
     image: "${IDO_QUAY_CONTAINER_MIRROR}/csiaddons/k8s-sidecar:v0.8.0"
 
