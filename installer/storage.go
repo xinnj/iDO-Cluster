@@ -11,8 +11,9 @@ type StorageClassType struct {
 	nfs  string
 }
 type NfsConfig struct {
-	server string
-	path   string
+	server       string
+	path         string
+	mountOptions string
 }
 
 var storageClassType = StorageClassType{
@@ -22,7 +23,11 @@ var storageClassType = StorageClassType{
 var storageClass = ""
 var useExistingSC = true
 var existingSCs []string
-var nfsConfig NfsConfig
+var nfsConfig = NfsConfig{
+	server:       "",
+	path:         "/",
+	mountOptions: "vers=3,nolock,proto=tcp,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport",
+}
 var installCsiAddonController = false
 
 func initFlexStorage() {
@@ -64,11 +69,14 @@ func initFlexStorage() {
 		initFlexStorage()
 	})
 	if !useExistingSC && storageClass == storageClassType.nfs {
-		formStorage.AddInputField("  NFS server: ", nfsConfig.server, 0, nil, func(text string) {
+		formStorage.AddInputField("  Server: ", nfsConfig.server, 0, nil, func(text string) {
 			nfsConfig.server = strings.Trim(text, " ")
 		})
-		formStorage.AddInputField("  NFS path: ", nfsConfig.path, 0, nil, func(text string) {
+		formStorage.AddInputField("  Path: ", nfsConfig.path, 0, nil, func(text string) {
 			nfsConfig.path = strings.Trim(text, " ")
+		})
+		formStorage.AddInputField("  Mount options: ", nfsConfig.mountOptions, 0, nil, func(text string) {
+			nfsConfig.mountOptions = strings.Trim(text, " ")
 		})
 	}
 
