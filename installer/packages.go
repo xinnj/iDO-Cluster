@@ -146,6 +146,21 @@ func (config *KeycloakConfig) validate() error {
 	return nil
 }
 
+type XwikiConfig struct {
+	xwikiStorageSizeGi   int
+	xwikiDbStorageSizeGi int
+}
+
+func (config *XwikiConfig) validate() error {
+	if config.xwikiStorageSizeGi == 0 {
+		return errors.New("Xwiki storage size is 0.")
+	}
+	if config.xwikiDbStorageSizeGi == 0 {
+		return errors.New("Xwiki DB storage size is 0.")
+	}
+	return nil
+}
+
 var installJenkins = false
 var installNexus = false
 var installSonar = false
@@ -155,6 +170,7 @@ var installPrometheus = false
 var installGitea = false
 var installZentao = false
 var installKeycloak = false
+var installXwiki = false
 var jenkinsConfig = JenkinsConfig{
 	controllerStorageSizeGi: 20,
 	agentStorageSizeGi:      200,
@@ -192,7 +208,13 @@ var zentaoConfig = ZentaoConfig{
 var keycloakConfig = KeycloakConfig{
 	dbStorageSizeGi: 8,
 }
-var packages = []string{"Keycloak", "Gitea", "Zentao", "Jenkins", "Nexus", "File server", "Samba server", "Sonarqube", "Prometheus"}
+
+var xwikiConfig = XwikiConfig{
+	xwikiStorageSizeGi:   10,
+	xwikiDbStorageSizeGi: 100,
+}
+
+var packages = []string{"Keycloak", "Gitea", "Zentao", "Jenkins", "Nexus", "File server", "Samba server", "Sonarqube", "Xwiki", "Prometheus"}
 var listPackages = tview.NewList()
 var formPackage = tview.NewForm()
 
@@ -274,6 +296,13 @@ func initFlexPackages() {
 
 		if installKeycloak {
 			err := keycloakConfig.validate()
+			if err != nil {
+				showErrorModal(err.Error())
+			}
+		}
+
+		if installXwiki {
+			err := xwikiConfig.validate()
 			if err != nil {
 				showErrorModal(err.Error())
 			}
@@ -446,6 +475,22 @@ func selectPackage(index int, mainText string) {
 			formPackage.AddInputField("Keycloak DB storage size (Gi): ", strconv.Itoa(keycloakConfig.dbStorageSizeGi),
 				0, nil, func(text string) {
 					keycloakConfig.dbStorageSizeGi, _ = strconv.Atoi(text)
+				})
+		}
+	case "Xwiki":
+		formPackage.AddCheckbox("Install Xwiki: ", installXwiki, func(checked bool) {
+			installXwiki = checked
+			selectPackage(index, mainText)
+		})
+		if installXwiki {
+			listPackages.SetItemText(index, mainText, "Will install")
+			formPackage.AddInputField("Xwiki storage size (Gi): ", strconv.Itoa(xwikiConfig.xwikiStorageSizeGi),
+				0, nil, func(text string) {
+					xwikiConfig.xwikiStorageSizeGi, _ = strconv.Atoi(text)
+				})
+			formPackage.AddInputField("Xwiki DB storage size (Gi): ", strconv.Itoa(xwikiConfig.xwikiDbStorageSizeGi),
+				0, nil, func(text string) {
+					xwikiConfig.xwikiDbStorageSizeGi, _ = strconv.Atoi(text)
 				})
 		}
 	}

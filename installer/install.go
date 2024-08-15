@@ -277,6 +277,13 @@ func buildTasks() (tasks []task, envs []string) {
 		envs = append(envs, "IDO_SONAR_PG_STORAGE_SIZE="+strconv.Itoa(sonarConfig.dbStorageSizeGi)+"Gi")
 	}
 
+	if installXwiki {
+		tasks = append(tasks, task{name: "Install Xwiki",
+			command: "chmod +x packages/wiki/install.sh; packages/wiki/install.sh"})
+		envs = append(envs, "IDO_XWIKI_STORAGE_SIZE="+strconv.Itoa(xwikiConfig.xwikiStorageSizeGi)+"Gi")
+		envs = append(envs, "IDO_XWIKI_DB_STORAGE_SIZE="+strconv.Itoa(xwikiConfig.xwikiDbStorageSizeGi)+"Gi")
+	}
+
 	// backup
 	if enableBackup {
 		tasks = append(tasks, task{name: "Install Velero",

@@ -1,0 +1,31 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: xwiki-data
+  namespace: ${IDO_TEAM}
+  labels:
+    velero.io/backup-app: xwiki
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ${IDO_STORAGE_CLASS}
+  resources:
+    requests:
+      storage: ${IDO_XWIKI_STORAGE_SIZE}
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: xwiki-mysql-data
+  namespace: ${IDO_TEAM}
+  labels:
+    velero.io/backup-app: xwiki
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ${IDO_STORAGE_CLASS}
+  resources:
+    requests:
+      storage: ${IDO_XWIKI_DB_STORAGE_SIZE}

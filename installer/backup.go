@@ -84,6 +84,9 @@ func initFlexBackup() {
 		formBackupLeft.AddCheckbox("Backup Sonarqube: ", backupInfo.backupItems["sonarqube"], func(checked bool) {
 			backupInfo.backupItems["sonarqube"] = checked
 		})
+		formBackupLeft.AddCheckbox("Backup Xwiki: ", backupInfo.backupItems["xwiki"], func(checked bool) {
+			backupInfo.backupItems["xwiki"] = checked
+		})
 
 		// right form
 		initialOption := slices.Index(providers, providerSelected)
