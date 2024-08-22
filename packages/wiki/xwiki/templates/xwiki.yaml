@@ -24,8 +24,14 @@ spec:
         # Annotations to rollout changes on configs on workload
         checksum/configmap: {{ include (print $.Template.BasePath "/configmaps.yaml") . | sha256sum }}
         checksum/initialization-configmaps: {{ include (print $.Template.BasePath "/initialization-configmaps.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotations }}
+          {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "xwiki.labels" . | nindent 8 }}
+        {{- if .Values.podLabels }}
+          {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ $fullName }}-sa
       {{- if or .Values.initContainers.database.enabled .Values.initContainers.solr.enabled (and .Values.volumePermissions.enabled .Values.persistence.enabled) }}

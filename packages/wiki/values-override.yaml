@@ -132,6 +132,12 @@ mysql:
       requests:
         cpu: 250m
         memory: 256Mi
+    podLabels:
+      velero.io/backup-app: xwiki
+    podAnnotations:
+      pre.hook.backup.velero.io/command: '["/bin/sh", "-c", "mysql -u root -pxwiki -e \"FLUSH TABLES WITH READ LOCK\""]'
+      post.hook.backup.velero.io/command: '["/bin/sh", "-c", "mysql -u root -pxwiki -e \"UNLOCK TABLES\""]'
+      backup.velero.io/backup-volumes: data
 
 ##
 ## MariaDB chart configuration
@@ -508,3 +514,8 @@ prometheus:
   podmonitor:
     enabled: true
     labels: {}
+
+podLabels:
+  velero.io/backup-app: xwiki
+podAnnotations:
+  backup.velero.io/backup-volumes: xwiki-data
