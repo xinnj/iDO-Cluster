@@ -46,6 +46,8 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
     nginx.ingress.kubernetes.io/preserve-trailing-slash: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "${IDO_FORCE_SSL_REDIRECT}"
@@ -53,7 +55,11 @@ ingress:
   hosts:
     - host: ${IDO_INGRESS_HOSTNAME}
       paths:
-        - path: ${IDO_FILE_URL_PREFIX}
+        - path: /(${IDO_FILE_URL_PREFIX}download.*)
+          pathType: ImplementationSpecific
+        - path: /${IDO_FILE_URL_PREFIX}(upload.*)
+          pathType: ImplementationSpecific
+        - path: /${IDO_FILE_URL_PREFIX}(delete.*)
           pathType: ImplementationSpecific
         - path: /fancyindex
           pathType: ImplementationSpecific
@@ -115,10 +121,10 @@ env:
   - name: TZ
     value: ${IDO_TIMEZONE}
   - name: URL_PREFIX
-    value: ${IDO_FILE_URL_PREFIX}
+    value: /${IDO_FILE_URL_PREFIX}download
 
 probe:
-  path: ${IDO_FILE_URL_PREFIX}
+  path: /${IDO_FILE_URL_PREFIX}download
 
 houseKeeping:
   schedule: "3 5 * * *"

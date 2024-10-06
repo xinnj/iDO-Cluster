@@ -262,6 +262,13 @@ func buildTasks() (tasks []task, envs []string) {
 		tasks = append(tasks, task{name: "Install File Server",
 			command: "chmod +x packages/file-server/install.sh; packages/file-server/install.sh"})
 		envs = append(envs, "IDO_FILE_STORAGE_SIZE="+strconv.Itoa(fileServerConfig.storageSizeGi)+"Gi")
+		if basicInfo.team == "default" {
+            envs = append(envs, "IDO_FILE_DOWNLOAD_URL="+clusterUrl+"/download")
+            envs = append(envs, "IDO_FILE_UPLOAD_URL="+clusterUrl+"/upload")
+        } else {
+            envs = append(envs, "IDO_FILE_DOWNLOAD_URL="+clusterUrl+"/"+basicInfo.team+"/download")
+            envs = append(envs, "IDO_FILE_UPLOAD_URL="+clusterUrl+"/"+basicInfo.team+"/upload")
+        }
 	}
 
 	if installSmb {

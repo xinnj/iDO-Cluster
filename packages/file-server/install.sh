@@ -6,8 +6,12 @@ base=$(dirname "$0")
 echo "##########################################################################"
 echo "### Install File Server ###"
 
-IDO_FILE_URL="${IDO_TEAM_URL}/download"
-IDO_FILE_URL_PREFIX="/${IDO_FILE_URL#*://*/}" && [[ "/${IDO_FILE_URL}" == "${IDO_FILE_URL_PREFIX}" ]] && IDO_FILE_URL_PREFIX="/"
+if [ "${IDO_TEAM}" == "default" ];then
+  IDO_FILE_URL_PREFIX=""
+else
+  IDO_FILE_URL_PREFIX="${IDO_TEAM}/"
+
+fi
 
 # Create namespaces
 kubectl create ns ${IDO_TEAM} --dry-run=client -o yaml | kubectl apply -f -
